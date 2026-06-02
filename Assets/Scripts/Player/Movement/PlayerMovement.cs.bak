@@ -1,0 +1,197 @@
+using UnityEngine;
+
+/// <summary>
+/// 玩家移动
+/// </summary>
+[RequireComponent(typeof(CharacterController))]
+public class PlayerMovement : MonoBehaviour
+{
+    /// <summary>
+    /// 身体旋转和镜头移动是否绑定
+    /// </summary>
+    public enum CouplingMode
+    {
+        Decoupled,
+        Coupled
+    }
+
+    CharacterController m_CharacterController;
+    PlayerRuntimeData m_PlayerRuntimeData;
+
+
+    /// 各种移动的速度
+    /// 移动全权交给代码实现，不依赖RootMotion
+    /// 本来是打算烘培动作速度曲线来实现不滑步的，但是八向移动使用的混合树
+    /// 遂放弃，改为固定速度，后续可以考虑通过速度和动画速度的比值来调整动画播放速度来实现不滑步
+    [SerializeField] float m_WalkSpeed = 2f;
+    [SerializeField] float m_SprintSpeed = 4f;
+    [SerializeField] float m_CrouchSpeed = 1f;
+    float m_IdleSpeed = 0f;
+    float m_TargetSpeed = 0f;
+
+    // Constant
+    public float Acceleration = 10f;
+    public float AirAcceleration = 5f;
+    public float JumpForce = 5f;
+    public float Gravity = 9.81f;
+
+    // Rotation
+    public float RotationSmoothTime = 0.1f;
+    float m_RotationVelocity;
+    public CouplingMode RotationType;
+
+    Vector3 m_RawInput;
+    Vector3 m_InputGlobalDir;
+
+    /// <summary>
+    /// 玩家速度
+    /// </summary>
+    public Vector3 Velocity => m_Velocity;
+
+    Vector3 m_Velocity;
+
+    // StateBase
+    public bool IsGrounded => m_IsGrounded;
+    bool m_IsGrounded;
+    bool m_JumpThisFrame;
+
+    // Event
+    [SerializeField] Vector2Event OnMoveInput;
+
+
+    void Start()
+    {
+        m_CharacterController = GetComponent<CharacterController>();
+        m_PlayerRuntimeData = GetComponent<PlayerController>().RuntimeData;
+
+        m_PlayerRuntimeData.OnStateChanged += OnStateChanged;
+        OnMoveInput.RegisterListener(OnMove);
+        EventManager.AddListener<Event.AimEvent>(OnAim);
+
+        UpdateTargetSpeed(m_PlayerRuntimeData.State);
+    }
+
+    private void OnDestroy()
+    {
+        m_PlayerRuntimeData.OnStateChanged -= OnStateChanged;
+        OnMoveInput.UnregisterListener(OnMove);
+        EventManager.RemoveListener<Event.AimEvent>(OnAim);
+    }
+
+    void Update()
+    {
+        m_InputGlobalDir = Vector3.Normalize(Quaternion.Euler(0, m_PlayerRuntimeData.CameraRoot.eulerAngles.y, 0) * m_RawInput);
+
+        GroundCheck();
+        UpdateMovement();
+        RotationBody();
+        m_CharacterController.Move(m_Velocity * Time.deltaTime);
+        m_PlayerRuntimeData.AniParameter.IsMove = (m_RawInput != Vector3.zero);
+        m_PlayerRuntimeData.AniParameter.Velocity = transform.InverseTransformDirection(m_Velocity);
+        //print($"InputVector: {m_InputGlobalDir}, Velocity: {m_Velocity}, selfVelocity: {transform.InverseTransformDirection(m_Velocity)}");
+    }
+
+    void UpdateMovement()
+    {
+        if (m_IsGrounded)
+        {
+            if (m_Velocity.y != 0)
+            {
+                m_Velocity.y = 0;
+            }
+            if (m_JumpThisFrame)
+            {
+                m_Velocity.y += JumpForce;
+                m_JumpThisFrame = false;
+            }
+            if (m_InputGlobalDir != Vector3.zero) {
+                // 烘培数据z分正负，如果向后移动，z为负数，经过后续旋转后变为正数，所以符号使用输入的符号
+                //m_Velocity = new Vector3(0f, 0f, Mathf.Abs(GetZSpeed()));
+                m_Velocity = Vector3.forward * m_TargetSpeed;
+                float velocityY = m_Velocity.y;
+                m_Velocity = Quaternion.LookRotation(m_InputGlobalDir) * Vector3.ProjectOnPlane(m_Velocity, Vector3.up);
+                m_Velocity.y = velocityY;
+            } else {
+                m_Velocity = Vector3.zero;
+            }
+        }
+        else
+        {
+            m_Velocity += Gravity * Time.deltaTime * Vector3.down;
+        }
+        
+        //print($"InputVector: {m_InputGlobalDir}, Velocity: {m_Velocity}, TargetData: {m_TargetData.name}");
+    }
+
+    void OnStateChanged(PlayerMovementState state)
+    {
+        if (state == PlayerMovementState.Jump && m_IsGrounded) {
+            m_JumpThisFrame = true;
+        } else {
+            UpdateTargetSpeed(state);
+        }
+    }
+
+    void UpdateTargetSpeed(PlayerMovementState state)
+    {
+        if (state == PlayerMovementState.Walk) {
+            m_TargetSpeed = m_WalkSpeed;
+        } else if (state == PlayerMovementState.Idle) {
+            m_TargetSpeed = m_IdleSpeed;
+        } else if (state == PlayerMovementState.Jump) {
+        } else if (state == PlayerMovementState.Sprint) {
+            m_TargetSpeed = m_SprintSpeed;
+        } else if (state == PlayerMovementState.Crouch) {
+            m_TargetSpeed = m_CrouchSpeed;
+        }
+        //print($"UpdateData: state{state}, IsAiming: {m_PlayerRuntimeData.IsAiming}, m_TargetData: {m_TargetData}");
+    }
+
+    void GroundCheck()
+    {
+        m_IsGrounded = false;
+        float checkDistance = m_CharacterController.skinWidth + 0.03f;
+        float radius = m_CharacterController.radius;
+        Vector3 start = transform.position + m_CharacterController.center - m_CharacterController.height / 2 * Vector3.up + radius * Vector3.up;
+        Vector3 end = transform.position + m_CharacterController.center + m_CharacterController.height / 2 * Vector3.up - radius * Vector3.up;
+        if (Physics.CapsuleCast(start, end, m_CharacterController.radius,
+            Vector3.down, out RaycastHit hitInfo, checkDistance)
+        )
+        {
+            if (hitInfo.collider.gameObject != gameObject)
+            {
+                m_IsGrounded = true;
+            }
+        }
+    }
+
+    void RotationBody()
+    {
+        float targetAngle = 0f;
+        if (RotationType == CouplingMode.Coupled) {
+            targetAngle = m_PlayerRuntimeData.CameraRoot.eulerAngles.y;
+        } else if(RotationType == CouplingMode.Decoupled) {
+            if (m_Velocity == Vector3.zero) {
+                return;
+            }
+            targetAngle = Mathf.Atan2(m_Velocity.x, m_Velocity.z) * Mathf.Rad2Deg;
+        }
+        float degree = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref m_RotationVelocity, RotationSmoothTime);
+        transform.rotation = Quaternion.Euler(0f, degree, 0f);
+    }
+
+    public bool IsMoved()
+    {
+        return m_InputGlobalDir.magnitude > 0;
+    }
+
+    void OnAim(Event.AimEvent evt)
+    {
+        UpdateTargetSpeed(m_PlayerRuntimeData.State);
+    }
+
+    void OnMove(Vector2 moveInput)
+    {
+        m_RawInput = new Vector3(moveInput.x, 0, moveInput.y);
+    }
+}

@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b2094c21dbfc24585ef72b08d51758, type: 3}
+  m_Name: Dialogue
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  InitializeIdx: 0
+  Nodes:
+  - Id: 0
+    Content: "\u4F60\u597D"
+    Options:
+    - Content: "\u4F60\u597D"
+      Action: 0
+      GotoIdx: 1
+      ActionData: 
+    - Content: "\uFF08\u65E0\u89C6\uFF09"
+      Action: 1
+      GotoIdx: 1
+      ActionData: 
+  - Id: 1
+    Content: "\u6709\u4EC0\u4E48\u80FD\u5E2E\u5230\u4F60\u7684\u5417\uFF1F"
+    Options:
+    - Content: "\u6211\u8981\u4E70\u4E1C\u897F\uFF08\u6253\u5F00\u5546\u5E97\uFF09"
+      Action: 4
+      GotoIdx: 1
+      ActionData: 1001
+    - Content: "\u6682\u65F6\u6CA1\u6709\u9700\u8981"
+      Action: 0
+      GotoIdx: 2
+      ActionData: 
+  - Id: 2
+    Content: "\u6709\u9700\u8981\u968F\u65F6\u6765\u627E\u6211"
+    Options:
+    - Content: "\uFF08\u5173\u95ED\u5BF9\u8BDD\uFF09"
+      Action: 1
+      GotoIdx: 1
+      ActionData: 

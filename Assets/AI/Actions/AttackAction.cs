@@ -1,0 +1,40 @@
+using System;
+using Unity.Behavior;
+using UnityEngine;
+using Action = Unity.Behavior.Action;
+using Unity.Properties;
+
+[Serializable, GeneratePropertyBag]
+[NodeDescription(name: "Attack", story: "[Agent] attack [Target]", category: "Action/Combat", id: "e214e03901521f4e46df50d4243342e0")]
+public partial class AttackAction : Action
+{
+    [SerializeReference] public BlackboardVariable<GameObject> Agent;
+    [SerializeReference] public BlackboardVariable<GameObject> Target;
+
+    IAttacker m_Attacker = null;
+    protected override Status OnStart()
+    {
+        if(Agent?.Value == null || Target?.Value == null) {
+            return Status.Failure;
+        }
+        m_Attacker = Agent.Value.GetComponentInChildren<IAttacker>();
+        if(m_Attacker == null) {
+            return Status.Failure;
+        }
+        return Status.Running;
+    }
+
+    protected override Status OnUpdate()
+    {
+        if (m_Attacker.CanFire()) {
+            var aimPoint = Target.Value.GetComponent<Actor>()?.AimPoint.position??Target.Value.transform.position;
+            m_Attacker.Fire(aimPoint);
+        }
+        return Status.Success;
+    }
+
+    protected override void OnEnd()
+    {
+    }
+}
+
