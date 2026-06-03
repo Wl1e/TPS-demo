@@ -1,7 +1,6 @@
 
-using UnityEngine;
 
-namespace FSM
+namespace TPSDemo.FSM
 {
     public class IdleState : StateBase<PlayerStateMachine>
     {

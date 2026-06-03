@@ -1,11 +1,15 @@
 
 using UnityEngine;
 
-public class PlayerManager: MonoBehaviour
+namespace TPSDemo
 {
-    public PlayerController m_PlayerPrefab;
-    public PlayerController SpawnPlayer()
+
+    public class PlayerManager : MonoBehaviour
     {
-        return Instantiate(m_PlayerPrefab);
+        public PlayerController m_PlayerPrefab;
+        public PlayerController SpawnPlayer()
+        {
+            return Instantiate(m_PlayerPrefab);
+        }
     }
 }

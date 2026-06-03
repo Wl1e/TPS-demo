@@ -1,9 +1,9 @@
 ﻿
-namespace Combat.StateMachine
+namespace TPSDemo.Combat.StateMachine
 {
-    public class EquippingState : FSM.StateBase<EquipStateMachine>
+    public class EquippingState : FSM.StateBase<TPSDemo.EquipStateMachine>
     {
-        public EquippingState(EquipStateMachine stateMachine) : base(stateMachine, "Equipping")
+        public EquippingState(TPSDemo.EquipStateMachine stateMachine) : base(stateMachine, "Equipping")
         {
         }
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // 事件越来越多，后续考虑换成SO Event
-namespace Event
+namespace TPSDemo.Event
 {
     public abstract class InternalEvent
     { }

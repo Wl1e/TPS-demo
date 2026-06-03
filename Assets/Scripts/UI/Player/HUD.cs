@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace UI
+namespace TPSDemo.UI
 {
     public class HUD : MonoBehaviour
     {

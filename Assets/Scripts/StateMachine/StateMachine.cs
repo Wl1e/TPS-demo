@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace FSM
+namespace TPSDemo.FSM
 {
     public abstract class StateMachine : MonoBehaviour
     {

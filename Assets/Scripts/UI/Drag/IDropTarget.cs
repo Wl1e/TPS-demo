@@ -1,6 +1,6 @@
 ﻿using UnityEngine.EventSystems;
 
-namespace UI
+namespace TPSDemo.UI
 {
     public interface IDropTarget
     {

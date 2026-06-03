@@ -6,13 +6,14 @@ namespace TPSDemo
     public class EffectBuilder
     {
         GameObject m_EffectPrefab;
-        string m_EffectName = "";
+        string m_EffectName = "Effect";
         Transform m_Parent = null;
         Vector3 m_Position = Vector3.zero;
-        Material m_Material = null;
         float m_Scale = 1f;
         Quaternion m_Rotation = Quaternion.identity;
-        Color m_Color;
+        float m_Duration = 1f;
+        //Material m_Material = null;
+        //Color m_Color;
 
         public EffectBuilder(GameObject effectPrefab)
         {
@@ -27,7 +28,7 @@ namespace TPSDemo
 
         public EffectBuilder WithColor(Color color)
         {
-            m_Color = color;
+            //m_Color = color;
             return this;
         }
 
@@ -45,7 +46,7 @@ namespace TPSDemo
 
         public EffectBuilder WithMaterial(Material material)
         {
-            m_Material = material;
+            //m_Material = material;
             return this;
         }
 
@@ -65,12 +66,31 @@ namespace TPSDemo
             return this;
         }
 
-        public void Create()
+        public EffectBuilder WithDuration(float duration)
+        {
+            m_Duration = duration;
+            return this;
+        }
+
+        public GameObject Create()
         {
             var effect = Object.Instantiate(m_EffectPrefab);
-            if (m_EffectName != "") {
-                effect.name = m_EffectName;
+            effect.name = m_EffectName;
+            effect.transform.localScale = Vector3.one * m_Scale;
+            effect.transform.rotation = m_Rotation;
+
+            if(m_Parent != null) {
+                effect.transform.SetParent(m_Parent);
+                effect.transform.localPosition = m_Position;
+            } else {
+                effect.transform.position = m_Position;
             }
+
+            if (m_Duration > 0) {
+                Object.Destroy(effect, m_Duration);
+            }
+
+            return effect;
         }
     }
 }

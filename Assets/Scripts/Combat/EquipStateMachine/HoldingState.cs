@@ -1,5 +1,5 @@
 ﻿
-namespace Combat.StateMachine
+namespace TPSDemo.Combat.StateMachine
 {
     public class HoldingState : FSM.StateBase<EquipStateMachine>
     {

@@ -1,11 +1,15 @@
 using UnityEngine;
 
-public class AnimatorChannel : MonoBehaviour
+namespace TPSDemo
 {
-    public Animator Animator;
-    public NpcBase Npc;
 
-    private void OnAnimatorMove()
+    public class AnimatorChannel : MonoBehaviour
     {
+        public Animator Animator;
+        public NpcBase Npc;
+
+        private void OnAnimatorMove()
+        {
+        }
     }
 }

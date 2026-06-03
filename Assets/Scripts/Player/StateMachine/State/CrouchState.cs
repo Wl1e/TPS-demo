@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace FSM
+namespace TPSDemo.FSM
 {
 
     public class CrouchState : StateBase<PlayerStateMachine>

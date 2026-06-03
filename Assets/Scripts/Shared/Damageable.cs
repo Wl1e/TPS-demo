@@ -1,21 +1,25 @@
 using System;
 using UnityEngine;
 
-public class Damageable : MonoBehaviour
+namespace TPSDemo
 {
-    public Health Health;
-    public Action<GameObject, float> OnTakeDamaged;
-    public void Start()
+
+    public class Damageable : MonoBehaviour
     {
-        Health = GetComponent<Health>();
-        if (!Health) {
-            Health = GetComponentInParent<Health>();
+        public Health Health;
+        public Action<GameObject, float> OnTakeDamaged;
+        public void Start()
+        {
+            Health = GetComponent<Health>();
+            if (!Health) {
+                Health = GetComponentInParent<Health>();
+            }
         }
-    }
-    public void InflictDamage(GameObject attacker, float damage)
-    {
-        if (Health) {
-            Health.TakeDamage(attacker, damage);
+        public void InflictDamage(GameObject attacker, float damage)
+        {
+            if (Health) {
+                Health.TakeDamage(attacker, damage);
+            }
         }
     }
 }

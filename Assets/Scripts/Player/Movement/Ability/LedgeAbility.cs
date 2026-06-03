@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Assets.Scripts.Player.Movement.Ability
+namespace TPSDemo
 {
 	public class LedgeAbility: MonoBehaviour, IMovementAbility
 	{

@@ -2,19 +2,22 @@
 using System;
 using UnityEngine;
 
-public class PlayerRuntimeData
+namespace TPSDemo
 {
-    public bool IsAiming;
-    public PlayerMovementState State;
-    public Transform CameraRoot;
+    public class PlayerRuntimeData
+    {
+        public bool IsAiming;
+        public PlayerMovementState State;
+        public Transform CameraRoot;
 
-    public Combat.Slot ActiveSlot;
+        public Combat.Slot ActiveSlot;
 
-    public Action<bool> OnAim;
-    public Action<PlayerMovementState> OnStateChanged;
+        public Action<bool> OnAim;
+        public Action<PlayerMovementState> OnStateChanged;
 
-    // animator
-    public AnimatorParameter AniParameter = new AnimatorParameter();
+        // animator
+        public AnimatorParameter AniParameter = new AnimatorParameter();
 
-    public Define.ViewPerspective AimType;
+        public Define.ViewPerspective AimType;
+    }
 }

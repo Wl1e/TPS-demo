@@ -1,19 +1,22 @@
 ﻿using UnityEngine;
 
-public class Magazine: AttachmentBase
+namespace TPSDemo
 {
+    public class Magazine : AttachmentBase
+    {
 
-	void Start()
-	{
+        void Start()
+        {
 
-	}
+        }
 
-    public override void OnEquip()
-    { }
-    public override void OnUnequip()
-    { }
-    public override void OnAim()
-    { }
-    public override void OnFire()
-    { }
+        public override void OnEquip()
+        { }
+        public override void OnUnequip()
+        { }
+        public override void OnAim()
+        { }
+        public override void OnFire()
+        { }
+    }
 }

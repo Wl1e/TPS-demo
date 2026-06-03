@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace UI
+namespace TPSDemo.UI
 {
     public class WeaponSlotUI : MonoBehaviour, IDropTarget
     {

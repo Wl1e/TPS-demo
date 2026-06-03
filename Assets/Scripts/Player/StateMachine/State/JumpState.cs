@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-namespace FSM
+namespace TPSDemo.FSM
 {
     public class JumpState : StateBase<PlayerStateMachine>
     {

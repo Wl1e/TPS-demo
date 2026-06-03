@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace FSM
+namespace TPSDemo.FSM
 {
 	public class LedgeState: StateBase<PlayerStateMachine>
     {

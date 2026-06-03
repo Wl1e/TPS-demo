@@ -1,7 +1,7 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace UI
+namespace TPSDemo.UI
 {
     public interface IDragable:
         IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler

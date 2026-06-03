@@ -1,13 +1,17 @@
 using System;
 
-public interface IFireMechanism
+namespace TPSDemo
 {
-    public float FireInternal { get; }
-    public bool IsFiring { get; }
 
-    public event Action OnShouldFire;
+    public interface IFireMechanism
+    {
+        public float FireInternal { get; }
+        public bool IsFiring { get; }
 
-    public void StartFire();
-    public void UpdateFire(float deltaTime);
-    public void StopFire();
+        public event Action OnShouldFire;
+
+        public void StartFire();
+        public void UpdateFire(float deltaTime);
+        public void StopFire();
+    }
 }

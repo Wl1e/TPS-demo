@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace FSM
+namespace TPSDemo.FSM
 {
 
     public class WalkState : StateBase<PlayerStateMachine>

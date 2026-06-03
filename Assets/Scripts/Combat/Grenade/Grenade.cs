@@ -1,4 +1,5 @@
 ﻿using System.Timers;
+using TPSDemo;
 using UnityEngine;
 
 public class Grenade: MonoBehaviour, IGrenade
@@ -45,15 +46,15 @@ public class Grenade: MonoBehaviour, IGrenade
         m_Rigidbody.linearDamping = 0.3f;
     }
 
-    private void FixedUpdate()
+    void Update()
     {
         if(!m_IsRunning) {
             return;
         }
         m_AliveTime += Time.deltaTime;
         if(!m_IsExploded && m_AliveTime > MaxLifeTime) {
-            Explore();
             m_IsExploded = true;
+            Explore();
             return;
         }
     }
@@ -87,6 +88,10 @@ public class Grenade: MonoBehaviour, IGrenade
             }
         }
 
+        var audio = Director.Instance.RequestAudio(ExplosionAudio);
+        audio.WithPosition(transform.position).Play();
+        var effect = Director.Instance.RequestEffect(ExplosionEffectPrefab);
+        effect.WithPosition(transform.position).Create();
 
         Destroy(gameObject);
     }

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   Id: 100
   Name: Grenade
-  Type: 2
+  Type: 3
   Description: Grenade
   Icon: {fileID: 3286163911610860551, guid: e53f2e86e048bb94b81ebe147cce14b6, type: 3}
   MaxStack: 1

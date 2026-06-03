@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.Events;
 
-namespace FSM
+namespace TPSDemo.FSM
 {
     public abstract class StateBase<StateMachineType> : IState
     {
@@ -62,4 +62,4 @@ namespace FSM
 
     
 
-} // namespace FSM
+} // namespace TPSDemo.FSM

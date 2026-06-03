@@ -10,5 +10,5 @@ public class ShopConfig : ScriptableObject
     public bool Restock = false;
     public float RestockTime = 0f;
     public bool RandomGoods = false;
-    public List<ShopEntry> Goods = new List<ShopEntry>();
+    public List<TPSDemo.ShopEntry> Goods = new List<TPSDemo.ShopEntry>();
 }

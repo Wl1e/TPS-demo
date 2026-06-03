@@ -1,14 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
-
-using WeaponStartReloadEvent = Event.WeaponStartReloadEvent;
-using WeaponEndReloadEvent = Event.WeaponEndReloadEvent;
-using WeaponChangedEvent = Event.WeaponChangedEvent;
 using TMPro;
-using Event;
 
-namespace UI
+namespace TPSDemo.UI
 {
+using Event;
     public class WeaponHUDUI : MonoBehaviour
     {
         [Header("Weapon Tabs")]

@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-namespace FSM
+namespace TPSDemo.FSM
 {
     public interface IPredicate
     {

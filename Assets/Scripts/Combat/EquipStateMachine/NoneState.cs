@@ -1,9 +1,9 @@
 ﻿
-namespace Combat.StateMachine
+namespace TPSDemo.Combat.StateMachine
 {
-    public class NoneState : FSM.StateBase<EquipStateMachine>
+    public class NoneState : FSM.StateBase<TPSDemo.EquipStateMachine>
     {
-        public NoneState(EquipStateMachine stateMachine) : base(stateMachine, "None")
+        public NoneState(TPSDemo.EquipStateMachine stateMachine) : base(stateMachine, "None")
         {
         }
 

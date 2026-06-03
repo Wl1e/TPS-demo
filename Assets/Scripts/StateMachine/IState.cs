@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FSM
+namespace TPSDemo.FSM
 {
     public interface IState
     {

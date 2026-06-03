@@ -4,10 +4,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ItemDataList", menuName = "ItemData/ItemDataList")]
 public class ItemDataList: ScriptableObject
 {
-    [SerializeField] List<ItemData> m_DataList;
+    [SerializeField] List<TPSDemo.ItemData> m_DataList;
 
     static ItemDataList m_Instance;
-    public static List<ItemData> GetItemDatas(ItemType type)
+    public static List<TPSDemo.ItemData> GetItemDatas(TPSDemo.ItemType type)
     {
         if(m_Instance == null) {
             m_Instance = Resources.Load<ItemDataList>("ItemDataList");
@@ -15,7 +15,7 @@ public class ItemDataList: ScriptableObject
         return m_Instance.m_DataList.FindAll(data => data.Type == type);
     }
 
-    public static ItemData GetItemData(int id)
+    public static TPSDemo.ItemData GetItemData(int id)
     {
         if(m_Instance == null) {
             m_Instance = Resources.Load<ItemDataList>("ItemDataList");

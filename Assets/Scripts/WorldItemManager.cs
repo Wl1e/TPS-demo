@@ -2,23 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WorldItemManager: MonoBehaviour
+namespace TPSDemo
 {
-    public Transform ItemRoot;
-
-    HashSet<ItemPickup> m_WorldItems = new HashSet<ItemPickup>();
-
-    public void SpawnItem(ItemData data, Vector3 pos)
+    public class WorldItemManager : MonoBehaviour
     {
-        var item = Instantiate(data.Prefab, pos, Quaternion.Euler(0, 0, 0), ItemRoot);
-        var pickup = item.GetComponent<ItemPickup>();
-        m_WorldItems.Add(pickup);
-    }
+        public Transform ItemRoot;
 
-    public void EraseItem(ItemPickup item)
-    {
-        m_WorldItems.Remove(item);
-    }
+        HashSet<ItemPickup> m_WorldItems = new HashSet<ItemPickup>();
 
+        public void SpawnItem(ItemData data, Vector3 pos)
+        {
+            var item = Instantiate(data.Prefab, pos, Quaternion.Euler(0, 0, 0), ItemRoot);
+            var pickup = item.GetComponent<ItemPickup>();
+            m_WorldItems.Add(pickup);
+        }
+
+        public void EraseItem(ItemPickup item)
+        {
+            m_WorldItems.Remove(item);
+        }
+    }
 }
-

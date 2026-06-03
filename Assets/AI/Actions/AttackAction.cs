@@ -11,13 +11,13 @@ public partial class AttackAction : Action
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<GameObject> Target;
 
-    IAttacker m_Attacker = null;
+    TPSDemo.IAttacker m_Attacker = null;
     protected override Status OnStart()
     {
         if(Agent?.Value == null || Target?.Value == null) {
             return Status.Failure;
         }
-        m_Attacker = Agent.Value.GetComponentInChildren<IAttacker>();
+        m_Attacker = Agent.Value.GetComponentInChildren<TPSDemo.IAttacker>();
         if(m_Attacker == null) {
             return Status.Failure;
         }

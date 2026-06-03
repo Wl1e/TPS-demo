@@ -6,14 +6,14 @@ namespace TPSDemo
     public class AudioBuilder
     {
         AudioSystem m_AudioSystem;
-        AudioDef m_AudioDef;
+        AudioClip m_AudioClip;
         Transform m_AttachTransform;
         Vector3 m_Position;
 
-        public AudioBuilder(AudioSystem audioSystem, AudioDef def)
+        public AudioBuilder(AudioSystem audioSystem, AudioClip clip)
         {
             m_AudioSystem = audioSystem;
-            m_AudioDef = def;
+            m_AudioClip = clip;
         }
 
         public AudioBuilder AttachTo(Transform attach)
@@ -30,11 +30,11 @@ namespace TPSDemo
 
         public void Play()
         {
-            if (!m_AudioSystem || !m_AudioDef) {
+            if (m_AudioSystem == null || !m_AudioClip) {
                 return;
             }
-            m_AudioSystem.Player(new AudioSystem.AudioInfo {
-                AudioDef = m_AudioDef,
+            m_AudioSystem.Play(new AudioSystem.AudioInfo {
+                AudioClip = m_AudioClip,
                 AttachTransform = m_AttachTransform,
                 Position = m_Position
             });

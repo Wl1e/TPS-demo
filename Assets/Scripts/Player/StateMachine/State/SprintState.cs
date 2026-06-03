@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-namespace FSM
+namespace TPSDemo.FSM
 {
     public class SprintState : StateBase<PlayerStateMachine>
     {
@@ -16,6 +16,7 @@ namespace FSM
 
         public override void OnExit()
         {
+            // 清空导致Jump回到Sprint时动画从头播放了
             m_StateMachine.RuntimeData.AniParameter.IsSprint = false;
         }
 

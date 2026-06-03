@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace UI
+namespace TPSDemo.UI
 {
     public struct WeaponUIData
     {

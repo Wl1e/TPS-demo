@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
-namespace UI
+namespace TPSDemo.UI
 {
     public class UIController : MonoBehaviour
     {

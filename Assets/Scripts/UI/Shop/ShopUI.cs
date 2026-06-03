@@ -1,11 +1,10 @@
-using Event;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI
+namespace TPSDemo.UI
 {
+using Event;
     public class ShopUI : MonoBehaviour
     {
         int m_CurrentShopId = 0;

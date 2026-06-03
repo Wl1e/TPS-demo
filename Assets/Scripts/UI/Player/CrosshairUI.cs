@@ -1,9 +1,9 @@
-using Event;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI
+namespace TPSDemo.UI
 {
+using Event;
     public class CrosshairUI : MonoBehaviour
     {
         public Image CrosshairImage;

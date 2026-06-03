@@ -1,9 +1,8 @@
-﻿using Combat;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI
+namespace TPSDemo.UI
 {
     public class ShopSlotUI : MonoBehaviour
     {

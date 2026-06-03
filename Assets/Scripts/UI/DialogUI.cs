@@ -1,10 +1,11 @@
-using Event;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI
+namespace TPSDemo.UI
 {
+using Event;
+
     public class DialogUI : MonoBehaviour
     {
         public Image BackGround;

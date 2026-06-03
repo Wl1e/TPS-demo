@@ -2,43 +2,46 @@
 using System;
 using UnityEngine;
 
-public class Burst: MonoBehaviour, IFireMechanism
+namespace TPSDemo
 {
-    [SerializeField]
-    int m_ShotPerBurst;
-    [SerializeField]
-    float m_ShotInternal;
-    int m_CurrentShot;
-    float m_LastShotTime = 0f;
-
-    bool m_IsFiring = false;
-    public float FireInternal { get; }
-    public bool IsFiring => m_IsFiring;
-
-    public event Action OnShouldFire;
-
-    public void StartFire()
+    public class Burst : MonoBehaviour, IFireMechanism
     {
-        m_IsFiring = true;
-        m_CurrentShot = 0;
-    }
-    public void StopFire()
-    {
-        m_IsFiring = false;
-    }
-    public void UpdateFire(float deltaTime)
-    {
-        if(!m_IsFiring) {
-            return;
+        [SerializeField]
+        int m_ShotPerBurst;
+        [SerializeField]
+        float m_ShotInternal;
+        int m_CurrentShot;
+        float m_LastShotTime = 0f;
+
+        bool m_IsFiring = false;
+        public float FireInternal { get; }
+        public bool IsFiring => m_IsFiring;
+
+        public event Action OnShouldFire;
+
+        public void StartFire()
+        {
+            m_IsFiring = true;
+            m_CurrentShot = 0;
         }
-        if(m_CurrentShot >= m_ShotPerBurst) {
-            return;
+        public void StopFire()
+        {
+            m_IsFiring = false;
         }
-        if(m_LastShotTime + m_ShotInternal > Time.time) {
-            return;
+        public void UpdateFire(float deltaTime)
+        {
+            if (!m_IsFiring) {
+                return;
+            }
+            if (m_CurrentShot >= m_ShotPerBurst) {
+                return;
+            }
+            if (m_LastShotTime + m_ShotInternal > Time.time) {
+                return;
+            }
+            m_LastShotTime = Time.time;
+            OnShouldFire?.Invoke();
+            m_CurrentShot++;
         }
-        m_LastShotTime = Time.time;
-        OnShouldFire?.Invoke();
-        m_CurrentShot++;
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace UI
+namespace TPSDemo.UI
 {
     [Flags]
     public enum DragType: int

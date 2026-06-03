@@ -1,14 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
 
-public class SpineController : MonoBehaviour
+namespace TPSDemo
 {
 
-    public Dictionary<PlayerMovementState, Vector3> Offset;
-    
-    void UpdateOffset()
+    public class SpineController : MonoBehaviour
     {
-        var movement = GetComponent<PlayerMovement>();
+
+        public Dictionary<PlayerMovementState, Vector3> Offset;
+
+        void UpdateOffset()
+        {
+            var movement = GetComponent<PlayerMovement>();
+        }
     }
 }

@@ -2,11 +2,14 @@
 using System;
 using UnityEngine;
 
-public class ProjectileBehaviour: ShootBehaviour
+namespace TPSDemo
 {
-    public override void Shoot(Vector3 dir)
+    public class ProjectileBehaviour : ShootBehaviour
     {
-        var bullet = CreateBullet(dir);
-        bullet.OnShoot();
+        public override void Shoot(Vector3 dir)
+        {
+            var bullet = CreateBullet(dir);
+            bullet.OnShoot();
+        }
     }
 }

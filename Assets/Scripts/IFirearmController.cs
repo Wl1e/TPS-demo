@@ -1,11 +1,15 @@
 ﻿
-public interface IFirearmSlot: ICombatSlot
+namespace TPSDemo
 {
-    public float ReloadTime { get; }
 
-    public void TrySwitchFirearm(int index);
+    public interface IFirearmSlot : ICombatSlot
+    {
+        public float ReloadTime { get; }
 
-    public void TryChangeFirearmIndex(int value);
+        public void TrySwitchFirearm(int index);
 
-    public void TryReload();
+        public void TryChangeFirearmIndex(int value);
+
+        public void TryReload();
+    }
 }

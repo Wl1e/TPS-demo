@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
-namespace UI
+namespace TPSDemo.UI
 {
     public class DragManager : Singleton<DragManager>
     {

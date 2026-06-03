@@ -1,25 +1,28 @@
 ﻿
-using Combat.StateMachine;
 
-public class EquipStateMachine: FSM.StateMachine
+namespace TPSDemo
 {
-    CombatController m_CombatController;
-
-    private void Start()
+using Combat.StateMachine;
+    public class EquipStateMachine : FSM.StateMachine
     {
-        m_CombatController = GetComponent<CombatController>();
-    }
+        CombatController m_CombatController;
 
-    public override void InitializeFSM()
-    {
-        var noneState = new NoneState(this);
-        var equippingState = new EquippingState(this);
-        var holdingState = new HoldingState(this);
-        var switchingState = new SwitchingState(this);
-        var unequippingState = new UnequippingState(this);
-        var reloadingState = new ReloadingState(this);
+        private void Start()
+        {
+            m_CombatController = GetComponent<CombatController>();
+        }
 
-        // None m_State
-        //noneState.AddTransition(equippingState, )
+        public override void InitializeFSM()
+        {
+            var noneState = new NoneState(this);
+            var equippingState = new EquippingState(this);
+            var holdingState = new HoldingState(this);
+            var switchingState = new SwitchingState(this);
+            var unequippingState = new UnequippingState(this);
+            var reloadingState = new ReloadingState(this);
+
+            // None m_State
+            //noneState.AddTransition(equippingState, )
+        }
     }
 }

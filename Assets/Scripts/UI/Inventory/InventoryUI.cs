@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace TPSDemo.UI
+{
+
 using InventoryUpdateEvent = Event.InventoryUpdateEvent;
 using InventoryStateChangeEvent = Event.InventoryStateChangeEvent;
 
-namespace UI
-{
     public class InventoryUI : MonoBehaviour
     {
         [SerializeField] List<InventorySlotUI> m_Slots;

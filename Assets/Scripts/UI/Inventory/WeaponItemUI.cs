@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Net.Mail;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace UI
+namespace TPSDemo.UI
 {
     public class WeaponItemUI : MonoBehaviour, IDragable
     {
@@ -16,7 +15,7 @@ namespace UI
 
         public DragType Type { get; private set; }
         public Image DragIcon => Base;
-        public WeaponSlotUI Slot;
+        public WeaponSlotUI Slot;   
         public int SlotIdx => Slot.SlotIdx;
 
         int IDragable.ItemId => WeaponId;

@@ -2,7 +2,7 @@
 using System.Collections;
 using TMPro;
 
-namespace Assets.Scripts
+namespace TPSDemo
 {
 	public class DebugLayer: MonoBehaviour
 	{
@@ -12,6 +12,7 @@ namespace Assets.Scripts
         public bool ShowState = true;
         public bool ShowVelocity = true;
         public bool ShowClimbState = true;
+        public bool ShowCombatState = true;
 
 
         private void LateUpdate()
@@ -22,12 +23,14 @@ namespace Assets.Scripts
             }
             if (ShowVelocity) {
                 text += $"Velocity: {Player.Movement.Velocity}\n";
+                text += $"IsGrounded: {Player.Movement.IsGrounded}\n";
             }
-            text += $"IsGrounded: {Player.Movement.IsGrounded}\n";
             if(ShowClimbState) {
                 text += $"CanClimb: {Player.ClimbController.CanClimb}\nCanLedge: {Player.ClimbController.CanLedge}\n";
             }
-            text += $"WantSprint: {Player.StateMachine.WantSprint}";
+            if (ShowCombatState) {
+                text += $"CombatState: {Player.CombatController.CurrentActiveSlot.ToString()}";
+            }
             StatusText.text = text;
         }
     }

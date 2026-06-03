@@ -1,9 +1,9 @@
 ﻿
-namespace Combat.StateMachine
+namespace TPSDemo.Combat.StateMachine
 {
-    public class ReloadingState : FSM.StateBase<EquipStateMachine>
+    public class ReloadingState : FSM.StateBase<TPSDemo.EquipStateMachine>
     {
-        public ReloadingState(EquipStateMachine stateMachine) : base(stateMachine, "Reloading")
+        public ReloadingState(TPSDemo.EquipStateMachine stateMachine) : base(stateMachine, "Reloading")
         {
         }
 

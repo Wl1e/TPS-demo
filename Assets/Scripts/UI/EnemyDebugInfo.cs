@@ -1,22 +1,25 @@
 using TMPro;
-using UI;
 using UnityEngine;
 
-public class EnemyDebugInfo : MonoBehaviour
+namespace TPSDemo
 {
-    public TextMeshProUGUI HealthLabel;
-    public EnemyController Enemy;
-    Health health;
-    void Start()
-    {
-        health = Enemy.Health;
-        health.OnTakeDamaged += (GameObject obj, float value) => UpdateHealth(health.CurrentHealth);
-        health.OnHealed += (float value) => UpdateHealth(health.CurrentHealth);
-        UpdateHealth(health.CurrentHealth);
-    }
 
-    void UpdateHealth(float value)
+    public class EnemyDebugInfo : MonoBehaviour
     {
-        HealthLabel.text = $"Health: {value}";
+        public TextMeshProUGUI HealthLabel;
+        public EnemyController Enemy;
+        Health health;
+        void Start()
+        {
+            health = Enemy.Health;
+            health.OnTakeDamaged += (GameObject obj, float value) => UpdateHealth(health.CurrentHealth);
+            health.OnHealed += (float value) => UpdateHealth(health.CurrentHealth);
+            UpdateHealth(health.CurrentHealth);
+        }
+
+        void UpdateHealth(float value)
+        {
+            HealthLabel.text = $"Health: {value}";
+        }
     }
 }
