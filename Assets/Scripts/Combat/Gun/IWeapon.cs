@@ -34,6 +34,6 @@ namespace TPSDemo
         public Dictionary<IAttachment.AttachmentSlot, IAttachment> Attachments { get; }
         public float GetScopeRatio();
         public void OnEquip();
-        public void OnUnEquip();
+        public void OnUnequip();
     }
 }

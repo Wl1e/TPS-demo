@@ -1,22 +1,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActorManager : Singleton<ActorManager>
+namespace TPSDemo
 {
-    Dictionary<int, Actor> m_Actors = new Dictionary<int, Actor>();
-    public Dictionary<int, Actor> Actors => m_Actors;
-    public void AddActor(Actor actor)
+    public class ActorManager : Singleton<ActorManager>
     {
-        m_Actors.Add(actor.Id, actor);
-    }
+        Dictionary<int, Actor> m_Actors = new Dictionary<int, Actor>();
+        public Dictionary<int, Actor> Actors => m_Actors;
+        public void AddActor(Actor actor)
+        {
+            m_Actors.Add(actor.Id, actor);
+        }
 
-    public void RemoveActor(Actor actor)
-    {
-        m_Actors.Remove(actor.Id);
-    }
+        public void RemoveActor(Actor actor)
+        {
+            m_Actors.Remove(actor.Id);
+        }
 
-    public Actor GetActor(int actorId)
-    {
-        return m_Actors.GetValueOrDefault(actorId, null);
+        public Actor GetActor(int actorId)
+        {
+            return m_Actors.GetValueOrDefault(actorId, null);
+        }
     }
 }

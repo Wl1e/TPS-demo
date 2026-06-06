@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace TPSDemo
@@ -14,7 +15,7 @@ namespace TPSDemo
     }
 
     [RequireComponent(typeof(AudioSource))]
-    public class Weapon : MonoBehaviour, IWeapon
+    public class Weapon: NetworkBehaviour, IWeapon
     {
         // 武器所有者
         GameObject m_Owner;
@@ -60,7 +61,13 @@ namespace TPSDemo
         //public Vector3 BackOffset => m_BackOffset;
 
         // Component
+        /// <summary>
+        /// 发射行为（一颗子弹、霰弹枪范围随机）
+        /// </summary>
         IShootBehaviour m_Behaviour;
+        /// <summary>
+        /// 发射规律（自动、半自动、三连发）
+        /// </summary>
         IFireMechanism m_FireMechanism;
         Transform m_Target;
         AttachmentManager m_AttachmentManager;
@@ -88,12 +95,20 @@ namespace TPSDemo
             m_AmmoHandler = GetComponent<AmmoHandler>();
             m_AttachmentManager = GetComponentInChildren<AttachmentManager>();
             m_Behaviour.SetMuzzle(Muzzle);
-            m_FireMechanism.OnShouldFire += TryFire;
+            
         }
 
         void Update()
         {
             m_FireMechanism.UpdateFire(Time.deltaTime);
+        }
+
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+            if(IsOwner) {
+                m_FireMechanism.OnShouldFire += TryFire;
+            }
         }
 
         public void Initialize(GameObject holder)
@@ -111,15 +126,27 @@ namespace TPSDemo
         public void EndFire()
         {
             m_FireMechanism.StopFire();
-
         }
 
-        void TryFire()
+        /// <summary>
+        /// Server端 发射逻辑（扣子弹、同时其他Client副本播放特效）
+        /// </summary>
+        [ServerRpc]
+        void ServerFireRpc()
         {
             if (!m_AmmoHandler.ComsumeAmmo()) {
                 return;
             }
             m_Behaviour.Shoot(Vector3.Normalize(m_Target.position - Muzzle.position));
+            ClientFireRpc();
+        }
+
+        /// <summary>
+        /// Client端 发射逻辑（只播放音效和动画）
+        /// </summary>
+        [ClientRpc]
+        void ClientFireRpc()
+        {
             OnFire?.Invoke();
             if (MuzzleFlashPrefab) {
                 // 枪口焰方向朝向-z，所以取反
@@ -133,6 +160,15 @@ namespace TPSDemo
             if (ShootSfx) {
                 Director.Instance.RequestAudio(ShootSfx).AttachTo(transform).Play();
             }
+        }
+
+        void TryFire()
+        {
+            if (!m_AmmoHandler.EnoughAmmo()) {
+                return;
+            }
+
+            ServerFireRpc();
         }
 
         public bool ValidReload() => m_AmmoHandler.ValidReload();
@@ -163,7 +199,7 @@ namespace TPSDemo
             transform.localRotation = Quaternion.Euler(m_HandRotation);
         }
 
-        public void OnUnEquip()
+        public void OnUnequip()
         {
             transform.localPosition = m_BackOffset;
             transform.localRotation = Quaternion.Euler(Vector3.zero);

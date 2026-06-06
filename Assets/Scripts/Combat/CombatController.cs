@@ -1,6 +1,7 @@
 ﻿// CombatController应位于Player的Children下
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 using SlotEntry = Tools.Entry<TPSDemo.Combat.Slot, TPSDemo.CombatSlot>;
@@ -28,7 +29,7 @@ namespace TPSDemo.Combat
 namespace TPSDemo
 {
     using Combat;
-    public class CombatController : MonoBehaviour
+    public class CombatController : NetworkBehaviour
     {
         Slot m_ActiveSlot = Slot.Unarmed;
         //EquipState m_EquipState = EquipState.None;
@@ -59,13 +60,26 @@ namespace TPSDemo
         {
             foreach (var slot in m_Slots) {
                 m_Lookup.Add(slot.Key, slot.Value);
-                slot.Value.OnAttack += OnAttack;
                 slot.Value.SetExitFunc(SlotExited);
             }
             //m_Lookup[Slot.None] = null;
         }
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkDespawn();
+            if(IsOwner) {
+                RegisterEvents();
+            }
+        }
+        public override void OnNetworkDespawn()
+        {
+            UnregisterEvents();
+            if (IsOwner) {
+                base.OnNetworkDespawn();
+            }
+        }
 
-        private void OnEnable()
+        private void RegisterEvents()
         {
             TryFireEvent.RegisterListener(HandleTryAttack);
             TryReloadEvent.RegisterListener(HandleTryReload);
@@ -76,7 +90,7 @@ namespace TPSDemo
             EventManager.AddListener<Event.AimEvent>(OnAim);
         }
 
-        private void OnDisable()
+        private void UnregisterEvents()
         {
             TryFireEvent.UnregisterListener(HandleTryAttack);
             TryReloadEvent.UnregisterListener(HandleTryReload);
@@ -179,11 +193,6 @@ namespace TPSDemo
         {
             GetActiveSlot()?.OnAim(evt.IsAiming);
             m_PlayerRuntimeData.AniParameter.Attack = false;
-        }
-
-        void OnAttack(int weaponType, bool attack)
-        {
-            
         }
     }
 }

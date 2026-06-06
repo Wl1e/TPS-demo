@@ -44,5 +44,13 @@ namespace TPSDemo
             }
             OnRelease?.Invoke(this);
         }
-	}
+
+        public void OnDestroy()
+        {
+            if (!gameObject.scene.isLoaded) {
+                return;
+            }
+            OnRelease?.Invoke(this);
+        }
+    }
 }

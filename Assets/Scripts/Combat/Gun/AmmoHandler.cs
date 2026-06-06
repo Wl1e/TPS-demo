@@ -1,12 +1,13 @@
 
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace TPSDemo
 {
 
     [Serializable]
-    public class AmmoHandler : MonoBehaviour
+    public class AmmoHandler : NetworkBehaviour
     {
         [SerializeField] int m_ClipSize;
         [SerializeField] float m_ReloadTime;
@@ -14,15 +15,17 @@ namespace TPSDemo
 
         IWeapon m_Weapon;
 
-        int m_CurrentAmmo;
-        public int CurrentAmmo => m_CurrentAmmo;
+        NetworkVariable<int> m_CurrentAmmo;
+        public int CurrentAmmo => m_CurrentAmmo.Value;
         public float ReloadTime => m_ReloadTime;
         public int ClipSize => m_ClipSize;
         public int AmmoId => m_AmmoId;
 
         public void Awake()
         {
-            m_CurrentAmmo = m_ClipSize;
+            if (IsServer) {
+                m_CurrentAmmo.Value = m_ClipSize;
+            }
         }
 
         public void Initialize(IWeapon weapon)
@@ -32,7 +35,7 @@ namespace TPSDemo
 
         public bool ValidReload()
         {
-            return m_CurrentAmmo < m_ClipSize;
+            return m_CurrentAmmo.Value < m_ClipSize;
         }
 
         public void StartReload()
@@ -40,21 +43,25 @@ namespace TPSDemo
             if (!ValidReload()) {
                 return;
             }
-            m_CurrentAmmo = 0;
+            m_CurrentAmmo.Value = 0;
         }
 
         public void EndReload(int ammo)
         {
-            m_CurrentAmmo = ammo;
+            m_CurrentAmmo.Value = ammo;
         }
 
         public bool ComsumeAmmo(int ammo = 1)
         {
-            if (m_CurrentAmmo < ammo) {
+            if (!EnoughAmmo(ammo)) {
                 return false;
             }
-            m_CurrentAmmo -= ammo;
+            m_CurrentAmmo.Value -= ammo;
             return true;
+        }
+
+        public bool EnoughAmmo(int ammo = 1) {
+            return m_CurrentAmmo.Value >= ammo;
         }
     }
 }

@@ -18,15 +18,15 @@ public class DetectModule : MonoBehaviour
     {
     }
 
-    public void Detect(Actor actor, Collider[] ignoreCollider)
+    public void Detect(TPSDemo.Actor actor, Collider[] ignoreCollider)
     {
         if(Target != null && !m_HasTarget && (m_TimeLastSeeTarget + MaxMemoryTime) < Time.time) {
             Target = null;
         }
         bool found = false;
         float minDistance = float.PositiveInfinity;
-        Actor target = null;
-        foreach (var other in ActorManager.Instance.Actors.Values) {
+        TPSDemo.Actor target = null;
+        foreach (var other in TPSDemo.ActorManager.Instance.Actors.Values) {
             if(found) {
                 break;
             }

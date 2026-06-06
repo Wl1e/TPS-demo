@@ -27,7 +27,7 @@ public partial class AttackAction : Action
     protected override Status OnUpdate()
     {
         if (m_Attacker.CanFire()) {
-            var aimPoint = Target.Value.GetComponent<Actor>()?.AimPoint.position??Target.Value.transform.position;
+            var aimPoint = Target.Value.GetComponent<TPSDemo.Actor>()?.AimPoint.position??Target.Value.transform.position;
             m_Attacker.Fire(aimPoint);
         }
         return Status.Success;

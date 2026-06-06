@@ -4,18 +4,20 @@ using UnityEngine;
 namespace TPSDemo
 {
 using Event;
+    using Unity.Netcode;
 
     [RequireComponent(typeof(WeaponManager))]
-    public class AimController : MonoBehaviour
+    public class AimController : NetworkBehaviour
     {
         // Camera
-        public Transform AimTransform;
-        public float SmoothingSpeed = 20f;
         Camera m_Camera;
 
         // AimPoint
+        [Tooltip("看向目标的Transform")]
         public Transform VisualAimPointTransform;
+        [Tooltip("目标可以碰撞的层级")]
         public LayerMask AimRayCastLayerMask = ~0;
+        [Tooltip("目标最远距离")]
         public float AimRayDistance = 200f;
         Vector3 m_VisualAimPosition;
 
@@ -26,15 +28,22 @@ using Event;
         // Weapon
         CombatController m_CombatController;
         WeaponManager m_WeaponManager;
-        public float RecoilForce => m_WeaponManager.CurrentFirearm?.RecoilForce ?? 0;
+        /// <summary>
+        /// 后坐力前往速度
+        /// </summary>
         public float RecoilKickSpeed = 50f;
+        /// <summary>
+        /// 后坐力恢复速度
+        /// </summary>
         public float RecoilReturnSpeed => m_WeaponManager.CurrentFirearm?.RecoilReturnSpeed ?? 0;
         Vector3 m_CurrentRecoilOffset;
         Vector3 m_TargetRecoilOffset;
 
+        /// <summary>
+        /// 瞄准状态
+        /// </summary>
         public bool IsAiming { get; private set; } = false;
 
-        // 修正蹲下时的动画骨骼位置和角度
         PlayerController m_PlayerController;
         PlayerRuntimeData m_RuntimeData;
 
@@ -66,7 +75,7 @@ using Event;
 
         void Update()
         {
-            if (IsAiming) {
+            if (IsOwner && IsAiming) {
                 UpdateAimPositon();
             } else {
 
@@ -75,13 +84,15 @@ using Event;
 
         private void LateUpdate()
         {
-            if (IsAiming) {
-                m_CurrentRecoilOffset = Vector3.Lerp(m_CurrentRecoilOffset, m_TargetRecoilOffset, RecoilKickSpeed * Time.deltaTime);
-                m_TargetRecoilOffset = Vector3.Lerp(m_TargetRecoilOffset, Vector3.zero, RecoilReturnSpeed * Time.deltaTime);
-                VisualAimPointTransform.position = m_VisualAimPosition + m_CurrentRecoilOffset;
-                VisualAimPointTransform.gameObject.SetActive(true);
-            } else {
-                VisualAimPointTransform.gameObject.SetActive(false);
+            if (IsOwner) {
+                if (IsAiming) {
+                    m_CurrentRecoilOffset = Vector3.Lerp(m_CurrentRecoilOffset, m_TargetRecoilOffset, RecoilKickSpeed * Time.deltaTime);
+                    m_TargetRecoilOffset = Vector3.Lerp(m_TargetRecoilOffset, Vector3.zero, RecoilReturnSpeed * Time.deltaTime);
+                    VisualAimPointTransform.position = m_VisualAimPosition + m_CurrentRecoilOffset;
+                    VisualAimPointTransform.gameObject.SetActive(true);
+                } else {
+                    VisualAimPointTransform.gameObject.SetActive(false);
+                }
             }
         }
 

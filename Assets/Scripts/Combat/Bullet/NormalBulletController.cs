@@ -19,6 +19,12 @@ namespace TPSDemo
 
         void Update()
         {
+            if (!IsSpawned) {
+                return;
+            }
+            if(!IsServer) {
+                return;
+            }
             if (m_IsFinished) {
                 return;
             }
@@ -30,6 +36,9 @@ namespace TPSDemo
 
         public override void OnShoot()
         {
+            if (!IsServer) {
+                return;
+            }
             m_Velocity = Speed * transform.forward;
         }
 

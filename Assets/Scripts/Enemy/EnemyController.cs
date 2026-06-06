@@ -1,4 +1,5 @@
 using Unity.Behavior;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -6,28 +7,30 @@ namespace TPSDemo
 {
 
 
-    public class EnemyController : MonoBehaviour
+    public class EnemyController : NetworkBehaviour
     {
+        // resource
+        [Tooltip("受伤音效")]
         public AudioClip DamageAudio;
+        [Tooltip("死亡音效")]
         public AudioClip DeadAudio;
 
-        AudioSource m_AudioSource;
         Health m_Health;
         BulletAttacker m_BulletAttacker;
-        DetectModule m_DetectModule;
         Actor m_Actor;
         NavMeshAgent m_Agent;
         Collider[] m_Colliders;
         HealthBar m_HealthBar;
+        
 
+        [Tooltip("行为树")]
         [SerializeField] BehaviorGraphAgent m_BehaviorTree;
 
         public Health Health => m_Health;
 
-        void Awake()
+        private void Awake()
         {
             m_Actor = GetComponent<Actor>();
-            m_AudioSource = GetComponent<AudioSource>();
             m_Health = GetComponent<Health>();
             m_BulletAttacker = GetComponentInChildren<BulletAttacker>();
             m_Colliders = GetComponentsInChildren<Collider>();
@@ -37,45 +40,43 @@ namespace TPSDemo
             gameObject.tag = "Enemy";
         }
 
-        private void OnEnable()
+        public override void OnNetworkSpawn()
         {
-            m_Health.OnTakeDamaged += OnTakeDamage;
-            m_Health.OnDied += OnDied;
+            if (!IsServer) {
+                m_Agent.enabled = false;
+                m_BulletAttacker.enabled = false;
+                m_BehaviorTree.enabled = false;
+            } else {
+                m_Health.OnTakeDamaged += OnTakeDamage;
+                m_Health.OnDied += OnDied;
+            }
         }
 
-        private void OnDisable()
+        public override void OnNetworkDespawn()
         {
-            m_Health.OnTakeDamaged -= OnTakeDamage;
-            m_Health.OnDied -= OnDied;
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        }
-
-        void PlayAnimation()
-        {
-
-        }
-
-        void OnTargetDetected()
-        {
+            if (!IsClient) {
+                m_Health.OnTakeDamaged -= OnTakeDamage;
+                m_Health.OnDied -= OnDied;
+            }
         }
 
         void OnTakeDamage(GameObject attacker, float damage)
         {
-            m_AudioSource.PlayOneShot(DamageAudio);
-            if (m_BehaviorTree.GetVariable("Target", out BlackboardVariable<GameObject> target)) {
-                target.Value = attacker;
+            if (IsServer) {
+                Director.Instance.RequestAudio(DamageAudio).AttachTo(transform).Play();
+                if (m_BehaviorTree.GetVariable("Target", out BlackboardVariable<GameObject> target)) {
+                    target.Value = attacker;
+                }
+                m_HealthBar.UpdateHealthProgress(m_Health.Ratio);
             }
-            m_HealthBar.UpdateHealthProgress(m_Health.Ratio);
         }
 
         void OnDied()
         {
-            m_AudioSource.PlayOneShot(DeadAudio);
-            Destroy(gameObject);
+            if (IsServer) {
+                Director.Instance.RequestAudio(DeadAudio).WithPosition(transform.position).Play();
+                Destroy(gameObject);
+            }
         }
     }
 }

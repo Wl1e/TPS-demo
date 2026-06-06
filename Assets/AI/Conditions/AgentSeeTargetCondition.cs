@@ -16,8 +16,8 @@ public partial class AgentSeeTargetCondition : Condition
 
     public override bool IsTrue()
     {
-        var agentEyePos = Agent.Value.GetComponent<Actor>()?.AimPoint.position ?? Agent.Value.transform.position;
-        var targetAimPos = Target.Value.GetComponent<Actor>()?.AimPoint.position ?? Target.Value.transform.position;
+        var agentEyePos = Agent.Value.GetComponent<TPSDemo.Actor>()?.AimPoint.position ?? Agent.Value.transform.position;
+        var targetAimPos = Target.Value.GetComponent<TPSDemo.Actor>()?.AimPoint.position ?? Target.Value.transform.position;
         RaycastHit[] info = Physics.RaycastAll(agentEyePos, Vector3.Normalize(targetAimPos - agentEyePos),
                      Vector3.Distance(agentEyePos, targetAimPos) + 0.2f, SeeLayer, QueryTriggerInteraction.Ignore);
         info.OrderBy(hit => hit.distance);
@@ -28,7 +28,6 @@ public partial class AgentSeeTargetCondition : Condition
             foreach (RaycastHit hit in info) {
                 Debug.DrawLine(agentEyePos, hit.point, Color.green);       // 射线到命中点
                 Debug.DrawLine(hit.point, hit.point + hit.normal * 0.5f, Color.blue);  // 法线
-                Debug.Log($"Collider: {hit.collider.gameObject}");
                 if (hit.collider.gameObject.GetEntityId() == Target.Value.GetEntityId()) {
                     found = true;
                     break;
@@ -38,7 +37,6 @@ public partial class AgentSeeTargetCondition : Condition
                 }
             }
         }
-        Debug.Log("See Target Condition: " + found);
         return found;
     }
 

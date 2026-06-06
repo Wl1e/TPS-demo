@@ -49,6 +49,10 @@ namespace TPSDemo.Event
         public Collision Collision;
     }
 
+    public class PlayerFinishedInitialzeEvent: InternalEvent
+    {
+    }
+
     #endregion
 
     public class PickupItemEvent: InternalEvent

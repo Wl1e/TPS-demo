@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 
 namespace TPSDemo
@@ -8,8 +10,13 @@ namespace TPSDemo
     /// 玩家移动
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
-    public class PlayerMovement : MonoBehaviour
+    public class PlayerMovement : NetworkTransform
     {
+#if UNITY_EDITOR
+        // Inspector view expand/collapse settings for this derived child class
+        [HideInInspector]
+        public bool MoverScriptExpanded;
+#endif
         /// <summary>
         /// 身体旋转和镜头移动是否绑定
         /// </summary>
@@ -19,28 +26,39 @@ namespace TPSDemo
             Coupled
         }
 
+        /// <summary>
+        /// 移动锁
+        /// </summary>
         public CountDownLatch MovementLock = new CountDownLatch();
 
         CharacterController m_CharacterController;
         PlayerRuntimeData m_PlayerRuntimeData;
 
-        [Header("移动能力")]
+        /// <summary>
+        /// 移动能力
+        /// </summary>
         Dictionary<PlayerMovementState, IMovementAbility> m_AbilitiesLookup;
 
         /// 各种移动的速度
         /// 移动全权交给代码实现，不依赖RootMotion
         /// 本来是打算烘培动作速度曲线来实现不滑步的，但是八向移动使用的混合树
         /// 遂放弃，改为固定速度，后续可以考虑通过速度和动画速度的比值来调整动画播放速度来实现不滑步
+        [Tooltip("行走速度")]
         [SerializeField] float m_WalkSpeed = 2f;
 
         // Constant
+        [Tooltip("加速度")]
         public float Acceleration = 10f;
+        [Tooltip("空中加速度")]
         public float AirAcceleration = 5f;
+        [Tooltip("重力")]
         public float Gravity = 9.81f;
 
+        [Tooltip("跳跃力")]
         public float JumpForce = 5f;
 
         // Rotation
+        [Tooltip("旋转时间")]
         public float RotationSmoothTime = 0.1f;
         float m_RotationVelocity;
         public CouplingMode RotationType;
@@ -48,8 +66,17 @@ namespace TPSDemo
         Vector2 m_RawInput;
         Vector3 m_Input;
         Vector3 m_InputGlobal;
+        /// <summary>
+        /// 原始输入Vector2
+        /// </summary>
         public Vector2 RawInput => m_RawInput;
+        /// <summary>
+        /// 原始输入Vector3
+        /// </summary>
         public Vector3 Input => m_Input;
+        /// <summary>
+        /// 世界空间下输入
+        /// </summary>
         public Vector3 InputGlobal => m_InputGlobal;
         public PlayerMovementState CurState = PlayerMovementState.Idle;
 
@@ -60,7 +87,9 @@ namespace TPSDemo
 
         Vector3 m_Velocity;
 
-        // StateBase
+        /// <summary>
+        /// 是否在地面
+        /// </summary>
         public bool IsGrounded => m_IsGrounded;
         bool m_IsGrounded;
         bool m_JumpThisFrame;
@@ -68,32 +97,39 @@ namespace TPSDemo
         // Event
         [SerializeField] Vector2Event OnMoveInput;
 
-
-        void Start()
+        protected override void Awake()
         {
+            base.Awake();
+
             m_CharacterController = GetComponent<CharacterController>();
             m_PlayerRuntimeData = GetComponent<PlayerController>().RuntimeData;
-
-            m_PlayerRuntimeData.OnStateChanged += OnStateChanged;
-            OnMoveInput.RegisterListener(OnMove);
-            EventManager.AddListener<Event.AimEvent>(OnAim);
 
             m_AbilitiesLookup = new Dictionary<PlayerMovementState, IMovementAbility>();
             foreach (var ability in GetComponentsInChildren<IMovementAbility>()) {
                 ability.Initialize(this);
                 m_AbilitiesLookup.Add(ability.State, ability);
             }
+
+            m_PlayerRuntimeData.OnStateChanged += OnStateChanged;
+            OnMoveInput.RegisterListener(OnMove);
+            EventManager.AddListener<Event.AimEvent>(OnAim);
         }
 
-        private void OnDestroy()
+        public override void OnDestroy()
         {
             m_PlayerRuntimeData.OnStateChanged -= OnStateChanged;
             OnMoveInput.UnregisterListener(OnMove);
             EventManager.RemoveListener<Event.AimEvent>(OnAim);
+
+            base.OnDestroy();
         }
 
         void Update()
         {
+            if (!IsOwner) {
+                return;
+            }
+
             m_InputGlobal = Vector3.Normalize(Quaternion.Euler(0, m_PlayerRuntimeData.CameraRoot.eulerAngles.y, 0) * m_Input);
 
             GroundCheck();

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 namespace TPSDemo
 {
 using Event;
-    public class Loadout : MonoBehaviour
+
+    public class Loadout: NetworkBehaviour
     {
         // Weapon
         List<IWeapon> m_WeaponSlots;
@@ -15,7 +17,7 @@ using Event;
         public int MaxCount => m_MaxWeaponCount;
         public Transform WeaponPlaceRoot;
 
-        PlayerController m_Player;
+        PlayerController m_Player = null;
 
         // Shield
         Shield m_Shield;
@@ -43,11 +45,24 @@ using Event;
             EventManager.RemoveListener<SwapWeaponEvent>(OnSwapWeapon);
         }
 
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+            Initialize();
+        }
+
         private void Start()
         {
-            m_Player = GetComponentInParent<PlayerController>();
-            if (DefaultWeapon) {
-                EquipWeapon(DefaultWeapon);
+            Initialize();
+        }
+
+        void Initialize()
+        {
+            if (m_Player == null) {
+                m_Player = GetComponentInParent<PlayerController>();
+                if (DefaultWeapon) {
+                    EquipWeapon(DefaultWeapon);
+                }
             }
         }
 
@@ -162,9 +177,10 @@ using Event;
 
         public List<UI.WeaponUIData> GetUIData()
         {
-            List<UI.WeaponUIData> result = new List<UI.WeaponUIData>();
-            result.Add(ParseWeapon(m_WeaponSlots[1]));
-            result.Add(ParseWeapon(m_WeaponSlots[2]));
+            List<UI.WeaponUIData> result = new List<UI.WeaponUIData> {
+                ParseWeapon(m_WeaponSlots[1]),
+                ParseWeapon(m_WeaponSlots[2])
+            };
 
             return result;
         }

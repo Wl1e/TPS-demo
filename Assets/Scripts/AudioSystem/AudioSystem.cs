@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -16,7 +17,6 @@ namespace TPSDemo
         }
         #endregion
 
-
         ObjectPool<AudioPlayer> m_AudioPlayerPool;
         GameObject m_AudioHolder;
         public int DefaultEmitterSize = 10;
@@ -26,7 +26,7 @@ namespace TPSDemo
         {
             GameObject audioSource = new GameObject("AGO", typeof(AudioSource));
             var player = audioSource.AddComponent<AudioPlayer>();
-            player.OnRelease += m_AudioPlayerPool.Release;
+            player.OnRelease += (AudioPlayer player) => m_AudioPlayerPool?.Release(player);
             return audioSource;
         }
 

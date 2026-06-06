@@ -34,19 +34,15 @@ using Event;
         public Transform RightHand;
         public Transform Back;
 
-        void Start()
+        private void Awake()
         {
-            m_Loadout = GetComponentInParent<Loadout>();
-
-            m_Loadout.OnAddWeapon += OnWeaponAdded;
-            m_Loadout.OnRemoveWeapon += OnWeaponRemoved;
-
             var playerController = GetComponentInParent<PlayerController>();
             m_Inventory = playerController.Inventory;
             m_RuntimeData = playerController.RuntimeData;
+            m_Loadout = playerController.Loadout;
         }
 
-        private void OnDestroy()
+        public override void OnDestroy()
         {
             m_Loadout.OnAddWeapon -= OnWeaponAdded;
             m_Loadout.OnRemoveWeapon -= OnWeaponRemoved;
@@ -64,6 +60,9 @@ using Event;
 
         public void Initialize()
         {
+            m_Loadout.OnAddWeapon += OnWeaponAdded;
+            m_Loadout.OnRemoveWeapon += OnWeaponRemoved;
+
             var firearms = m_Loadout.GetAllWeapon();
             int index = -1;
             for (int i = 0; i < firearms.Count; ++i) {
@@ -138,7 +137,7 @@ using Event;
             } else {
                 m_CurrentFirearm.EndFire();
                 m_CurrentFirearm.SetParent(Back);
-                m_CurrentFirearm.OnUnEquip();
+                m_CurrentFirearm.OnUnequip();
                 m_CurrentFirearmIndex = -1;
                 m_CurrentFirearm = null;
             }

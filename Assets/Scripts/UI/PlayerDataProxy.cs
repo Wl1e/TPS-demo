@@ -12,16 +12,20 @@ namespace TPSDemo
 
         public void RegisterPlayer(PlayerController player)
         {
-            Instance.m_Player = player;
+            m_Player = player;
         }
         public void UnregisterPlayer()
         {
-            Instance.m_Player = null;
+            m_Player = null;
+        }
+        public bool HasPlayer()
+        {
+            return m_Player != null;
         }
 
         public float GetHealthRatio()
         {
-            return Instance.m_Player.Health.Ratio;
+            return m_Player.Health.Ratio;
         }
 
         public IWeapon GetCurrentFirearm()

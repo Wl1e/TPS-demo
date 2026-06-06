@@ -28,7 +28,7 @@ public partial class FindVisibleClosestWithTagAction : Action
         //}
 
         Vector3 agentPosition = Agent.Value.transform.position;
-        var agentEyePos = Agent.Value.GetComponent<Actor>()?.AimPoint.position ?? Agent.Value.transform.position;
+        var agentEyePos = Agent.Value.GetComponent<TPSDemo.Actor>()?.AimPoint.position ?? Agent.Value.transform.position;
 
         GameObject[] gameObjects = GameObject.FindGameObjectsWithTag(Tag.Value);
         float closestDistanceSq = Mathf.Infinity;
@@ -37,7 +37,7 @@ public partial class FindVisibleClosestWithTagAction : Action
             float distanceSq = Vector3.SqrMagnitude(agentPosition - gameObject.transform.position);
             if (distanceSq < closestDistanceSq) {
 
-                var targetAimPos = gameObject.GetComponent<Actor>()?.AimPoint.position ?? gameObject.transform.position;
+                var targetAimPos = gameObject.GetComponent<TPSDemo.Actor>()?.AimPoint.position ?? gameObject.transform.position;
                 Debug.DrawLine(agentEyePos, targetAimPos, Color.yellow);
                 RaycastHit[] info = Physics.RaycastAll(agentEyePos, Vector3.Normalize(targetAimPos - agentEyePos),
                      Mathf.Sqrt(distanceSq) + 1f, -1, QueryTriggerInteraction.Ignore);
@@ -47,8 +47,8 @@ public partial class FindVisibleClosestWithTagAction : Action
                     bool isAgent = true;
                     agentCollider = Agent.Value.GetComponentsInChildren<Collider>();
                     foreach (RaycastHit hit in info) {
-                        Debug.DrawLine(agentEyePos, hit.point, Color.green);       // ÉäÏßµ½ÃüÖÐµã
-                        Debug.DrawLine(hit.point, hit.point + hit.normal * 0.5f, Color.blue);  // ·¨Ïß
+                        Debug.DrawLine(agentEyePos, hit.point, Color.green);       // ï¿½ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½Ðµï¿½
+                        Debug.DrawLine(hit.point, hit.point + hit.normal * 0.5f, Color.blue);  // ï¿½ï¿½ï¿½ï¿½
                         if (hit.collider.gameObject.GetEntityId() == gameObject.GetEntityId()) {
                             found = true;
                             break;

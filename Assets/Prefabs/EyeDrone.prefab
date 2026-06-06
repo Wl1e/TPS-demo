@@ -770,12 +770,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5382857873328648158}
+  - component: {fileID: 4531998687336516583}
   - component: {fileID: 850370521829255415}
   - component: {fileID: 2700602984528541365}
   - component: {fileID: 5150714500589044868}
   - component: {fileID: 386272032009258269}
   - component: {fileID: 5290774227092882157}
   - component: {fileID: 2758097229283135902}
+  - component: {fileID: 631719807404019760}
   m_Layer: 13
   m_Name: EyeDrone
   m_TagString: Untagged
@@ -803,6 +805,31 @@ Transform:
   - {fileID: 4717315221636584696}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &4531998687336516583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8378100684060686700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 3647326498
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!195 &850370521829255415
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -837,6 +864,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5496c499187aa446bc5001f01b90936, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
+  ShowTopMostFoldoutHeaderGroup: 1
   DamageAudio: {fileID: 0}
   DeadAudio: {fileID: 0}
   m_BehaviorTree: {fileID: 2758097229283135902}
@@ -979,6 +1007,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0038c16c34866b4f9e25c9c0dc0f7e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Behavior::Unity.Behavior.BehaviorGraphAgent
+  ShowTopMostFoldoutHeaderGroup: 1
   m_Graph: {fileID: 1871619638529690935, guid: cb8a8738a89f3f549b52135e4b201f6e, type: 2}
   m_BlackboardVariableOverridesList:
   - rid: 3983656116822736963
@@ -987,6 +1016,7 @@ MonoBehaviour:
   m_OriginalGraph: {fileID: 1871619638529690935, guid: cb8a8738a89f3f549b52135e4b201f6e, type: 2}
   m_IsInitialised: 0
   m_IsStarted: 0
+  NetcodeRunOnlyOnOwner: 0
   references:
     version: 2
     RefIds:
@@ -1014,6 +1044,52 @@ MonoBehaviour:
           m_Value1: 4027271314811792464
         Name: AttackRange
         m_Value: 3
+--- !u!114 &631719807404019760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8378100684060686700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Components.NetworkTransform
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkTransformExpanded: 0
+  AutoOwnerAuthorityTickOffset: 1
+  PositionInterpolationType: 0
+  RotationInterpolationType: 0
+  ScaleInterpolationType: 0
+  PositionLerpSmoothing: 1
+  PositionMaxInterpolationTime: 0.1
+  RotationLerpSmoothing: 1
+  RotationMaxInterpolationTime: 0.1
+  ScaleLerpSmoothing: 1
+  ScaleMaxInterpolationTime: 0.1
+  AuthorityMode: 0
+  TickSyncChildren: 0
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  SwitchTransformSpaceWhenParented: 0
+  Interpolate: 1
+  SlerpPosition: 0
 --- !u!1 &9017519859924443699
 GameObject:
   m_ObjectHideFlags: 0

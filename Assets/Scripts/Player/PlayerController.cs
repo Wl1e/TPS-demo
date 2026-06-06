@@ -1,5 +1,6 @@
 using System;
-using Unity.VisualScripting;
+using TPSDemo.Event;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace TPSDemo
@@ -16,7 +17,7 @@ namespace TPSDemo
         Ledge,
     }
 
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : NetworkBehaviour
     {
         PlayerMovement m_Movement;
         CharacterController m_CharacterController;
@@ -35,25 +36,63 @@ namespace TPSDemo
 
         CountDownLatch m_CursorBlock = new CountDownLatch();
 
+        /// <summary>
+        /// 移动控制
+        /// </summary>
         public PlayerMovement Movement => m_Movement;
+        /// <summary>
+        /// 生命
+        /// </summary>
         public Health Health => m_Health;
+        /// <summary>
+        /// 枪械控制
+        /// </summary>
         public WeaponManager WeaponManager => m_WeaponManager;
+        /// <summary>
+        /// 装备
+        /// </summary>
         public Loadout Loadout => m_Loadout;
+        /// <summary>
+        /// 战斗控制
+        /// </summary>
         public CombatController CombatController => m_CombatController;
+        /// <summary>
+        /// 玩家仓库
+        /// </summary>
         public Inventory Inventory => m_Inventory;
+        /// <summary>
+        /// 经济系统
+        /// </summary>
         public PlayerEconomy Economy => m_Economy;
+        /// <summary>
+        /// Actor基类
+        /// </summary>
         public Actor Actor => m_Actor;
+        /// <summary>
+        /// 攀爬控制
+        /// </summary>
         public ClimbContoller ClimbController => m_ClimbContoller;
         public CharacterController CharacterController => m_CharacterController;
+        /// <summary>
+        /// 状态机
+        /// </summary>
         public PlayerStateMachine StateMachine => m_FSM;
 
+        /// <summary>
+        /// 相机根节点
+        /// </summary>
         public Transform CameraRoot;
+        /// <summary>
+        /// 玩家运行时数据
+        /// </summary>
         public PlayerRuntimeData RuntimeData = new PlayerRuntimeData();
+
 
         [SerializeField] private GameEvent OnJumpInput;
         [SerializeField] private GameEvent OnSprintInput;
         [SerializeField] private GameEvent OnCrouchInput;
         [SerializeField] private Vector2Event OnLookInput;
+        [SerializeField] private BoolEvent OnActiveCursorInput;
         public Action<string, string> OnStateChanged;
 
         public int ID => m_Actor.Id;
@@ -83,32 +122,72 @@ namespace TPSDemo
             RuntimeData.State = PlayerMovementState.Idle;
         }
 
-        void Start()
+        public override void OnDestroy()
         {
-            m_FSM.OnStateChanged += (string pre, string cur) => OnStateChanged?.Invoke(pre, cur);
-            m_FSM.InitializeFSM();
+            if (IsOwner) {
+                PlayerDataProxy.Instance.UnregisterPlayer();
+            }
+            base.OnDestroy();
+        }
+
+        void DisableClientComponents()
+        {
+            if(m_Movement != null) {
+                m_Movement.enabled = false;
+            }
+            if (m_FSM != null) {
+                m_FSM.enabled = false;
+            }
+            if (m_AimController != null) {
+                m_AimController.enabled = false;
+            }
+            if (m_CameraController != null) {
+                m_CameraController.enabled = false;
+            }
+        }
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+            Initialize();
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            UnregisterEvents();
+            base.OnNetworkDespawn();
         }
 
         public void Initialize()
         {
-            m_WeaponManager.Initialize();
-            print($"Firearm: {m_WeaponManager.CurrentFirearm}");
+            if (IsOwner) {
+                m_FSM.OnStateChanged += (string pre, string cur) => OnStateChanged?.Invoke(pre, cur);
+                m_FSM.InitializeFSM();
+                RegisterEvents();
+                m_WeaponManager.Initialize();
+                PlayerDataProxy.Instance.RegisterPlayer(this);
+                // 通知UI和DebugLayer
+                EventManager.Broadcast(new PlayerFinishedInitialzeEvent());
+            } else {
+                DisableClientComponents();
+            }
         }
 
-        private void OnEnable()
+        private void RegisterEvents()
         {
             OnJumpInput.RegisterListener(OnJump);
             OnSprintInput.RegisterListener(OnSprint);
             OnCrouchInput.RegisterListener(OnCrouch);
+            OnActiveCursorInput.RegisterListener(OnActiveCursor);
             //OnLookInput.RegisterListener(OnLook);
         }
 
-        private void OnDisable()
+        private void UnregisterEvents()
         {
 
             OnJumpInput.UnregisterListener(OnJump);
             OnSprintInput.UnregisterListener(OnSprint);
             OnCrouchInput.UnregisterListener(OnCrouch);
+            OnActiveCursorInput.UnregisterListener(OnActiveCursor);
             //OnLookInput.UnregisterListener(OnLook);
         }
 
@@ -127,8 +206,15 @@ namespace TPSDemo
             m_FSM.WantCrouch = !m_FSM.WantCrouch;
         }
 
+        void OnActiveCursor(bool active)
+        {
+            print("ActiveCursor: " + active);
+            SetInputActive(active, active);
+        }
+
         public void SetInputActive(bool active, bool activeCursor)
         {
+            print($"SetInputActive: {active} {activeCursor}");
             if (!activeCursor) {
                 m_CursorBlock.Increase();
             } else {

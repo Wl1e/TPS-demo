@@ -1,5 +1,6 @@
 ﻿
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace TPSDemo
@@ -10,30 +11,41 @@ namespace TPSDemo
 
     }
 
-    public abstract class BulletController : MonoBehaviour, IBulletController
+    public abstract class BulletController : NetworkBehaviour, IBulletController
     {
         // 改为ID?
+        /// <summary>
+        /// 攻击者
+        /// </summary>
         public GameObject Owner;
+        [Tooltip("伤害")]
         public float Damage;
+        [Tooltip("飞行速度")]
         public float Speed;
+        [Tooltip("攻击的层")]
         public LayerMask HitLayerMask = -1;
 
         protected Vector3 m_Velocity;
 
+        [Tooltip("最大存活时间")]
         public float MaxLifeTime = 5f;
+        [Tooltip("攻击后直接销毁")]
         public bool DestroyOnHit = true;
 
         public Action<GameObject> OnHitTarget;
 
-        // 音效需要一个全局对象创建和管理
-        public AudioSource m_AudioSource;
+        [Tooltip("特效")]
         public GameObject HitFlashPrefab;
+        [Tooltip("攻击音效")]
         public AudioClip HitSfx;
 
         protected virtual void Awake()
         {
             Destroy(gameObject, MaxLifeTime);
         }
+
+        public override void OnNetworkDespawn()
+        { }
 
         public abstract void OnShoot();
         protected void OnHit(RaycastHit hitInfo)
@@ -48,11 +60,14 @@ namespace TPSDemo
                 Destroy(gameObject);
             }
             if (HitFlashPrefab) {
-                var sfx = Instantiate(HitFlashPrefab, hitInfo.point, Quaternion.LookRotation(hitInfo.normal));
-                Destroy(sfx, 1f);
+                Director.Instance.RequestEffect(HitFlashPrefab)
+                    .WithPosition(hitInfo.point)
+                    .LookAt(hitInfo.normal)
+                    .WithDuration(1)
+                    .Create();
             }
             if (HitSfx) {
-                m_AudioSource.PlayOneShot(HitSfx);
+                Director.Instance.RequestAudio(HitSfx).WithPosition(hitInfo.point).Play();
             }
         }
 

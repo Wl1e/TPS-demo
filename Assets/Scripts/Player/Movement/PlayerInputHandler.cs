@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.Netcode;
 
 
-public class PlayerInputHandler : MonoBehaviour
+public class PlayerInputHandler : NetworkBehaviour
 {
     CountDownLatch m_InputBlock = new CountDownLatch();
     bool m_OpenInventory = false;
@@ -21,14 +22,20 @@ public class PlayerInputHandler : MonoBehaviour
     [SerializeField] private GameEvent m_OnGrenadeInput;
     [SerializeField] private GameEvent m_OnWeapon1Input;
     [SerializeField] private GameEvent m_OnWeapon2Input;
+    [SerializeField] private BoolEvent m_OnActiveCursorInput;
 
-    private void OnEnable()
+    public override void OnNetworkSpawn()
     {
-        RegisterInputAction();
+        if (IsOwner) {
+            RegisterInputAction();
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
-    private void OnDisable()
+    public override void OnNetworkDespawn()
     {
-        UnregisterInputAction();
+        if (IsOwner) {
+            UnregisterInputAction();
+        }
     }
 
     void RegisterInputAction()
@@ -51,6 +58,7 @@ public class PlayerInputHandler : MonoBehaviour
         map.FindAction("Grenade").performed += OnGrenade;
         map.FindAction("Weapon1").performed += OnWeapon1;
         map.FindAction("Weapon2").performed += OnWeapon2;
+        map.FindAction("ActiveCursor").performed += OnActiveCursor;
     }
 
     void UnregisterInputAction()
@@ -72,6 +80,7 @@ public class PlayerInputHandler : MonoBehaviour
         map.FindAction("Grenade").performed -= OnGrenade;
         map.FindAction("Weapon1").performed -= OnWeapon1;
         map.FindAction("Weapon2").performed -= OnWeapon2;
+        map.FindAction("ActiveCursor").performed -= OnActiveCursor;
     }
 
     bool ValidPlayerInput()
@@ -176,16 +185,33 @@ public class PlayerInputHandler : MonoBehaviour
     }
     void OnGrenade(InputAction.CallbackContext ctx)
     {
+        if (!ValidPlayerInput()) {
+            return;
+        }
         m_OnGrenadeInput.Raise();
     }
 
     void OnWeapon1(InputAction.CallbackContext ctx)
     {
+        if (!ValidPlayerInput()) {
+            return;
+        }
         m_OnWeapon1Input.Raise();
     }
     void OnWeapon2(InputAction.CallbackContext ctx)
     {
+        if (!ValidPlayerInput()) {
+            return;
+        }
         m_OnWeapon2Input.Raise();
+    }
+
+    void OnActiveCursor(InputAction.CallbackContext ctx)
+    {
+        if (!ValidPlayerInput()) {
+            return;
+        }
+        m_OnActiveCursorInput.Raise(ctx.ReadValueAsButton());
     }
     #endregion
 }

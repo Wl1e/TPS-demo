@@ -17,6 +17,9 @@ namespace TPSDemo
 
         public void TakeDamage(GameObject attacker, float damage)
         {
+            if (m_IsDied) {
+                return;
+            }
             float trueDamage = -m_HealthValue.Subtract(damage);
             if (trueDamage > 0) {
                 OnTakeDamaged?.Invoke(attacker, damage);

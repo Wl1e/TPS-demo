@@ -26,6 +26,9 @@ namespace TPSDemo
 
         public override void OnShoot()
         {
+            if(!IsServer) {
+                return;
+            }
             var forward = transform.forward;
             var distance = MaxDistance;
             var end = forward * MaxDistance + transform.position;

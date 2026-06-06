@@ -1,29 +1,38 @@
 
 using System.Collections.Generic;
 using Unity.Cinemachine;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace TPSDemo
 {
     using Event;
 
-    public class CameraController : MonoBehaviour
+    public class CameraController : NetworkBehaviour
     {
-        [Tooltip(tooltip: "灵敏度")]
+        [Tooltip("灵敏度")]
         public float Sensitivity;
-        [Tooltip(tooltip: "相机根节点")]
+        [Tooltip("相机根节点")]
         [SerializeField] Transform m_CameraRoot;
 
         // Cinemachine
-        [Tooltip(tooltip: "Cinemachine列表")]
+        [Tooltip("Cinemachine列表")]
         [SerializeField] List<CameraMode> m_Modes = new List<CameraMode>();
         List<CameraMode> m_InitializedCameraModes = new List<CameraMode>();
+        [Tooltip("默认模式")]
         public string DefaultMode;
         public CameraMode CurrentMode { get; private set; }
-        [Tooltip(tooltip: "俯仰最大角度")]
+        [Tooltip("俯仰最大角度")]
         public float VerticalLookLimit = 70f;
+        [Tooltip("是否启用视角旋转")]
         public bool EnableLook;
+        /// <summary>
+        ///  当前水平角度
+        /// </summary>
         float m_HorizontalAngle;
+        /// <summary>
+        /// 当前垂直角度
+        /// </summary>
         float m_VerticalAngle;
 
         public PlayerMovement.CouplingMode PlayerCouplingMode { get; private set; }
@@ -43,33 +52,45 @@ namespace TPSDemo
 
         void Awake()
         {
-            foreach (var mode in m_Modes) {
-                var instance = Instantiate(mode);
-                m_InitializedCameraModes.Add(instance);
-                instance.SetTarget(m_CameraRoot);
-            }
-        }
-        private void Start()
-        {
-            m_Camera = Camera.main;
-            m_Camera.TryGetComponent(out m_CameraBrain);
-            if (!m_CameraBrain) {
-                Debug.LogError("MainCamera dont have CinemachineBrain component");
-            }
             m_PlayerController = GetComponent<PlayerController>();
             m_PlayerRuntimeData = m_PlayerController.RuntimeData;
-            SwitchCameraMode(DefaultMode);
+        }
+        public override void OnNetworkSpawn()
+        {
+            if (IsOwner) {
+                base.OnNetworkSpawn();
+
+                m_Camera = Camera.main;
+                m_Camera.TryGetComponent(out m_CameraBrain);
+                if (!m_CameraBrain) {
+                    Debug.LogError("MainCamera dont have CinemachineBrain component");
+                }
+                
+                foreach (var mode in m_Modes) {
+                    var instance = Instantiate(mode);
+                    m_InitializedCameraModes.Add(instance);
+                    instance.SetTarget(m_CameraRoot);
+                }
+                SwitchCameraMode(DefaultMode);
+
+                EventManager.AddListener<AimEvent>(OnAim);
+                LookEvent.RegisterListener(OnLookInput);
+
+            }
         }
 
-        private void OnEnable()
+        public override void OnNetworkDespawn()
         {
-            EventManager.AddListener<AimEvent>(OnAim);
-            LookEvent.RegisterListener(OnLookInput);
-        }
-        void OnDisable()
-        {
-            EventManager.RemoveListener<AimEvent>(OnAim);
-            LookEvent.UnregisterListener(OnLookInput);
+            if (IsOwner) {
+                foreach (var cam in m_InitializedCameraModes) {
+                    Destroy(cam.gameObject);
+                }
+                m_InitializedCameraModes.Clear();
+                m_Modes.Clear();
+                EventManager.RemoveListener<AimEvent>(OnAim);
+                LookEvent.UnregisterListener(OnLookInput);
+                base.OnNetworkDespawn();
+            }
         }
 
         // Update is called once per frame

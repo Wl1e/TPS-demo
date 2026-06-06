@@ -167,6 +167,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ActiveCursor",
+                    "type": "Button",
+                    "id": "43832da4-b07b-4831-8eae-fe95a7c954ae",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -651,6 +660,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Weapon2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ba692fa7-45a3-4db7-a8a5-0e4f307024d8",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ActiveCursor",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Unity.Netcode;
 
 namespace TPSDemo
 {
@@ -18,7 +19,7 @@ using Combat;
         public void SetExitFunc(Action<Slot> func);
     }
 
-    public abstract class CombatSlot : MonoBehaviour, ICombatSlot
+    public abstract class CombatSlot : NetworkBehaviour, ICombatSlot
     {
         public abstract bool IsActive { get; }
         public event Action<int, bool> OnAttack;
