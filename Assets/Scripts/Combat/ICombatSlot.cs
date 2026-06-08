@@ -57,7 +57,7 @@ using Combat;
     {
         public abstract float ReloadTime { get; }
 
-        public abstract void TrySwitchFirearm(int index);
+        public abstract bool TrySwitchFirearm(int index);
 
         public abstract void TryReload();
     }

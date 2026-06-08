@@ -112,7 +112,7 @@ using Event;
             // FIXME 这里应该删掉武器OnFire的回调
         }
 
-        public override bool ValidActive() => m_Loadout != null && m_Loadout.WeaponCount > 0;
+        public override bool ValidActive() => m_Loadout != null && (m_Loadout.HasWeapon(1) || m_Loadout.HasWeapon(2));
 
         public override void SetActive(bool isActive)
         {
@@ -169,7 +169,6 @@ using Event;
                 m_CurrentFirearm.Attach(RightHandAttach);
                 m_CurrentFirearm.OnEquip();
             } else {
-                m_CurrentFirearm.EndFire();
                 m_CurrentFirearm.Attach(BackAttach);
                 m_CurrentFirearm.OnUnequip();
             }
@@ -179,6 +178,7 @@ using Event;
         [ServerRpc]
         void TrySwitchFirearmServerRpc(int idx)
         {
+            print($"ClientId: {OwnerClientId} TrySwitchFirearmServerRpc");
             // 按下当前武器对应数字键收回武器
             if (CurrentFirearmIndex == idx) {
                 m_CurrentFirearmIndex.Value = -1;
@@ -199,13 +199,13 @@ using Event;
 
             int oldIdx = CurrentFirearmIndex;
             m_CurrentFirearmIndex.Value = idx;
-
-            
         }
 
-        public override void TrySwitchFirearm(int idx)
+        public override bool TrySwitchFirearm(int idx)
         {
+            int oldIdx = CurrentFirearmIndex;
             TrySwitchFirearmServerRpc(idx);
+            return CurrentFirearmIndex != oldIdx;
             // Wait?
         }
 
@@ -278,6 +278,7 @@ using Event;
                 OnEquipFirearm(false);
             }
             if(CurrentFirearmIndex == -1) {
+                m_CurrentFirearm.EndFire();
                 m_CurrentFirearm = null;
             } else {
                 m_CurrentFirearm = m_Loadout.GetWeapon(cur);

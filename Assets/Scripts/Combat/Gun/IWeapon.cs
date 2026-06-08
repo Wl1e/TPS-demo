@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace TPSDemo
@@ -35,5 +36,6 @@ namespace TPSDemo
         public void OnEquip();
         public void OnUnequip();
         public void Attach(AttachableNode node);
+        public NetworkObject GetNO();
     }
 }

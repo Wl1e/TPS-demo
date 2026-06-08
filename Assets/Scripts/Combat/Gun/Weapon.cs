@@ -219,5 +219,7 @@ namespace TPSDemo
         {
             m_Attachable.Attach(node);
         }
+
+        public NetworkObject GetNO() => GetComponentInParent<NetworkObject>();
     }
 }
