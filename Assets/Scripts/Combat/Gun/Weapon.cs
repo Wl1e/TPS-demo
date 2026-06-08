@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 
 namespace TPSDemo
@@ -71,6 +72,7 @@ namespace TPSDemo
         IFireMechanism m_FireMechanism;
         Transform m_Target;
         AttachmentManager m_AttachmentManager;
+        AttachableBehaviour m_Attachable;
 
         // Crosshair
         [SerializeField] CrosshairData m_Crosshair;
@@ -94,6 +96,7 @@ namespace TPSDemo
             m_Behaviour = GetComponent<IShootBehaviour>();
             m_AmmoHandler = GetComponent<AmmoHandler>();
             m_AttachmentManager = GetComponentInChildren<AttachmentManager>();
+            m_Attachable = GetComponent<AttachableBehaviour>();
             m_Behaviour.SetMuzzle(Muzzle);
             
         }
@@ -108,14 +111,14 @@ namespace TPSDemo
             base.OnNetworkSpawn();
             if(IsOwner) {
                 m_FireMechanism.OnShouldFire += TryFire;
+                m_AmmoHandler.Initialize(this);
+                m_Behaviour.Initialize(this);
             }
         }
 
         public void Initialize(GameObject holder)
         {
             m_Owner = holder;
-            m_Behaviour.Initialize(this);
-            m_AmmoHandler.Initialize(this);
         }
 
         public void StartFire(Transform target)
@@ -132,23 +135,31 @@ namespace TPSDemo
         /// Server端 发射逻辑（扣子弹、同时其他Client副本播放特效）
         /// </summary>
         [ServerRpc]
-        void ServerFireRpc()
+        void FireServerRpc()
         {
             if (!m_AmmoHandler.ComsumeAmmo()) {
                 return;
             }
-            m_Behaviour.Shoot(Vector3.Normalize(m_Target.position - Muzzle.position));
-            ClientFireRpc();
+            m_Behaviour.Shoot(Vector3.Normalize(m_Target.position - Muzzle.position), OwnerClientId);
+            FireClientRpc();
         }
 
         /// <summary>
         /// Client端 发射逻辑（只播放音效和动画）
         /// </summary>
         [ClientRpc]
-        void ClientFireRpc()
+        void FireClientRpc()
         {
             OnFire?.Invoke();
-            if (MuzzleFlashPrefab) {
+            if(IsOwner) {
+                return;
+            }
+            PlayAudioAndMuzzleFlash();
+        }
+
+        void PlayAudioAndMuzzleFlash()
+        {
+        if (MuzzleFlashPrefab) {
                 // 枪口焰方向朝向-z，所以取反
                 Director.Instance.RequestEffect(MuzzleFlashPrefab)
                     .WithParent(transform)
@@ -167,17 +178,16 @@ namespace TPSDemo
             if (!m_AmmoHandler.EnoughAmmo()) {
                 return;
             }
+            FireServerRpc();
 
-            ServerFireRpc();
+            PlayAudioAndMuzzleFlash();
         }
 
         public bool ValidReload() => m_AmmoHandler.ValidReload();
-
         public void StartReload() => m_AmmoHandler.StartReload();
         public void EndReload(int ammo) => m_AmmoHandler.EndReload(ammo);
 
         public void ClearAmmo() => m_AmmoHandler.ComsumeAmmo(CurrentAmmo);
-        public void SetParent(Transform parent) => transform.SetParent(parent, false);
         public void SetOffset(Vector3 offset) => transform.localPosition = offset;
 
         public void AddAttachment(AttachmentBase attachment) => m_AttachmentManager.AddAttachment(attachment);
@@ -203,6 +213,11 @@ namespace TPSDemo
         {
             transform.localPosition = m_BackOffset;
             transform.localRotation = Quaternion.Euler(Vector3.zero);
+        }
+
+        public void Attach(AttachableNode node)
+        {
+            m_Attachable.Attach(node);
         }
     }
 }

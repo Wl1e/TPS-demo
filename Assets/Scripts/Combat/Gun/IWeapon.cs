@@ -27,7 +27,6 @@ namespace TPSDemo
         public void StartReload();
         public void EndReload(int amount);
         public void ClearAmmo();
-        public void SetParent(Transform parent);
         public void SetOffset(Vector3 offset);
         public void AddAttachment(AttachmentBase attachment);
         public void RemoveAttachment(AttachmentBase attachment);
@@ -35,5 +34,6 @@ namespace TPSDemo
         public float GetScopeRatio();
         public void OnEquip();
         public void OnUnequip();
+        public void Attach(AttachableNode node);
     }
 }

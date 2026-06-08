@@ -8,8 +8,6 @@ namespace TPSDemo
 
         public void TrySwitchFirearm(int index);
 
-        public void TryChangeFirearmIndex(int value);
-
         public void TryReload();
     }
 }

@@ -161,6 +161,7 @@ namespace TPSDemo
         void SetInteger(string name, int value) => m_Animator.SetInteger(name, value);
         public void SetSpineOffset(Vector3 offset)
         { }
+
         void SetAimWeight(bool IsAiming)
         {
             float targetAimWeight = IsAiming ? 1.0f : 0.0f;
@@ -175,6 +176,24 @@ namespace TPSDemo
             }
             m_RiggingCoroutine = StartCoroutine(AimRiggingCoroutine(targetAimWeight, targetSpineOffset));
         }
+        //void SetAimWeight(float weight)
+        //{
+        //    Vector3 targetSpineOffset = GetFirearmSpineOffset();
+        //    float startAimWeight = m_Rig.weight;
+        //    Vector3 startSpineOffset = AimConstraint.data.offset;
+        //    float elapsedTime = 0;
+
+        //    while (elapsedTime < RigLerpDuration) {
+        //        elapsedTime += Time.deltaTime;
+        //        float t = Mathf.Clamp01(elapsedTime / RigLerpDuration);
+        //        m_Rig.weight = Mathf.Lerp(startAimWeight, weight, t);
+        //        AimConstraint.data.offset = Vector3.Lerp(startSpineOffset, targetSpineOffset, t);
+        //    }
+
+        //    m_Rig.weight = weight;
+        //    AimConstraint.data.offset = targetSpineOffset;
+        //    m_RiggingCoroutine = null;
+        //}
 
         Vector3 GetFirearmSpineOffset()
         {
@@ -207,14 +226,8 @@ namespace TPSDemo
             m_RiggingCoroutine = null;
         }
 
-        void SetAimLayerWeight(float layerWeight)
-        {
-            m_Animator.SetLayerWeight(1, layerWeight);
-        }
+        void SetAimLayerWeight(float layerWeight) => m_Animator.SetLayerWeight(1, layerWeight);
 
-        public void ResetAnimation()
-        {
-            m_PlayerRuntimeData.AniParameter = new AnimatorParameter();
-        }
+        public void ResetAnimation() => m_PlayerRuntimeData.AniParameter = new AnimatorParameter();
     }
 }

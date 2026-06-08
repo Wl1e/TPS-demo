@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace TPSDemo
 {
 using Event;
+    using System.Collections;
+    using Unity.Netcode.Components;
 
     public class Loadout: NetworkBehaviour
     {
         // Weapon
+        NetworkList<NetworkObjectReference> m_WeaponRefs = new NetworkList<NetworkObjectReference>();
         List<IWeapon> m_WeaponSlots;
         [SerializeField] int m_MaxWeaponCount = 2;
         public GameObject DefaultWeapon;
@@ -29,41 +32,33 @@ using Event;
         private void Awake()
         {
             m_WeaponSlots = new List<IWeapon> {
-            null,
-            null,
-            null
-        };
-        }
-
-        private void OnEnable()
-        {
-            EventManager.AddListener<SwapWeaponEvent>(OnSwapWeapon);
-        }
-
-        private void OnDisable()
-        {
-            EventManager.RemoveListener<SwapWeaponEvent>(OnSwapWeapon);
+                null,
+                null,
+                null
+            };
         }
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            Initialize();
-        }
 
-        private void Start()
-        {
-            Initialize();
-        }
-
-        void Initialize()
-        {
-            if (m_Player == null) {
-                m_Player = GetComponentInParent<PlayerController>();
+            m_Player = GetComponentInParent<PlayerController>();
+            if(IsOwner) {
+                EventManager.AddListener<SwapWeaponEvent>(OnSwapWeapon);
+            }
+            if(IsServer) {
                 if (DefaultWeapon) {
                     EquipWeapon(DefaultWeapon);
                 }
             }
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            if (IsOwner) {
+                EventManager.RemoveListener<SwapWeaponEvent>(OnSwapWeapon);
+            }
+            base.OnNetworkDespawn();
         }
 
         public bool CanAddWeapon()
@@ -75,6 +70,8 @@ using Event;
         {
             return m_WeaponSlots[index] != null;
         }
+
+        #region equip
 
         public int EquipWeapon(IWeapon weapon)
         {
@@ -88,30 +85,69 @@ using Event;
 
         int EquipWeapon(IWeapon weapon, int index)
         {
+            if (weapon == null) {
+                Debug.LogError("err weapon");
+            }
             if (!ValidSlotIdx(index)) {
                 return -1;
             }
             if (m_WeaponSlots[index] != null) {
                 return -1;
             }
+
             weapon.Initialize(m_Player.gameObject);
             m_WeaponSlots[index] = weapon;
             OnAddWeapon?.Invoke(weapon, index);
 
-            var evt = new UpdateLoadoutUIEvent();
-
-            var data = GetUIData();
-            evt.weapon1 = data[0];
-            evt.weapon2 = data[1];
-
-            EventManager.Broadcast(evt);
+            EventManager.Broadcast(new UpdateLoadoutUIEvent {
+                Weapon1 = ParseWeapon(m_WeaponSlots[1]),
+                Weapon2 = ParseWeapon(m_WeaponSlots[2])
+            });
             return index;
         }
 
-        public int EquipWeapon(GameObject WeaponPrefab)
+        public void EquipWeapon(GameObject WeaponPrefab)
         {
-            var instance = Instantiate(WeaponPrefab, WeaponPlaceRoot);
-            return EquipWeapon(instance.GetComponent<IWeapon>());
+            StartCoroutine(EquipWeaponCoroutine(WeaponPrefab));
+        }
+
+        private IEnumerator EquipWeaponCoroutine(GameObject weaponPrefab)
+        {
+            yield return null;
+
+            if(!CanAddWeapon()) {
+                yield break;
+            }
+
+            var instance = Instantiate(weaponPrefab, WeaponPlaceRoot);
+            if (!instance.TryGetComponent<NetworkObject>(out var no)) {
+                Destroy(instance);
+                yield break;
+            }
+
+            var attachable = instance.GetComponentInChildren<AttachableBehaviour>();
+            if (attachable == null) {
+                Destroy(instance);
+                yield break;
+            }
+
+            if(!attachable.TryGetComponent<IWeapon>(out var weapon)) {
+                Destroy(instance);
+                yield break;
+            }
+
+            no.SpawnWithOwnership(OwnerClientId);
+            m_WeaponRefs.Add(new NetworkObjectReference(instance));
+            yield return new WaitUntil(() => no.IsSpawned);
+
+            int idx = EquipWeapon(weapon);
+            EquipWeaponClientRpc(weapon, idx);
+        }
+
+        [ClientRpc]
+        void EquipWeaponClientRpc(IWeapon weapon, int idx)
+        {
+            EquipWeapon(weapon, idx);
         }
 
         public void UnequipWeapon(IWeapon weapon)
@@ -120,8 +156,14 @@ using Event;
             if (idx != -1) {
                 m_WeaponSlots[idx] = null;
                 OnRemoveWeapon?.Invoke(weapon);
+                EventManager.Broadcast(new UpdateLoadoutUIEvent {
+                    Weapon1 = ParseWeapon(m_WeaponSlots[1]),
+                    Weapon2 = ParseWeapon(m_WeaponSlots[2])
+                });
             }
         }
+
+        #endregion
 
         public bool ValidSlotIdx(int index)
         {
@@ -151,8 +193,8 @@ using Event;
             m_WeaponSlots[evt.Idx2] = temp;
             EventManager.Broadcast(
                 new UpdateLoadoutUIEvent {
-                    weapon1 = ParseWeapon(m_WeaponSlots[1]),
-                    weapon2 = ParseWeapon(m_WeaponSlots[2])
+                    Weapon1 = ParseWeapon(m_WeaponSlots[1]),
+                    Weapon2 = ParseWeapon(m_WeaponSlots[2])
                 }
             );
         }
@@ -185,5 +227,10 @@ using Event;
             return result;
         }
         #endregion
+
+        private void OnWeaponRefChanged(NetworkListEvent<NetworkObjectReference> refer)
+        {
+            if(refer.Index)
+        }
     }
 }

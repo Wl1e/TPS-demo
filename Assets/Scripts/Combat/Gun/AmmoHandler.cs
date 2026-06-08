@@ -9,21 +9,35 @@ namespace TPSDemo
     [Serializable]
     public class AmmoHandler : NetworkBehaviour
     {
-        [SerializeField] int m_ClipSize;
+        [Tooltip("初始弹匣容量")]
+        public int DefaultClipSize;
+        [Tooltip("换弹时间")]
         [SerializeField] float m_ReloadTime;
+        [Tooltip("使用子弹ID")]
         [SerializeField] int m_AmmoId;
 
         IWeapon m_Weapon;
 
-        NetworkVariable<int> m_CurrentAmmo;
+        private int m_ClipSize;
+
+        NetworkVariable<int> m_CurrentAmmo = new NetworkVariable<int>(
+            writePerm: NetworkVariableWritePermission.Owner
+        );
         public int CurrentAmmo => m_CurrentAmmo.Value;
         public float ReloadTime => m_ReloadTime;
         public int ClipSize => m_ClipSize;
         public int AmmoId => m_AmmoId;
 
-        public void Awake()
+        private void Awake()
         {
-            if (IsServer) {
+            m_ClipSize = DefaultClipSize;
+        }
+
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+            // 目前子弹由自己写入（这里初始化和WeaponManager的m_ReloadCoroutine），有安全问题
+            if (IsOwner) {
                 m_CurrentAmmo.Value = m_ClipSize;
             }
         }

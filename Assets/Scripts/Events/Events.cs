@@ -78,8 +78,8 @@ namespace TPSDemo.Event
     }
     public class UpdateLoadoutUIEvent: InternalEvent
     {
-        public UI.WeaponUIData weapon1;
-        public UI.WeaponUIData weapon2;
+        public UI.WeaponUIData Weapon1;
+        public UI.WeaponUIData Weapon2;
     }
 
     // ui -> logic

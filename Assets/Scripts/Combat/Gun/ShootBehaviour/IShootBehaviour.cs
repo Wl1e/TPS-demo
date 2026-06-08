@@ -1,5 +1,7 @@
 
 using System;
+using Unity.Netcode;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace TPSDemo
@@ -9,7 +11,7 @@ namespace TPSDemo
         public GameObject Owner { get; }
         public void SetMuzzle(Transform muzzle);
         public void Initialize(IWeapon weapon);
-        public void Shoot(Vector3 dir);
+        public void Shoot(Vector3 dir, ulong clientId);
         public event Action<GameObject> OnTargetHit;
     }
 
@@ -33,8 +35,8 @@ namespace TPSDemo
             m_Weapon = weapon;
         }
 
-        public abstract void Shoot(Vector3 dir);
-        protected BulletController CreateBullet(Vector3 dir)
+        public abstract void Shoot(Vector3 dir, ulong clientId);
+        protected BulletController CreateBullet(Vector3 dir, ulong clientId)
         {
             var bullet = Instantiate(BulletPrefab, Muzzle.position, Quaternion.LookRotation(dir));
             bullet.Owner = Owner;
@@ -42,6 +44,11 @@ namespace TPSDemo
             bullet.Speed = BulletSpeed;
             bullet.HitLayerMask = HitLayerMask;
             bullet.OnHitTarget += OnBulletHit;
+
+            var no = bullet.GetComponent<NetworkObject>();
+            if (!no.IsSpawned) {
+                no.SpawnWithOwnership(clientId);
+            }
             return bullet;
         }
         protected virtual void OnBulletHit(GameObject obj)

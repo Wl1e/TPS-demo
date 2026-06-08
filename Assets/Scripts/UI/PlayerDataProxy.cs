@@ -10,18 +10,10 @@ namespace TPSDemo
         public static PlayerDataProxy Instance => m_Instance ?? (m_Instance = new PlayerDataProxy());
         PlayerController m_Player;
 
-        public void RegisterPlayer(PlayerController player)
-        {
-            m_Player = player;
-        }
-        public void UnregisterPlayer()
-        {
-            m_Player = null;
-        }
-        public bool HasPlayer()
-        {
-            return m_Player != null;
-        }
+        public void RegisterPlayer(PlayerController player) => m_Player = player;
+        public void UnregisterPlayer() => m_Player = null;
+        public bool HasPlayer() => m_Player != null;
+        public PlayerController GetPlayer() => m_Player;
 
         public float GetHealthRatio()
         {

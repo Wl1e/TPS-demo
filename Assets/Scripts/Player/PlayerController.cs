@@ -148,28 +148,23 @@ namespace TPSDemo
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            Initialize();
-        }
 
-        public override void OnNetworkDespawn()
-        {
-            UnregisterEvents();
-            base.OnNetworkDespawn();
-        }
-
-        public void Initialize()
-        {
             if (IsOwner) {
                 m_FSM.OnStateChanged += (string pre, string cur) => OnStateChanged?.Invoke(pre, cur);
                 m_FSM.InitializeFSM();
                 RegisterEvents();
-                m_WeaponManager.Initialize();
                 PlayerDataProxy.Instance.RegisterPlayer(this);
                 // 通知UI和DebugLayer
                 EventManager.Broadcast(new PlayerFinishedInitialzeEvent());
             } else {
                 DisableClientComponents();
             }
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            UnregisterEvents();
+            base.OnNetworkDespawn();
         }
 
         private void RegisterEvents()

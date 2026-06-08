@@ -251,11 +251,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9218768079438993353}
+  - component: {fileID: 4555124550451738247}
   - component: {fileID: 6368045196937203479}
   - component: {fileID: 7691995253254054613}
   - component: {fileID: 2759598056937869321}
   - component: {fileID: 297784636474424585}
-  - component: {fileID: 4555124550451738247}
   - component: {fileID: 502528820035278656}
   m_Layer: 12
   m_Name: Combat
@@ -280,6 +280,22 @@ Transform:
   - {fileID: 154961992645478461}
   m_Father: {fileID: 6091626507694201701}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4555124550451738247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1586364090473995708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ee2f58316a74b0408e1067d7227418b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Loadout
+  ShowTopMostFoldoutHeaderGroup: 1
+  m_MaxWeaponCount: 2
+  DefaultWeapon: {fileID: 8953871719496657116, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
+  WeaponPlaceRoot: {fileID: 0}
 --- !u!114 &6368045196937203479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -346,8 +362,8 @@ MonoBehaviour:
   m_Slot: 1
   m_ReloadTime: 1
   AimTarget: {fileID: 1607248410051887178}
-  RightHand: {fileID: 1136555938073773616}
-  Back: {fileID: 8897862832182481896}
+  RightHandAttach: {fileID: 8723894199958014274}
+  BackAttach: {fileID: 7404486853201203038}
 --- !u!114 &297784636474424585
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -369,22 +385,6 @@ MonoBehaviour:
   OnTryAimEvent: {fileID: 11400000, guid: c05bb3c61eda5eb4bb766febf5fc86ff, type: 2}
   OnFireEvent: {fileID: 11400000, guid: cf832bb1e5fa7164e9434273adff4855, type: 2}
   RecoilKickSpeed: 50
---- !u!114 &4555124550451738247
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1586364090473995708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ee2f58316a74b0408e1067d7227418b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Loadout
-  ShowTopMostFoldoutHeaderGroup: 1
-  m_MaxWeaponCount: 2
-  DefaultWeapon: {fileID: 8953871719496657116, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
-  WeaponPlaceRoot: {fileID: 8897862832182481896}
 --- !u!114 &502528820035278656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -399,6 +399,98 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnarmedController
   ShowTopMostFoldoutHeaderGroup: 1
   m_Slot: 0
+--- !u!1 &2081892483045426009
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8347009442954234222}
+  - component: {fileID: 8723894199958014274}
+  m_Layer: 0
+  m_Name: RightHandAttach
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8347009442954234222
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2081892483045426009}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1136555938073773616}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8723894199958014274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2081892483045426009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b870dfbc4cccf6244b4ed1a9b379c701, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::AttachableNode
+  ShowTopMostFoldoutHeaderGroup: 1
+  DetachOnDespawn: 1
+--- !u!1 &2632628057067670397
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5598152957383978274}
+  - component: {fileID: 7404486853201203038}
+  m_Layer: 0
+  m_Name: BackAttach
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5598152957383978274
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2632628057067670397}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.26470253, y: 0.57052773, z: 0.28389773, w: 0.723763}
+  m_LocalPosition: {x: 0, y: 0, z: -0.35}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1136555938073774070}
+  m_LocalEulerAnglesHint: {x: -45, y: 72.82, z: 8.86}
+--- !u!114 &7404486853201203038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2632628057067670397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b870dfbc4cccf6244b4ed1a9b379c701, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::AttachableNode
+  ShowTopMostFoldoutHeaderGroup: 1
+  DetachOnDespawn: 1
 --- !u!1 &3109014798761552595
 GameObject:
   m_ObjectHideFlags: 0
@@ -867,7 +959,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 41440137
+  GlobalObjectIdHash: 585497169
   InScenePlacedSourceGlobalObjectIdHash: 585497169
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1143,7 +1235,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimatorController
   RightHand: {fileID: 1136555938073773616}
-  Back: {fileID: 8897862832182481896}
+  Back: {fileID: 0}
   m_Animator: {fileID: 1136555938080713148}
   DampTime: 0.1
   m_Rig: {fileID: 1279322890699467163}
@@ -1183,37 +1275,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6091626507694201701}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &8894029871305366818
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8897862832182481896}
-  m_Layer: 0
-  m_Name: Back
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8897862832182481896
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8894029871305366818}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.26470253, y: 0.57052773, z: 0.28389773, w: 0.723763}
-  m_LocalPosition: {x: 0, y: 0, z: -0.35}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1136555938073774070}
-  m_LocalEulerAnglesHint: {x: -45, y: 72.82, z: 8.86}
 --- !u!1001 &1136555938073386204
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1282,7 +1343,10 @@ PrefabInstance:
       addedObject: {fileID: 6681792419182309798}
     - targetCorrespondingSourceObject: {fileID: 400170, guid: dab9cd6b3aa068b4385111bc9af85bd7, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8897862832182481896}
+      addedObject: {fileID: 5598152957383978274}
+    - targetCorrespondingSourceObject: {fileID: 400108, guid: dab9cd6b3aa068b4385111bc9af85bd7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8347009442954234222}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 100008, guid: dab9cd6b3aa068b4385111bc9af85bd7, type: 3}
       insertIndex: -1

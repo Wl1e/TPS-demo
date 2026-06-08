@@ -1,6 +1,5 @@
 ﻿
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace TPSDemo
@@ -12,11 +11,15 @@ namespace TPSDemo
         public Dictionary<IAttachment.AttachmentSlot, IAttachment> Attachments => m_Attachments;
 
         [Header(header: "配件挂点")]
+        [Tooltip("瞄准镜挂点")]
         public Transform ScopeSocket;
+        [Tooltip("弹匣挂点")]
         public Transform MagazineSocket;
 
         [Header(header: "默认配件")]
+        [Tooltip("默认瞄准镜")]
         public Scope DefaultScope;
+        [Tooltip("默认弹匣")]
         public Magazine DefaultMagazine;
 
         private void Awake()

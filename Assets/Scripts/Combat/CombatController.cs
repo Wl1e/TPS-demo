@@ -31,7 +31,7 @@ namespace TPSDemo
     using Combat;
     public class CombatController : NetworkBehaviour
     {
-        Slot m_ActiveSlot = Slot.Unarmed;
+        NetworkVariable<Slot> m_ActiveSlot = new NetworkVariable<Slot>(Slot.Unarmed);
         //EquipState m_EquipState = EquipState.None;
         [SerializeField] List<SlotEntry> m_Slots;
         Dictionary<Slot, ICombatSlot> m_Lookup = new Dictionary<Slot, ICombatSlot>();
@@ -39,7 +39,7 @@ namespace TPSDemo
         PlayerController m_PlayerController;
         PlayerRuntimeData m_PlayerRuntimeData;
 
-        public Slot CurrentActiveSlot => m_ActiveSlot;
+        public Slot CurrentActiveSlot => m_ActiveSlot.Value;
 
         public float EquipTime = 0.3f;
         public float SwitchTime = 0.3f;
@@ -58,6 +58,8 @@ namespace TPSDemo
 
         private void Awake()
         {
+            m_PlayerController = GetComponentInParent<PlayerController>();
+            m_PlayerRuntimeData = m_PlayerController.RuntimeData;
             foreach (var slot in m_Slots) {
                 m_Lookup.Add(slot.Key, slot.Value);
                 slot.Value.SetExitFunc(SlotExited);
@@ -66,17 +68,22 @@ namespace TPSDemo
         }
         public override void OnNetworkSpawn()
         {
-            base.OnNetworkDespawn();
+            base.OnNetworkSpawn();
+
+            m_ActiveSlot.OnValueChanged += OnSlotChanged;
+
             if(IsOwner) {
                 RegisterEvents();
+                ActiveSlot(Slot.Firearm);
             }
         }
         public override void OnNetworkDespawn()
         {
-            UnregisterEvents();
             if (IsOwner) {
-                base.OnNetworkDespawn();
+                UnregisterEvents();
             }
+            m_ActiveSlot.OnValueChanged -= OnSlotChanged;
+            base.OnNetworkDespawn();
         }
 
         private void RegisterEvents()
@@ -101,37 +108,33 @@ namespace TPSDemo
             EventManager.RemoveListener<Event.AimEvent>(OnAim);
         }
 
-        private void Start()
-        {
-            m_PlayerController = GetComponentInParent<PlayerController>();
-            m_PlayerRuntimeData = m_PlayerController.RuntimeData;
-            ActiveSlot(Slot.Firearm);
-        }
-        ICombatSlot GetActiveSlot() => m_Lookup[m_ActiveSlot];
+        ICombatSlot GetActiveSlot() => m_Lookup[CurrentActiveSlot];
         bool ValidSlotIndex(int index)
         {
             return index >= 0 && index < m_Slots.Count;
         }
-        void ActiveSlot(Slot slot)
+        [ServerRpc]
+        void ActiveSlotServerRpc(Slot slot)
         {
             if (!m_Lookup[slot].ValidActive()) {
                 return;
             }
-            m_ActiveSlot = slot;
-            foreach (var entry in m_Lookup) {
-                entry.Value.SetActive(m_ActiveSlot == entry.Key);
-            }
-            EndTime = Time.time + EquipTime;
-            m_PlayerRuntimeData.ActiveSlot = m_ActiveSlot;
-            OnSlotChange?.Invoke(m_ActiveSlot);
-            print("Active: " + m_ActiveSlot);
-            m_PlayerRuntimeData.AniParameter.CombatSlot = (int)m_ActiveSlot;
+            m_ActiveSlot.Value = slot;
+            //foreach (var entry in m_Lookup) {
+            //    entry.Value.SetActive(CurrentActiveSlot == entry.Key);
+            //}
+        }
+
+        void ActiveSlot(Slot slot)
+        {
+            ActiveSlotServerRpc(slot);
+            
         }
 
         void SlotExited(Slot slot)
         {
-            if (m_ActiveSlot == slot) {
-                ActiveSlot(Slot.Unarmed);
+            if (IsOwner && CurrentActiveSlot == slot) {
+                ActiveSlotServerRpc(Slot.Unarmed);
             }
         }
 
@@ -152,7 +155,7 @@ namespace TPSDemo
                 ActiveSlot(Slot.Unarmed);
                 return;
             }
-            if (m_ActiveSlot != Slot.Firearm) {
+            if (CurrentActiveSlot != Slot.Firearm) {
                 ActiveSlot(Slot.Firearm);
             }
             if (GetActiveSlot() is IFirearmSlot firearmSlot) {
@@ -173,7 +176,7 @@ namespace TPSDemo
 
         void HandleTryEquipGrenade()
         {
-            if (m_ActiveSlot != Slot.Throwable) {
+            if (CurrentActiveSlot != Slot.Throwable) {
                 ActiveSlot(Slot.Throwable);
             } else {
                 ActiveSlot(Slot.Unarmed);
@@ -193,6 +196,19 @@ namespace TPSDemo
         {
             GetActiveSlot()?.OnAim(evt.IsAiming);
             m_PlayerRuntimeData.AniParameter.Attack = false;
+        }
+        void OnSlotChanged(Slot pre, Slot cur)
+        {
+            foreach (var entry in m_Lookup) {
+                entry.Value.SetActive(CurrentActiveSlot == entry.Key);
+            }
+            if(IsOwner) {
+                EndTime = Time.time + EquipTime;
+                m_PlayerRuntimeData.ActiveSlot = CurrentActiveSlot;
+                m_PlayerRuntimeData.AniParameter.CombatSlot = (int)CurrentActiveSlot;
+                OnSlotChange?.Invoke(CurrentActiveSlot);
+                print("Active: " + m_ActiveSlot);
+            }
         }
     }
 }

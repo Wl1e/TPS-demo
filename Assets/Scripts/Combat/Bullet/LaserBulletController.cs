@@ -17,9 +17,8 @@ namespace TPSDemo
         public Transform LaserOrigin;
         public Transform Laser;
 
-        protected override void Awake()
+        protected void Awake()
         {
-            base.Awake();
             transform.localScale = new Vector3(LaserWidth, LaserWidth, 1);
             Laser.GetComponent<Renderer>().material.SetColor("_EmissionColor", LaserColor);
         }

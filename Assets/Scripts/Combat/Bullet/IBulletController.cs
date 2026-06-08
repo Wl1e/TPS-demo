@@ -39,13 +39,12 @@ namespace TPSDemo
         [Tooltip("攻击音效")]
         public AudioClip HitSfx;
 
-        protected virtual void Awake()
-        {
-            Destroy(gameObject, MaxLifeTime);
-        }
-
         public override void OnNetworkDespawn()
-        { }
+        {
+            if (IsServer) {
+                Destroy(gameObject, MaxLifeTime);
+            }
+        }
 
         public abstract void OnShoot();
         protected void OnHit(RaycastHit hitInfo)
@@ -56,7 +55,7 @@ namespace TPSDemo
                 OnHitTarget?.Invoke(hitInfo.collider.gameObject);
                 EventManager.Broadcast(new Event.BulletHitTargetEvent { Attacker = Owner, Victim = damageable.gameObject });
             }
-            if (DestroyOnHit) {
+            if (IsServer && DestroyOnHit) {
                 Destroy(gameObject);
             }
             if (HitFlashPrefab) {

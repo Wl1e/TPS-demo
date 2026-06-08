@@ -26,6 +26,10 @@ using Combat;
         public Action<Slot> m_ExitFunc;
         [SerializeField] Slot m_Slot;
         public Slot Slot => m_Slot;
+        // 本来打算通过attack来让combatcontroller统一设置动画，
+        // 但是手雷和武器的动画需求不一样，武器如果按下攻击键就是一直攻击，
+        // 但是手雷是只有攻击键松手的一瞬间为攻击状态
+        // 目前这个方法没有用，看看后续有没有需求
         protected void RaiseAttack(int weaponType, bool isEnd)
         {
             OnAttack?.Invoke(weaponType, isEnd);
@@ -54,8 +58,6 @@ using Combat;
         public abstract float ReloadTime { get; }
 
         public abstract void TrySwitchFirearm(int index);
-
-        public abstract void TryChangeFirearmIndex(int value);
 
         public abstract void TryReload();
     }

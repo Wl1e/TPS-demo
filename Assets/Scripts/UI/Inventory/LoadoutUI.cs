@@ -54,8 +54,8 @@ namespace TPSDemo.UI
 
         void UpdateLoadout(Event.UpdateLoadoutUIEvent evt)
         {
-            WeaponSlot1.SetWeapon(evt.weapon1);
-            WeaponSlot2.SetWeapon(evt.weapon2);
+            WeaponSlot1.SetWeapon(evt.Weapon1);
+            WeaponSlot2.SetWeapon(evt.Weapon2);
         }
 
         void OnInventoryStateChange(Event.InventoryStateChangeEvent evt)

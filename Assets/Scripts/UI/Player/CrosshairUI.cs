@@ -10,6 +10,9 @@ using Event;
         public Image FeedbackImage;
 
         bool showCrosshair = false;
+
+        public CrosshairData DefaultCrosshair;
+
         CrosshairData m_CrosshairData;
         [SerializeField] CrosshairData m_HitFeedback;
         static readonly CrosshairData NullCrosshair = new CrosshairData { Sprite = null };
@@ -40,11 +43,8 @@ using Event;
         }
         public void Initialize()
         {
-            m_CrosshairData = PlayerDataProxy.Instance.GetCurrentFirearm()?.Crosshair ?? NullCrosshair;
-            if (!IsNullCrosshair(m_CrosshairData)) {
-                showCrosshair = true;
-                UpdateCrosshair();
-            }
+            m_CrosshairData = PlayerDataProxy.Instance.GetCurrentFirearm()?.Crosshair ?? DefaultCrosshair;
+            UpdateCrosshair();
         }
 
         private void Update()
@@ -65,8 +65,9 @@ using Event;
 
         void HandleWeaponChanged(WeaponChangedEvent evt)
         {
+            print($"Firearm: {PlayerDataProxy.Instance.GetCurrentFirearm()}, crosshair: {PlayerDataProxy.Instance.GetCurrentFirearm().Crosshair}");
             showCrosshair = true;
-            m_CrosshairData = PlayerDataProxy.Instance.GetCurrentFirearm()?.Crosshair ?? NullCrosshair;
+            m_CrosshairData = PlayerDataProxy.Instance.GetCurrentFirearm()?.Crosshair ?? DefaultCrosshair;
             UpdateCrosshair();
         }
 

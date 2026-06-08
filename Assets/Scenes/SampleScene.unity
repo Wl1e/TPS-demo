@@ -169,14 +169,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 50f9836302fc761428b76b61fc16260a, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1172,8 +1172,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff502ec33299ca74c9538314d46596a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Assets.Scripts.DebugLayer
-  ShowTopMostFoldoutHeaderGroup: 1
-  Player: {fileID: 0}
   StatusText: {fileID: 1903156722}
   ShowState: 1
   ShowVelocity: 1
@@ -7274,6 +7272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5496c499187aa446bc5001f01b90936, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
+  ShowTopMostFoldoutHeaderGroup: 1
   DamageAudio: {fileID: 0}
   DeadAudio: {fileID: 0}
   m_BehaviorTree: {fileID: 1250992755}
@@ -8821,6 +8820,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CrosshairUIController
   CrosshairImage: {fileID: 2564284}
   FeedbackImage: {fileID: 2021160361}
+  DefaultCrosshair:
+    Sprite: {fileID: 21300000, guid: 50f9836302fc761428b76b61fc16260a, type: 3}
+    Color: {r: 0, g: 0, b: 0, a: 0}
+    Scale: 1
   m_HitFeedback:
     Sprite: {fileID: 21300000, guid: c2805439a3a903649957c295596f3b0a, type: 3}
     Color: {r: 1, g: 0, b: 0, a: 1}
@@ -10282,63 +10285,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b23013e7893392e47be321f6ee8c7d0e, type: 3}
---- !u!1001 &160432020170907662
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 7509520411638633182, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7509520411638633182, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7509520411638633182, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7509520411638633182, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7509520411638633182, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7509520411638633182, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7509520411638633182, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7509520411638633182, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7509520411638633182, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7509520411638633182, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8953871719496657116, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
-      propertyPath: m_Name
-      value: AR
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
 --- !u!224 &226101678102604116
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11931,7 +11877,6 @@ SceneRoots:
   - {fileID: 1294533343}
   - {fileID: 1948593218}
   - {fileID: 7964012486984498905}
-  - {fileID: 160432020170907662}
   - {fileID: 48644376}
   - {fileID: 8025384846945224115}
   - {fileID: 673534578}
