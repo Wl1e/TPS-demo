@@ -293,9 +293,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Loadout
   ShowTopMostFoldoutHeaderGroup: 1
-  m_MaxWeaponCount: 2
   DefaultWeapon: {fileID: 8953871719496657116, guid: 599b94dcaec819e49815631b7eb37f07, type: 3}
-  WeaponPlaceRoot: {fileID: 0}
+  WeaponPlaceRoot: {fileID: 7404486853201203038}
 --- !u!114 &6368045196937203479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -383,7 +382,6 @@ MonoBehaviour:
     m_Bits: 4294967295
   AimRayDistance: 200
   OnTryAimEvent: {fileID: 11400000, guid: c05bb3c61eda5eb4bb766febf5fc86ff, type: 2}
-  OnFireEvent: {fileID: 11400000, guid: cf832bb1e5fa7164e9434273adff4855, type: 2}
   RecoilKickSpeed: 50
 --- !u!114 &502528820035278656
 MonoBehaviour:
@@ -537,11 +535,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.MultiAimConstraint
   m_Weight: 1
   m_Data:
-    m_ConstrainedObject: {fileID: 0}
+    m_ConstrainedObject: {fileID: 1136555938073774070}
     m_SourceObjects:
       m_Length: 1
       m_Item0:
-        transform: {fileID: 4854133514220884507}
+        transform: {fileID: 1607248410051887178}
         weight: 1
       m_Item1:
         transform: {fileID: 0}
@@ -564,10 +562,10 @@ MonoBehaviour:
       m_Item7:
         transform: {fileID: 0}
         weight: 0
-    m_Offset: {x: 0, y: 0, z: 0}
+    m_Offset: {x: 10, y: -24, z: 0}
     m_MinLimit: -180
     m_MaxLimit: 180
-    m_AimAxis: 4
+    m_AimAxis: 1
     m_UpAxis: 2
     m_WorldUpType: 0
     m_WorldUpObject: {fileID: 0}
@@ -575,8 +573,8 @@ MonoBehaviour:
     m_MaintainOffset: 0
     m_ConstrainedAxes:
       x: 1
-      y: 0
-      z: 0
+      y: 1
+      z: 1
 --- !u!1 &3388967165175632207
 GameObject:
   m_ObjectHideFlags: 0
@@ -959,7 +957,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 585497169
+  GlobalObjectIdHash: 41440137
   InScenePlacedSourceGlobalObjectIdHash: 585497169
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1026,6 +1024,12 @@ MonoBehaviour:
   WantJump: 0
   WantSprint: 0
   WantCrouch: 0
+  StartPos: {x: 0, y: 0, z: 0}
+  MidPos: {x: 0, y: 1.7, z: 0}
+  EndPos: {x: 0, y: 1.7, z: 0.5}
+  NowTime: 0
+  MidTime: 0.5
+  EndTime: 0.9
 --- !u!114 &5758035524814191548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1234,14 +1238,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3957c660d9418964e801d5ca278b7029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimatorController
-  RightHand: {fileID: 1136555938073773616}
-  Back: {fileID: 0}
   m_Animator: {fileID: 1136555938080713148}
+  m_VelocityThreshold: 0.01
   DampTime: 0.1
   m_Rig: {fileID: 1279322890699467163}
   AimConstraint: {fileID: 2443313966638450972}
   RigLerpDuration: 0.15
-  m_AimOffset: {x: 0, y: 40, z: 0}
   m_CrouchOffset: {x: 20, y: -10, z: 0}
   m_CrouchMoveOffset: {x: 35, y: -10, z: 0}
 --- !u!1 &8439695403502581523
@@ -1392,7 +1394,21 @@ MonoBehaviour:
   NetworkAnimatorExpanded: 0
   AuthorityMode: 1
   m_Animator: {fileID: 1136555938080713148}
-  TransitionStateInfoList: []
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 258166319
+    DestinationState: -580185574
+    TransitionDuration: 0.25
+    TriggerNameHash: -624486612
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 1
+    OriginatingState: 1259439509
+    DestinationState: 173371648
+    TransitionDuration: 0.25
+    TriggerNameHash: -1525363869
+    TransitionIndex: 2
   AnimatorParameterEntries:
     ParameterEntries:
     - name: VerticalSpeed
@@ -1435,10 +1451,6 @@ MonoBehaviour:
       NameHash: 1236215618
       Synchronize: 1
       ParameterType: 4
-    - name: FrontLeg
-      NameHash: 2013694420
-      Synchronize: 1
-      ParameterType: 3
     - name: Ground
       NameHash: -1605138850
       Synchronize: 1
@@ -1453,6 +1465,18 @@ MonoBehaviour:
       ParameterType: 3
     - name: Throw
       NameHash: -1907200461
+      Synchronize: 1
+      ParameterType: 9
+    - name: Climb
+      NameHash: -1670875122
+      Synchronize: 1
+      ParameterType: 4
+    - name: Ledge
+      NameHash: 258166319
+      Synchronize: 1
+      ParameterType: 4
+    - name: Mantle
+      NameHash: -624486612
       Synchronize: 1
       ParameterType: 9
   AnimatorParametersExpanded: 0

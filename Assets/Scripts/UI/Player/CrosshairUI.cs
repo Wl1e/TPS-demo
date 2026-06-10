@@ -9,17 +9,13 @@ using Event;
         public Image CrosshairImage;
         public Image FeedbackImage;
 
-        bool showCrosshair = false;
+        bool showCrosshair = true;
 
         public CrosshairData DefaultCrosshair;
 
         CrosshairData m_CrosshairData;
         [SerializeField] CrosshairData m_HitFeedback;
-        static readonly CrosshairData NullCrosshair = new CrosshairData { Sprite = null };
-        static bool IsNullCrosshair(CrosshairData crosshairData)
-        {
-            return crosshairData.Sprite == null;
-        }
+
         // 更新依赖deltaTime，所以可能不准确
         public float FeedbackTime = 0.1f;
         float FeedbackEndTime = 0f;
@@ -65,7 +61,6 @@ using Event;
 
         void HandleWeaponChanged(WeaponChangedEvent evt)
         {
-            print($"Firearm: {PlayerDataProxy.Instance.GetCurrentFirearm()}, crosshair: {PlayerDataProxy.Instance.GetCurrentFirearm().Crosshair}");
             showCrosshair = true;
             m_CrosshairData = PlayerDataProxy.Instance.GetCurrentFirearm()?.Crosshair ?? DefaultCrosshair;
             UpdateCrosshair();

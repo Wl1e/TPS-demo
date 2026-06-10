@@ -19,8 +19,12 @@ namespace TPSDemo
 
         protected void Awake()
         {
-            transform.localScale = new Vector3(LaserWidth, LaserWidth, 1);
             Laser.GetComponent<Renderer>().material.SetColor("_EmissionColor", LaserColor);
+        }
+
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
         }
 
         public override void OnShoot()
@@ -39,8 +43,7 @@ namespace TPSDemo
                 distance = m_Info.distance;
                 OnHit(m_Info);
             }
-            transform.localScale = new Vector3(LaserWidth, LaserWidth, distance);
-
+            transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, distance);
         }
     }
 }

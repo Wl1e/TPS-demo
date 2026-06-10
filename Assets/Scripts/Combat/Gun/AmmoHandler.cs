@@ -20,9 +20,7 @@ namespace TPSDemo
 
         private int m_ClipSize;
 
-        NetworkVariable<int> m_CurrentAmmo = new NetworkVariable<int>(
-            writePerm: NetworkVariableWritePermission.Owner
-        );
+        NetworkVariable<int> m_CurrentAmmo = new NetworkVariable<int>();
         public int CurrentAmmo => m_CurrentAmmo.Value;
         public float ReloadTime => m_ReloadTime;
         public int ClipSize => m_ClipSize;
@@ -36,8 +34,8 @@ namespace TPSDemo
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            // 目前子弹由自己写入（这里初始化和WeaponManager的m_ReloadCoroutine），有安全问题
-            if (IsOwner) {
+            // 子弹由Server写入
+            if (IsServer) {
                 m_CurrentAmmo.Value = m_ClipSize;
             }
         }

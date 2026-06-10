@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 1613367872274662961}
   - component: {fileID: 7059052605086097433}
   - component: {fileID: 542621614124267216}
-  - component: {fileID: 7242167727892765913}
+  - component: {fileID: 6561294238649950812}
   m_Layer: 0
   m_Name: AR-Child
   m_TagString: Untagged
@@ -249,8 +249,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Weapon
   ShowTopMostFoldoutHeaderGroup: 1
   Muzzle: {fileID: 7285302219024661440}
-  m_RecoilForce: 0.1
-  m_RecoilFrequency: 0.1
+  m_RecoilForce: 0.01
+  m_RecoilFrequency: 100
   m_RecoilReturnSpeed: 1
   m_SpineOffset: {x: 0, y: 0, z: 0}
   m_HandOffset: {x: 0.12, y: 0, z: -0.01}
@@ -263,7 +263,7 @@ MonoBehaviour:
     Scale: 1
   MuzzleFlashPrefab: {fileID: 100006, guid: 7e9c50938e32351438a7df9ccad2f2a5, type: 3}
   ShootSfx: {fileID: 8300000, guid: 6739c01659ad96d47987f4ddee226b36, type: 3}
-  ReloadingSfx: {fileID: 0}
+  ReloadingSfx: {fileID: 8300000, guid: 93331a7c9fe98494a84f18effb358899, type: 3}
 --- !u!114 &1613367872274662961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,7 +312,7 @@ MonoBehaviour:
   DefaultClipSize: 30
   m_ReloadTime: 1.5
   m_AmmoId: 1
---- !u!114 &7242167727892765913
+--- !u!114 &6561294238649950812
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -336,7 +336,7 @@ MonoBehaviour:
   RotationMaxInterpolationTime: 0.1
   ScaleLerpSmoothing: 1
   ScaleMaxInterpolationTime: 0.1
-  AuthorityMode: 0
+  AuthorityMode: 1
   TickSyncChildren: 0
   UseUnreliableDeltas: 0
   SyncPositionX: 1
@@ -356,7 +356,7 @@ MonoBehaviour:
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
   SwitchTransformSpaceWhenParented: 0
-  Interpolate: 1
+  Interpolate: 0
   SlerpPosition: 0
 --- !u!1 &4836498252302626488
 GameObject:

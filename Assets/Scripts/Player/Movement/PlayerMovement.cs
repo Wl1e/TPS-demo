@@ -130,6 +130,11 @@ namespace TPSDemo
                 return;
             }
 
+            if(!m_CharacterController.enabled) {
+                m_Velocity = Vector3.zero;
+                return;
+            }
+
             m_InputGlobal = Vector3.Normalize(Quaternion.Euler(0, m_PlayerRuntimeData.CameraRoot.eulerAngles.y, 0) * m_Input);
 
             GroundCheck();

@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
-using UnityEngine;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace TPSDemo
 {
 using Event;
+    using System.Runtime.ConstrainedExecution;
+
     public class WeaponManager : FirearmCombatSlot
     {
         // IFirearmController
@@ -26,6 +28,7 @@ using Event;
         IWeapon m_CurrentFirearm = null;
         [SerializeField] float m_ReloadTime = 1f;
 
+        private NetworkVariable<bool> m_Reloading = new NetworkVariable<bool>(false);
         Coroutine m_ReloadCoroutine = null;
 
         /// <summary>
@@ -97,6 +100,7 @@ using Event;
 
         /// <summary>
         /// 将武器射击的本地Action进行广播
+        /// 其实可以让武器自己广播
         /// </summary>
         /// <param name="idx"></param>
         void OnWeaponFire(int idx)
@@ -117,10 +121,8 @@ using Event;
         public override void SetActive(bool isActive)
         {
             m_IsActive = isActive;
-            if (m_IsActive) {
-            } else {
+            if (!m_IsActive) {
                 if (CurrentFirearmIndex != -1) {
-                    OnEquipFirearm(false);
                     m_CurrentFirearmIndex.Value = -1;
                 }
                 if (m_ReloadCoroutine != null) {
@@ -163,22 +165,9 @@ using Event;
 
         #region Equip
 
-        void OnEquipFirearm(bool isEquip)
-        {
-            if (isEquip) {
-                m_CurrentFirearm.Attach(RightHandAttach);
-                m_CurrentFirearm.OnEquip();
-            } else {
-                m_CurrentFirearm.Attach(BackAttach);
-                m_CurrentFirearm.OnUnequip();
-            }
-        }
-
-
         [ServerRpc]
         void TrySwitchFirearmServerRpc(int idx)
         {
-            print($"ClientId: {OwnerClientId} TrySwitchFirearmServerRpc");
             // 按下当前武器对应数字键收回武器
             if (CurrentFirearmIndex == idx) {
                 m_CurrentFirearmIndex.Value = -1;
@@ -192,12 +181,6 @@ using Event;
                 return;
             }
 
-            // 收回当前武器
-            if (m_CurrentFirearm != null) {
-                OnEquipFirearm(false);
-            }
-
-            int oldIdx = CurrentFirearmIndex;
             m_CurrentFirearmIndex.Value = idx;
         }
 
@@ -226,15 +209,42 @@ using Event;
             int ammoId = m_CurrentFirearm.AmmoId;
             m_CurrentFirearm.StartReload();
             PutAmmoIntoInventory(ammoId, amount);
+            m_ReloadCoroutine = StartCoroutine(ReloadCoroutine(m_CurrentFirearm.ReloadTime));
+            StartReloadClientRpc();
+        }
+
+        [ClientRpc]
+        void EndReloadClientRpc()
+        {
+            if(!IsOwner) {
+                return;
+            }
+            EventManager.Broadcast(new WeaponEndReloadEvent {
+                WeaponIdx = CurrentFirearmIndex
+            });
+        }
+        [ClientRpc]
+        void StartReloadClientRpc()
+        {
+            if (!IsOwner) {
+                return;
+            }
+            EventManager.Broadcast(new WeaponStartReloadEvent {
+                WeaponIdx = CurrentFirearmIndex
+            });
+            m_RuntimeData.AniParameter.Reload = true;
         }
 
         public override void TryReload()
         {
+            if (CurrentFirearmIndex == -1) {
+                return;
+            }
+            if (!m_CurrentFirearm.ValidReload() || m_Inventory.GetAmount(m_CurrentFirearm.AmmoId) <= 0) {
+                return;
+            }
             TryReloadServerRpc();
-            EventManager.Broadcast(new WeaponStartReloadEvent {
-                WeaponIdx = CurrentFirearmIndex
-            });
-            m_ReloadCoroutine = StartCoroutine(ReloadCoroutine(m_CurrentFirearm.ReloadTime));
+            
         }
 
         // 当通过在UI中拖动子弹到武器槽时执行
@@ -261,12 +271,13 @@ using Event;
         }
         IEnumerator ReloadCoroutine(float time)
         {
+            m_Reloading.Value = true;
             yield return new WaitForSeconds(time);
             m_CurrentFirearm.EndReload(GetLoadAmmo(m_CurrentFirearm));
-            EventManager.Broadcast(new WeaponEndReloadEvent {
-                WeaponIdx = CurrentFirearmIndex
-            });
+            m_Reloading.Value = false;
+
             m_ReloadCoroutine = null;
+            EndReloadClientRpc();
         }
 
         #endregion
@@ -274,24 +285,41 @@ using Event;
         // 非Owner检测到武器更换时同步更换
         void OnWeaponChanged(int pre, int cur)
         {
-            if(!IsServer && m_CurrentFirearm != null) {
-                OnEquipFirearm(false);
-            }
-            if(CurrentFirearmIndex == -1) {
-                m_CurrentFirearm.EndFire();
-                m_CurrentFirearm = null;
-            } else {
-                m_CurrentFirearm = m_Loadout.GetWeapon(cur);
-            }
-            OnEquipFirearm(CurrentFirearmIndex != -1);
-            if (IsOwner) {
-                EventManager.Broadcast(new WeaponChangedEvent { OldIdx = pre, NewIdx = CurrentFirearmIndex });
+            // m_ReloadCoroutine修改起来太麻烦了，后续通过WeaponStateManager同步
+            if (IsServer) {
+                if(m_CurrentFirearm != null) {
+                    m_CurrentFirearm.Attach(BackAttach);
+                }
+
                 if (m_ReloadCoroutine != null) {
                     StopCoroutine(m_ReloadCoroutine);
                     m_ReloadCoroutine = null;
                 }
             }
-            
-        }    
+
+            if(IsServer || IsOwner) {
+                if (CurrentFirearmIndex == -1) {
+                    if (IsOwner) {
+                        m_CurrentFirearm.EndFire();
+                        m_CurrentFirearm.OnUnequip();
+                    }
+                    m_CurrentFirearm = null;
+                } else {
+                    m_CurrentFirearm = m_Loadout.GetWeapon(cur);
+                    if (IsServer) {
+                        if (m_CurrentFirearm != null) {
+                            m_CurrentFirearm.Attach(RightHandAttach);
+                        }
+                    }
+                    if (IsOwner) {
+                        m_CurrentFirearm.OnEquip();
+                    }
+                }
+            }
+
+            if (IsOwner) {
+                EventManager.Broadcast(new WeaponChangedEvent { OldIdx = pre, NewIdx = CurrentFirearmIndex });
+            }
+        }
     }
 }

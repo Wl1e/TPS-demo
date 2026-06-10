@@ -13,11 +13,13 @@ namespace TPSDemo.FSM
         {
             m_StateMachine.WantJump = false;
             m_StateMachine.RuntimeData.AniParameter.IsClimb = true;
+            m_StateMachine.RuntimeData.AniParameter.DisableAimLayer = true;
         }
 
         public override void OnExit()
         {
             m_StateMachine.RuntimeData.AniParameter.IsClimb = false;
+            m_StateMachine.RuntimeData.AniParameter.DisableAimLayer = false;
         }
 
         public override void Update()

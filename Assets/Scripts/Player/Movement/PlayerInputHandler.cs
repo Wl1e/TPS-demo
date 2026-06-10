@@ -85,7 +85,7 @@ public class PlayerInputHandler : NetworkBehaviour
 
     bool ValidPlayerInput()
     {
-        return Cursor.lockState == CursorLockMode.Locked && !m_InputBlock.IsLockd() && !m_OpenInventory;
+        return !m_InputBlock.IsLockd() && !m_OpenInventory;
     }
 
     public void SetActive(bool active)

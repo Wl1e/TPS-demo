@@ -33,6 +33,7 @@ namespace TPSDemo
         Loadout m_Loadout;
         ClimbContoller m_ClimbContoller;
         CombatController m_CombatController;
+        AnimatorController m_AnimatorController;
 
         CountDownLatch m_CursorBlock = new CountDownLatch();
 
@@ -44,6 +45,10 @@ namespace TPSDemo
         /// 生命
         /// </summary>
         public Health Health => m_Health;
+        /// <summary>
+        /// 相机控制
+        /// </summary>
+        public CameraController CameraController => m_CameraController;
         /// <summary>
         /// 枪械控制
         /// </summary>
@@ -72,6 +77,12 @@ namespace TPSDemo
         /// 攀爬控制
         /// </summary>
         public ClimbContoller ClimbController => m_ClimbContoller;
+
+        /// <summary>
+        /// 动画控制
+        /// </summary>
+        public AnimatorController AnimatorController => m_AnimatorController;
+
         public CharacterController CharacterController => m_CharacterController;
         /// <summary>
         /// 状态机
@@ -108,6 +119,7 @@ namespace TPSDemo
             m_Actor = GetComponent<Actor>();
             m_InputHandle = GetComponent<PlayerInputHandler>();
             m_ClimbContoller = GetComponentInChildren<ClimbContoller>();
+            m_AnimatorController = GetComponent<AnimatorController>();
 
             // Combat
             m_AimController = GetComponentInChildren<AimController>();

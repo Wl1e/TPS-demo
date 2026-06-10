@@ -20,6 +20,14 @@ using FSM;
         [HideInInspector] public bool WantSprint = false;
         [HideInInspector] public bool WantCrouch = false;
 
+        // 暂时给Mantle调试使用
+        public Vector3 StartPos = Vector3.zero;
+        public Vector3 MidPos = new Vector3(0, 1.8f, 0);
+        public Vector3 EndPos = new Vector3(0.5f, 1.8f, 0);
+        public float NowTime = 0f;
+        public float MidTime = 0.5f;
+        public float EndTime = 0.9f;
+
         void Awake()
         {
             m_Movement = GetComponent<PlayerMovement>();
@@ -154,7 +162,11 @@ using FSM;
             // Ledge
             ledgeState.AddTransition(
                 idleState,
-                new FuncPredicate(() => m_Movement.IsGrounded || !m_PlayerController.ClimbController.CanLedge || ledgeState.FinishMantle)
+                new FuncPredicate(
+                    () => m_Movement.IsGrounded ||
+                    (!m_PlayerController.ClimbController.CanLedge && !ledgeState.InMantle) ||
+                    ledgeState.FinishMantle
+                )
             );
             //ledgeState.AddTransition(
             //    idleState,

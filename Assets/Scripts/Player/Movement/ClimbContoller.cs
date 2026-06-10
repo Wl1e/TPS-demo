@@ -39,7 +39,8 @@ namespace TPSDemo
 
         void Awake()
         {
-            m_MinClimbDot = Mathf.Cos(MaxClimbDeg * Mathf.Deg2Rad);
+            // 有时候因为浮点数误差导致upDot计算有误，留0.001f
+            m_MinClimbDot = Mathf.Cos(MaxClimbDeg * Mathf.Deg2Rad) + 0.001f;
         }
 
         private void Start()
@@ -59,7 +60,6 @@ namespace TPSDemo
 
             CanClimb = BodyCheck && HeadCheck;
             CanLedge = BodyCheck && TopCheck && !HeadCheck;
-
         }
 
         Vector3 GetTopRayOrigin() => m_Controller.transform.position + Vector3.up * (m_Controller.height + TopRayHeight) +

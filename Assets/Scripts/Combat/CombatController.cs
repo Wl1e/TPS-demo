@@ -116,9 +116,11 @@ namespace TPSDemo
         [ServerRpc]
         void ActiveSlotServerRpc(Slot slot)
         {
+            print("TryActive: " + slot);
             if (!m_Lookup[slot].ValidActive()) {
                 return;
             }
+            print("Active: " + slot);
             m_ActiveSlot.Value = slot;
             //foreach (var entry in m_Lookup) {
             //    entry.Value.SetActive(CurrentActiveSlot == entry.Key);
@@ -128,7 +130,6 @@ namespace TPSDemo
         void ActiveSlot(Slot slot)
         {
             ActiveSlotServerRpc(slot);
-            
         }
 
         void SlotExited(Slot slot)
@@ -151,6 +152,7 @@ namespace TPSDemo
 
         void TryEquipFirearm(int index)
         {
+            print("TryEquipFirearm");
             if (!m_PlayerController.Loadout.HasWeapon(index)) {
                 ActiveSlot(Slot.Unarmed);
                 return;
@@ -199,10 +201,11 @@ namespace TPSDemo
         }
         void OnSlotChanged(Slot pre, Slot cur)
         {
-            foreach (var entry in m_Lookup) {
-                entry.Value.SetActive(CurrentActiveSlot == entry.Key);
-            }
+            print("OnSlotChanged");
             if(IsOwner) {
+                foreach (var entry in m_Lookup) {
+                    entry.Value.SetActive(CurrentActiveSlot == entry.Key);
+                }
                 EndTime = Time.time + EquipTime;
                 m_PlayerRuntimeData.ActiveSlot = CurrentActiveSlot;
                 m_PlayerRuntimeData.AniParameter.CombatSlot = (int)CurrentActiveSlot;

@@ -39,9 +39,11 @@ namespace TPSDemo
         [Tooltip("攻击音效")]
         public AudioClip HitSfx;
 
-        public override void OnNetworkDespawn()
+        public override void OnNetworkSpawn()
         {
+            base.OnNetworkSpawn();
             if (IsServer) {
+                print("Set max life time: " + MaxLifeTime);
                 Destroy(gameObject, MaxLifeTime);
             }
         }

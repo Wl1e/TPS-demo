@@ -23,6 +23,10 @@ namespace TPSDemo
         public MovementModifier Process()
         {
             var normal = ClimbController.ClimbNormal.normalized;
+            print($"ClimbAbility Get normal: {normal}");
+            if(normal == Vector3.zero) {
+                return new MovementModifier();
+            }
             var lastNormal = ClimbController.LastNormal.normalized;
             var rawInput = m_Movement.RawInput;
             var YAxis = Vector3.ProjectOnPlane(Vector3.up, normal).normalized;

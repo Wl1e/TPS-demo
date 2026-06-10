@@ -109,10 +109,12 @@ namespace TPSDemo
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            if(IsOwner) {
-                m_FireMechanism.OnShouldFire += TryFire;
+            if(IsServer || IsOwner) {
                 m_AmmoHandler.Initialize(this);
                 m_Behaviour.Initialize(this);
+            }
+            if(IsOwner) {
+                m_FireMechanism.OnShouldFire += TryFire;
             }
         }
 
@@ -135,12 +137,12 @@ namespace TPSDemo
         /// Server端 发射逻辑（扣子弹、同时其他Client副本播放特效）
         /// </summary>
         [ServerRpc]
-        void FireServerRpc()
+        void FireServerRpc(Vector3 dir)
         {
             if (!m_AmmoHandler.ComsumeAmmo()) {
                 return;
             }
-            m_Behaviour.Shoot(Vector3.Normalize(m_Target.position - Muzzle.position), OwnerClientId);
+            m_Behaviour.Shoot(dir, OwnerClientId);
             FireClientRpc();
         }
 
@@ -150,8 +152,8 @@ namespace TPSDemo
         [ClientRpc]
         void FireClientRpc()
         {
-            OnFire?.Invoke();
             if(IsOwner) {
+                OnFire?.Invoke();
                 return;
             }
             PlayAudioAndMuzzleFlash();
@@ -178,7 +180,7 @@ namespace TPSDemo
             if (!m_AmmoHandler.EnoughAmmo()) {
                 return;
             }
-            FireServerRpc();
+            FireServerRpc(Vector3.Normalize(m_Target.position - Muzzle.position));
 
             PlayAudioAndMuzzleFlash();
         }
@@ -188,7 +190,6 @@ namespace TPSDemo
         public void EndReload(int ammo) => m_AmmoHandler.EndReload(ammo);
 
         public void ClearAmmo() => m_AmmoHandler.ComsumeAmmo(CurrentAmmo);
-        public void SetOffset(Vector3 offset) => transform.localPosition = offset;
 
         public void AddAttachment(AttachmentBase attachment) => m_AttachmentManager.AddAttachment(attachment);
         public void RemoveAttachment(AttachmentBase attachment) => m_AttachmentManager.RemoveAttachment(attachment);

@@ -28,13 +28,16 @@ namespace TPSDemo
         public void StartReload();
         public void EndReload(int amount);
         public void ClearAmmo();
-        public void SetOffset(Vector3 offset);
         public void AddAttachment(AttachmentBase attachment);
         public void RemoveAttachment(AttachmentBase attachment);
         public Dictionary<IAttachment.AttachmentSlot, IAttachment> Attachments { get; }
         public float GetScopeRatio();
         public void OnEquip();
         public void OnUnequip();
+        /// <summary>
+        /// 必须由Server端调用
+        /// </summary>
+        /// <param name="node"></param>
         public void Attach(AttachableNode node);
         public NetworkObject GetNO();
     }

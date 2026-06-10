@@ -23,7 +23,6 @@ using Event;
 
         // Events
         public BoolEvent OnTryAimEvent;
-        public BoolEvent OnFireEvent;
 
         // Weapon
         CombatController m_CombatController;
@@ -39,6 +38,8 @@ using Event;
         Vector3 m_CurrentRecoilOffset;
         Vector3 m_TargetRecoilOffset;
 
+        public IWeapon CurrentWeapon = null;
+
         /// <summary>
         /// 瞄准状态
         /// </summary>
@@ -46,10 +47,12 @@ using Event;
 
         PlayerController m_PlayerController;
         PlayerRuntimeData m_RuntimeData;
+        CameraController m_CameraController;
 
         void Start()
         {
             m_PlayerController = GetComponentInParent<PlayerController>();
+            m_CameraController = m_PlayerController.CameraController;
             m_RuntimeData = m_PlayerController.RuntimeData;
             m_CombatController = GetComponent<CombatController>();
             m_WeaponManager = GetComponent<WeaponManager>();
@@ -59,7 +62,6 @@ using Event;
 
         private void OnEnable()
         {
-            OnFireEvent.RegisterListener(HandleWeaponFired);
             OnTryAimEvent.RegisterListener(HandleTryAim);
             EventManager.AddListener<WeaponChangedEvent>(HandleChangeWeapon);
             EventManager.AddListener<WeaponFiredEvent>(OnFired);
@@ -67,7 +69,6 @@ using Event;
 
         private void OnDisable()
         {
-            OnFireEvent.UnregisterListener(HandleWeaponFired);
             OnTryAimEvent.UnregisterListener(HandleTryAim);
             EventManager.RemoveListener<WeaponChangedEvent>(HandleChangeWeapon);
             EventManager.RemoveListener<WeaponFiredEvent>(OnFired);
@@ -79,20 +80,6 @@ using Event;
                 UpdateAimPositon();
             } else {
 
-            }
-        }
-
-        private void LateUpdate()
-        {
-            if (IsOwner) {
-                if (IsAiming) {
-                    m_CurrentRecoilOffset = Vector3.Lerp(m_CurrentRecoilOffset, m_TargetRecoilOffset, RecoilKickSpeed * Time.deltaTime);
-                    m_TargetRecoilOffset = Vector3.Lerp(m_TargetRecoilOffset, Vector3.zero, RecoilReturnSpeed * Time.deltaTime);
-                    VisualAimPointTransform.position = m_VisualAimPosition + m_CurrentRecoilOffset;
-                    VisualAimPointTransform.gameObject.SetActive(true);
-                } else {
-                    VisualAimPointTransform.gameObject.SetActive(false);
-                }
             }
         }
 
@@ -115,6 +102,7 @@ using Event;
             }
             // TODO 如果距离过近，会有IK动画问题，引入visualAimBlendDistance
             m_VisualAimPosition = targetPosition;
+            VisualAimPointTransform.position = m_VisualAimPosition;
         }
 
         bool ValidAim()
@@ -136,31 +124,33 @@ using Event;
             }
             m_RuntimeData.IsAiming = IsAiming;
             m_RuntimeData.AniParameter.IsAim = IsAiming;
+            if(IsAiming) {
+                VisualAimPointTransform.gameObject.SetActive(true);
+            } else {
+                VisualAimPointTransform.gameObject.SetActive(false);
+            }
+            m_PlayerController.AnimatorController.SetAimWeight(IsAiming ? 1f : 0f);
             EventManager.Broadcast(new AimEvent { IsAiming = IsAiming });
         }
 
-        void HandleWeaponFired(bool fire)
-        {
-        }
         void HandleChangeWeapon(WeaponChangedEvent evt)
         {
-
+            CurrentWeapon = m_WeaponManager.CurrentFirearm;
         }
 
         void ApplyRecoil()
         {
-            IWeapon weapon = m_WeaponManager.CurrentFirearm;
-            if (weapon is null) {
+            if (CurrentWeapon is null) {
                 return;
             }
-            float Frequency = weapon.RecoilFrequency;
-            float Force = weapon.RecoilForce;
-            Vector3 recoil = new Vector3(
+            float Frequency = CurrentWeapon.RecoilFrequency;
+            float Force = CurrentWeapon.RecoilForce;
+            // TODO 后续可以将后坐力交给Weapon自己提供
+            Vector2 recoil = new Vector2(
                 Mathf.Sin(Time.time * Frequency) * Force,
-                (Mathf.Sin(Time.time * Frequency * 2f) * 0.5f + 0.5f) * Force,
-                0
+                -(Mathf.Sin(Time.time * Frequency * 2f) * 0.5f + 0.5f) * Force
             );
-            m_TargetRecoilOffset += recoil;
+            m_CameraController.AddRecoil(recoil);
         }
 
         void OnFired(WeaponFiredEvent evt)

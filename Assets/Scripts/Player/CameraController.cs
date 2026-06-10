@@ -7,6 +7,7 @@ using UnityEngine;
 namespace TPSDemo
 {
     using Event;
+    using UniVRM10;
 
     public class CameraController : NetworkBehaviour
     {
@@ -170,6 +171,12 @@ namespace TPSDemo
             }
 
             print("Change Mode: " + modeName);
+        }
+
+        public void AddRecoil(Vector2 force)
+        {
+            m_HorizontalAngle += force.x;
+            m_VerticalAngle = Mathf.Clamp(m_VerticalAngle + force.y * Sensitivity, -VerticalLookLimit, VerticalLookLimit);
         }
     }
 }
