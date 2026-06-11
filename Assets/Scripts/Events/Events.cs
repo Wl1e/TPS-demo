@@ -58,7 +58,7 @@ namespace TPSDemo.Event
     public class PickupItemEvent: InternalEvent
     {  public GameObject Item; }
 
-    public class TaskCheckEvent: InternalEvent
+    public class QuestUpdateEvent: InternalEvent
     { }
 
     #region Loadout

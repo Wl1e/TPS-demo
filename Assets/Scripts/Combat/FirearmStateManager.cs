@@ -16,10 +16,6 @@ public class FirearmStateManager : MonoBehaviour
 
     private float m_Duration = 0f;
 
-    // 武器切换使用
-    int m_NextFirearmIdx = -1;
-    IWeapon m_Weapon;
-
     private FirearmState m_CurrentState = FirearmState.None;
     public FirearmState CurrentState => m_CurrentState;
 

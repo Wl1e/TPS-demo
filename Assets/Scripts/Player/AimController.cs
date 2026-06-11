@@ -129,7 +129,7 @@ using Event;
             } else {
                 VisualAimPointTransform.gameObject.SetActive(false);
             }
-            m_PlayerController.AnimatorController.SetAimWeight(IsAiming ? 1f : 0f);
+            m_PlayerController.AnimatorController.SetAimWeight(IsAiming);
             EventManager.Broadcast(new AimEvent { IsAiming = IsAiming });
         }
 

@@ -34,6 +34,7 @@ namespace TPSDemo
         ClimbContoller m_ClimbContoller;
         CombatController m_CombatController;
         AnimatorController m_AnimatorController;
+        QuestController m_QuestController;
 
         CountDownLatch m_CursorBlock = new CountDownLatch();
 
@@ -90,6 +91,11 @@ namespace TPSDemo
         public PlayerStateMachine StateMachine => m_FSM;
 
         /// <summary>
+        /// 任务控制
+        /// </summary>
+        public QuestController QuestController => m_QuestController;
+
+        /// <summary>
         /// 相机根节点
         /// </summary>
         public Transform CameraRoot;
@@ -120,6 +126,7 @@ namespace TPSDemo
             m_InputHandle = GetComponent<PlayerInputHandler>();
             m_ClimbContoller = GetComponentInChildren<ClimbContoller>();
             m_AnimatorController = GetComponent<AnimatorController>();
+            m_QuestController = GetComponent<QuestController>();
 
             // Combat
             m_AimController = GetComponentInChildren<AimController>();

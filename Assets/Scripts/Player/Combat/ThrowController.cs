@@ -42,7 +42,7 @@ namespace TPSDemo
             m_TrajectoryLine.CollisionMask = -1;
         }
 
-        private void OnDestroy()
+        public override void OnDestroy()
         {
             m_Inventory.OnInventoryUpdate -= CheckGrenade;
         }

@@ -132,8 +132,6 @@ namespace TPSDemo
                 SetBool("Ground", curData.IsGrounded);
             }
 
-
-
             // move
             if (m_LastParameter.IsSprint != curData.IsSprint) {
                 SetBool("Sprint", curData.IsSprint);
@@ -202,39 +200,35 @@ namespace TPSDemo
         public void SetSpineOffset(Vector3 offset)
         { }
 
-        //void SetAimWeight(bool IsAiming)
-        //{
-        //    float targetAimWeight = IsAiming ? 1.0f : 0.0f;
-        //    Vector3 targetSpineOffset = GetFirearmSpineOffset();
-        //    if (m_RiggingCoroutine != null) {
-        //        StopCoroutine(m_RiggingCoroutine);
-        //        m_RiggingCoroutine = null;
-        //    }
-        //    if (m_PlayerRuntimeData.ActiveSlot == Combat.Slot.Firearm) {
-        //        SetAimLayerWeight(IsAiming ? 1 : 0);
-        //    } else if (m_PlayerRuntimeData.ActiveSlot == Combat.Slot.Throwable) {
-        //    }
-        //    m_RiggingCoroutine = StartCoroutine(AimRiggingCoroutine(targetAimWeight, targetSpineOffset));
-        //}
-
-        public void SetAimWeight(float weight)
+        public void SetAimWeight(bool IsAiming)
         {
-            float startAimWeight = m_Rig.weight;
-            Vector3 startSpineOffset = AimConstraint.data.offset;
-            Vector3 targetSpineOffset = startSpineOffset + GetFirearmSpineOffset();
-            float elapsedTime = 0;
-
-            while (elapsedTime < RigLerpDuration) {
-                elapsedTime += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsedTime / RigLerpDuration);
-                m_Rig.weight = Mathf.Lerp(startAimWeight, weight, t);
-                AimConstraint.data.offset = Vector3.Lerp(startSpineOffset, targetSpineOffset, t);
+            float targetAimWeight = IsAiming ? 1.0f : 0.0f;
+            Vector3 targetSpineOffset = AimConstraint.data.offset + GetFirearmSpineOffset();
+            if (m_RiggingCoroutine != null) {
+                StopCoroutine(m_RiggingCoroutine);
+                m_RiggingCoroutine = null;
             }
-
-            m_Rig.weight = weight;
-            AimConstraint.data.offset = targetSpineOffset;
-            m_RiggingCoroutine = null;
+            m_RiggingCoroutine = StartCoroutine(AimRiggingCoroutine(targetAimWeight, targetSpineOffset));
         }
+
+        //public void SetAimWeight(float weight)
+        //{
+        //    float startAimWeight = m_Rig.weight;
+        //    Vector3 startSpineOffset = AimConstraint.data.offset;
+        //    Vector3 targetSpineOffset = startSpineOffset + GetFirearmSpineOffset();
+        //    float elapsedTime = 0;
+
+        //    while (elapsedTime < RigLerpDuration) {
+        //        elapsedTime += Time.deltaTime;
+        //        float t = Mathf.Clamp01(elapsedTime / RigLerpDuration);
+        //        m_Rig.weight = Mathf.Lerp(startAimWeight, weight, t);
+        //        AimConstraint.data.offset = Vector3.Lerp(startSpineOffset, targetSpineOffset, t);
+        //    }
+
+        //    m_Rig.weight = weight;
+        //    AimConstraint.data.offset = targetSpineOffset;
+        //    m_RiggingCoroutine = null;
+        //}
 
         Vector3 GetFirearmSpineOffset()
         {
