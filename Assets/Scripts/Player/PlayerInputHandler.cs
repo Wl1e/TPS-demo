@@ -7,22 +7,23 @@ public class PlayerInputHandler : NetworkBehaviour
 {
     CountDownLatch m_InputBlock = new CountDownLatch();
     bool m_OpenInventory = false;
-    [SerializeField] private Vector2Event m_OnMoveInput;
-    [SerializeField] private GameEvent m_OnJumpInput;
-    [SerializeField] private GameEvent m_OnSprintInput;
-    [SerializeField] private GameEvent m_OnCrouchInput;
-    [SerializeField] private Vector2Event m_OnLookInput;
-    [SerializeField] private IntEvent m_OnNumberInput;
-    [SerializeField] private IntEvent m_OnScrollInput;
-    [SerializeField] private BoolEvent m_OnFireInput;
-    [SerializeField] private BoolEvent m_OnAimInput;
-    [SerializeField] private GameEvent m_OnReloadInput;
-    [SerializeField] private GameEvent m_OnInteractionInput;
-    [SerializeField] private GameEvent m_OnInventoryInput;
-    [SerializeField] private GameEvent m_OnGrenadeInput;
-    [SerializeField] private GameEvent m_OnWeapon1Input;
-    [SerializeField] private GameEvent m_OnWeapon2Input;
-    [SerializeField] private BoolEvent m_OnActiveCursorInput;
+    [SerializeField] private Vector2Event m_MoveInput;
+    [SerializeField] private GameEvent m_JumpInput;
+    [SerializeField] private GameEvent m_SprintInput;
+    [SerializeField] private GameEvent m_CrouchInput;
+    [SerializeField] private Vector2Event m_LookInput;
+    [SerializeField] private IntEvent m_NumberInput;
+    [SerializeField] private IntEvent m_ScrollInput;
+    [SerializeField] private BoolEvent m_FireInput;
+    [SerializeField] private BoolEvent m_AimInput;
+    [SerializeField] private GameEvent m_ReloadInput;
+    [SerializeField] private GameEvent m_InteractionInput;
+    [SerializeField] private GameEvent m_InventoryInput;
+    [SerializeField] private GameEvent m_GrenadeInput;
+    [SerializeField] private GameEvent m_Weapon1Input;
+    [SerializeField] private GameEvent m_Weapon2Input;
+    [SerializeField] private BoolEvent m_ActiveCursorInput;
+    [SerializeField] private GameEvent m_QuestPanelInput;
 
     public override void OnNetworkSpawn()
     {
@@ -38,7 +39,7 @@ public class PlayerInputHandler : NetworkBehaviour
         }
     }
 
-    void RegisterInputAction()
+    private void RegisterInputAction()
     {
         InputActionMap map = InputSystem.actions.FindActionMap("Player");
         map.FindAction("Move").performed += OnMove;
@@ -59,9 +60,10 @@ public class PlayerInputHandler : NetworkBehaviour
         map.FindAction("Weapon1").performed += OnWeapon1;
         map.FindAction("Weapon2").performed += OnWeapon2;
         map.FindAction("ActiveCursor").performed += OnActiveCursor;
+        map.FindAction("Quest").performed += OnQuest;
     }
 
-    void UnregisterInputAction()
+    private void UnregisterInputAction()
     {
         InputActionMap map = InputSystem.actions.FindActionMap("Player");
         map.FindAction("Move").performed -= OnMove;
@@ -81,9 +83,10 @@ public class PlayerInputHandler : NetworkBehaviour
         map.FindAction("Weapon1").performed -= OnWeapon1;
         map.FindAction("Weapon2").performed -= OnWeapon2;
         map.FindAction("ActiveCursor").performed -= OnActiveCursor;
+        map.FindAction("Quest").performed -= OnQuest;
     }
 
-    bool ValidPlayerInput()
+    private bool ValidPlayerInput()
     {
         return !m_InputBlock.IsLockd() && !m_OpenInventory;
     }
@@ -97,121 +100,126 @@ public class PlayerInputHandler : NetworkBehaviour
         }
     }
 
-#region
-    void OnMove(InputAction.CallbackContext ctx)
+    #region
+    private void OnMove(InputAction.CallbackContext ctx)
     {
         if(!ValidPlayerInput()) {
             return;
         }
         Vector2 moveValue = ctx.ReadValue<Vector2>();
-        m_OnMoveInput.Raise(moveValue);
+        m_MoveInput.Raise(moveValue);
     }
-    void OnJump(InputAction.CallbackContext ctx)
+    private void OnJump(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
             return;
         }
-        m_OnJumpInput.Raise();
+        m_JumpInput.Raise();
     }
-    void OnSprint(InputAction.CallbackContext ctx)
+    private void OnSprint(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
             return;
         }
-        m_OnSprintInput.Raise();
+        m_SprintInput.Raise();
     }
-    void OnCrouch(InputAction.CallbackContext ctx)
+    private void OnCrouch(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
             return;
         }
-        m_OnCrouchInput.Raise();
+        m_CrouchInput.Raise();
     }
-    void OnLook(InputAction.CallbackContext ctx)
+    private void OnLook(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
             return;
         }
         Vector2 lookValue = ctx.ReadValue<Vector2>();
-        m_OnLookInput.Raise(lookValue);
+        m_LookInput.Raise(lookValue);
     }
 
-    void OnScroll(InputAction.CallbackContext ctx)
+    private void OnScroll(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
             return;
         }
-        m_OnScrollInput.Raise(Mathf.FloorToInt(ctx.ReadValue<Vector2>().y));
+        m_ScrollInput.Raise(Mathf.FloorToInt(ctx.ReadValue<Vector2>().y));
     }
-    void OnFire(InputAction.CallbackContext ctx)
+    private void OnFire(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
             return;
         }
-        m_OnFireInput.Raise(ctx.ReadValueAsButton());
+        m_FireInput.Raise(ctx.ReadValueAsButton());
     }
-    void OnAimPressed(InputAction.CallbackContext ctx)
+    private void OnAimPressed(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
             return;
         }
-        m_OnAimInput.Raise(true);
+        m_AimInput.Raise(true);
     }
-    void OnAimReleased(InputAction.CallbackContext ctx)
+    private void OnAimReleased(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
             return;
         }
-        m_OnAimInput.Raise(false);
+        m_AimInput.Raise(false);
     }
-    void OnReload(InputAction.CallbackContext ctx)
+    private void OnReload(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
             return;
         }
-        m_OnReloadInput.Raise();
+        m_ReloadInput.Raise();
     }
-    void OnInteraction(InputAction.CallbackContext ctx)
+    private void OnInteraction(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
             return;
         }
-        m_OnInteractionInput.Raise();
+        m_InteractionInput.Raise();
     }
-    void OnInventory(InputAction.CallbackContext ctx)
+    private void OnInventory(InputAction.CallbackContext ctx)
     {
         m_OpenInventory = !m_OpenInventory;
-        m_OnInventoryInput.Raise();
+        m_InventoryInput.Raise();
     }
-    void OnGrenade(InputAction.CallbackContext ctx)
+    private void OnGrenade(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
             return;
         }
-        m_OnGrenadeInput.Raise();
-    }
-
-    void OnWeapon1(InputAction.CallbackContext ctx)
-    {
-        if (!ValidPlayerInput()) {
-            return;
-        }
-        m_OnWeapon1Input.Raise();
-    }
-    void OnWeapon2(InputAction.CallbackContext ctx)
-    {
-        if (!ValidPlayerInput()) {
-            return;
-        }
-        m_OnWeapon2Input.Raise();
+        m_GrenadeInput.Raise();
     }
 
-    void OnActiveCursor(InputAction.CallbackContext ctx)
+    private void OnWeapon1(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
             return;
         }
-        m_OnActiveCursorInput.Raise(ctx.ReadValueAsButton());
+        m_Weapon1Input.Raise();
+    }
+    private void OnWeapon2(InputAction.CallbackContext ctx)
+    {
+        if (!ValidPlayerInput()) {
+            return;
+        }
+        m_Weapon2Input.Raise();
+    }
+
+    private void OnActiveCursor(InputAction.CallbackContext ctx)
+    {
+        if (!ValidPlayerInput()) {
+            return;
+        }
+        m_ActiveCursorInput.Raise(ctx.ReadValueAsButton());
+    }
+
+    private void OnQuest(InputAction.CallbackContext obj)
+    {
+        m_QuestPanelInput.Raise();
     }
     #endregion
 }

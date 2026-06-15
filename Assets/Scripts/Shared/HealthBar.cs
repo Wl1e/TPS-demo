@@ -3,15 +3,16 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    // 血条背景
+    [Tooltip("血条背景")]
     public Image Background;
-    // 延迟血条
+    [Tooltip("延迟血条")]
     public Image DelayedHealth;
-    // 血条
+    [Tooltip("血条")]
     public Image Bar;
 
-    // 延迟血条的插值速度
-    public float Speed;
+    [Tooltip("延迟事件")]
+    public float DelayTime = 0.2f;
+    private float DelaySpeed;
     // 延迟血量
     protected float m_DelayHealth;
     // 当前血量
@@ -35,7 +36,7 @@ public class HealthBar : MonoBehaviour
     void Update()
     {
         if (m_DelayHealth != m_CurrentHealth) {
-            var value = Mathf.Lerp(m_DelayHealth, m_CurrentHealth, Speed);
+            var value = Mathf.SmoothDamp(m_DelayHealth, m_CurrentHealth, ref DelaySpeed, DelayTime);
             SetProgress(DelayedHealth, value);
             m_DelayHealth = value;
         }

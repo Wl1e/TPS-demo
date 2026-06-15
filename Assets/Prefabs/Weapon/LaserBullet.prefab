@@ -155,8 +155,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7763194973799543073}
   - component: {fileID: 1378439714896903789}
-  - component: {fileID: 8312534977164171955}
   - component: {fileID: 2275712694503643936}
+  - component: {fileID: 8312534977164171955}
   m_Layer: 21
   m_Name: LaserBullet
   m_TagString: Untagged
@@ -206,37 +206,6 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &8312534977164171955
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9106354779856956537}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7cc4a20047d7fda4a98923da27876947, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LaserBulletController
-  ShowTopMostFoldoutHeaderGroup: 1
-  Owner: {fileID: 0}
-  Damage: 40
-  Speed: 0
-  HitLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  MaxLifeTime: 3
-  DestroyOnHit: 0
-  HitFlashPrefab: {fileID: 0}
-  HitSfx: {fileID: 0}
-  MaxDistance: 100
-  HitLayer:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  LaserWidth: 0.1
-  LaserColor: {r: 0, g: 5.3403134, b: 3.0760844, a: 1}
-  LaserOrigin: {fileID: 7443320598877827934}
-  Laser: {fileID: 8042813861973404442}
 --- !u!114 &2275712694503643936
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -283,3 +252,30 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 0
   SlerpPosition: 0
+--- !u!114 &8312534977164171955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9106354779856956537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cc4a20047d7fda4a98923da27876947, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LaserBulletController
+  ShowTopMostFoldoutHeaderGroup: 1
+  Owner: {fileID: 0}
+  Damage: 40
+  Speed: 0
+  HitLayerMask:
+    serializedVersion: 2
+    m_Bits: 3072
+  MaxLifeTime: 3
+  DestroyOnHit: 0
+  HitFlashPrefab: {fileID: 0}
+  HitSfx: {fileID: 0}
+  MaxDistance: 100
+  LaserColor: {r: 0, g: 5.3403134, b: 3.0760844, a: 1}
+  LaserOrigin: {fileID: 7443320598877827934}
+  Laser: {fileID: 8042813861973404442}

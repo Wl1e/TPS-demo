@@ -1,9 +1,18 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ShopList", menuName = "Shop/ShopList")]
-public class ShopList: ScriptableObject
+namespace TPSDemo
 {
-    public List<ShopConfig> Configs;
-}
 
+    [CreateAssetMenu(fileName = "ShopList", menuName = "Shop/ShopList")]
+    public class ShopList: GameResource
+    {
+        public List<ShopConfig> Configs;
+        public ShopConfig GetConfig(int shopId)
+        {
+            int idx = Configs.FindIndex(config => config.ShopId == shopId);
+            return idx != -1 ? Configs[idx] : null;
+        }
+    }
+
+}

@@ -4,7 +4,7 @@ namespace TPSDemo
 {
 
     [CreateAssetMenu(menuName = "ItemData/ItemData", fileName = "ItemData")]
-    public class ItemData : ScriptableObject
+    public class ItemData: ScriptableObject
     {
         public int Id;
         public string Name;

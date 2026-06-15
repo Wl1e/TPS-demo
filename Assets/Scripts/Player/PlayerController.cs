@@ -19,6 +19,7 @@ namespace TPSDemo
 
     public class PlayerController : NetworkBehaviour
     {
+        #region component
         PlayerMovement m_Movement;
         CharacterController m_CharacterController;
         PlayerStateMachine m_FSM;
@@ -27,7 +28,7 @@ namespace TPSDemo
         Health m_Health;
         WeaponManager m_WeaponManager;
         Inventory m_Inventory;
-        PlayerEconomy m_Economy;
+        readonly PlayerEconomy m_Economy = new();
         Actor m_Actor;
         PlayerInputHandler m_InputHandle;
         Loadout m_Loadout;
@@ -35,9 +36,13 @@ namespace TPSDemo
         CombatController m_CombatController;
         AnimatorController m_AnimatorController;
         QuestController m_QuestController;
+        InteractionController m_InteractionController;
 
         CountDownLatch m_CursorBlock = new CountDownLatch();
 
+        #endregion
+
+        #region Property
         /// <summary>
         /// 移动控制
         /// </summary>
@@ -103,7 +108,14 @@ namespace TPSDemo
         /// 玩家运行时数据
         /// </summary>
         public PlayerRuntimeData RuntimeData = new PlayerRuntimeData();
+        /// <summary>
+        /// 交互控制
+        /// </summary>
+        public InteractionController InteractionController => m_InteractionController;
 
+        #endregion
+
+        public System.Collections.Generic.List<Vector2Int> Money;
 
         [SerializeField] private GameEvent OnJumpInput;
         [SerializeField] private GameEvent OnSprintInput;
@@ -112,7 +124,7 @@ namespace TPSDemo
         [SerializeField] private BoolEvent OnActiveCursorInput;
         public Action<string, string> OnStateChanged;
 
-        public int ID => m_Actor.Id;
+        public int Id => m_Actor.Id;
         private void Awake()
         {
             m_CharacterController = GetComponent<CharacterController>();
@@ -121,12 +133,12 @@ namespace TPSDemo
             m_CameraController = GetComponent<CameraController>();
             m_Health = GetComponent<Health>();
             m_Inventory = GetComponent<Inventory>();
-            m_Economy = GetComponent<PlayerEconomy>();
             m_Actor = GetComponent<Actor>();
             m_InputHandle = GetComponent<PlayerInputHandler>();
             m_ClimbContoller = GetComponentInChildren<ClimbContoller>();
             m_AnimatorController = GetComponent<AnimatorController>();
             m_QuestController = GetComponent<QuestController>();
+            m_InteractionController = GetComponent<InteractionController>();
 
             // Combat
             m_AimController = GetComponentInChildren<AimController>();
@@ -139,6 +151,10 @@ namespace TPSDemo
             RuntimeData.IsAiming = m_AimController.IsAiming;
             RuntimeData.CameraRoot = CameraRoot;
             RuntimeData.State = PlayerMovementState.Idle;
+
+            foreach(var e in Money) {
+                m_Economy.AddMoney(e.x, e.y);
+            }
         }
 
         public override void OnDestroy()

@@ -10,7 +10,7 @@ namespace TPSDemo
         public float Ratio => m_HealthValue.Ratio();
 
         public Action<GameObject, float> OnTakeDamaged;
-        public Action OnDied;
+        public Action<int> OnDied;
         public Action<float> OnHealed;
 
         bool m_IsDied = false;
@@ -27,17 +27,21 @@ namespace TPSDemo
                     EventManager.Broadcast(new Event.HealthChangedEvent { value = trueDamage });
                 }
             }
-            HandleDeath();
+            HandleDeath(attacker);
         }
 
-        void HandleDeath()
+        void HandleDeath(GameObject attacker)
         {
             if (m_IsDied) {
                 return;
             }
             if (m_HealthValue.IsLow()) {
                 m_IsDied = true;
-                OnDied?.Invoke();
+                int actorId = -1;
+                if(attacker && attacker.TryGetComponent<Actor>(out var actor)) {
+                    actorId = actor.Id;
+                }
+                OnDied?.Invoke(actorId);
             }
         }
     }

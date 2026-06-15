@@ -61,10 +61,11 @@ using Event;
                 }
                 ChangeNode(nextNodeId);
             } else if (option.Action == OptionAction.AcceptQuest) {
+                m_CurrentPlayer.QuestController.AddQuest(int.Parse(option.ActionData));
             } else if (option.Action == OptionAction.OpenShop) {
                 EventManager.Broadcast(
                     new OpenShopEvent {
-                        playerId = m_CurrentPlayer.ID,
+                        playerId = m_CurrentPlayer.Id,
                         ShopId = int.Parse(option.ActionData)
                     }
                 );
@@ -88,7 +89,7 @@ using Event;
         {
             m_State = state;
             if (state == DialogState.Active) {
-                EventManager.Broadcast(new StartDialogEvent { Npc = m_Npc, PlayerId = m_CurrentPlayer.ID });
+                EventManager.Broadcast(new StartDialogEvent { Npc = m_Npc, PlayerId = m_CurrentPlayer.Id });
             } else if (state == DialogState.Interrupted || state == DialogState.Completed) {
                 m_CurrentPlayer.SetInputActive(true, true);
                 m_Npc.StopChat();

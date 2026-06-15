@@ -4,21 +4,27 @@ using UnityEngine.UI;
 
 namespace TPSDemo.UI
 {
-using Event;
+    using Event;
+    using TMPro;
+    using TPSDemo.Combat;
+
     public class ShopUI : MonoBehaviour
     {
-        int m_CurrentShopId = 0;
+        int m_CurrentShopId = 1;
         [SerializeField] Button m_CloseButton;
 
         [SerializeField] GameObject m_ShopSlotPrefab;
         [SerializeField] RectTransform m_SlotRoot;
 
-        List<ShopSlotUI> m_Slots = new List<ShopSlotUI>();
+        [SerializeField] TextMeshProUGUI m_Money;
+
+        private readonly List<ShopSlotUI> m_Slots = new();
         private void Start()
         {
             EventManager.AddListener<ShopOpenEvent>(OnShopOpen);
             EventManager.AddListener<ShopCloseEvent>(OnShopClose);
             EventManager.AddListener<ShopBuyEvent>(OnShopBuy);
+            EventManager.AddListener<PlayerEconomyChangedEvent>(OnEconomyChanged);
             if (m_CloseButton) {
                 m_CloseButton.onClick.AddListener(HandleCloseButtonClick);
             }
@@ -29,6 +35,7 @@ using Event;
             EventManager.RemoveListener<ShopOpenEvent>(OnShopOpen);
             EventManager.RemoveListener<ShopCloseEvent>(OnShopClose);
             EventManager.RemoveListener<ShopBuyEvent>(OnShopBuy);
+            EventManager.RemoveListener<PlayerEconomyChangedEvent>(OnEconomyChanged);
             if (m_CloseButton) {
                 m_CloseButton.onClick.RemoveListener(HandleCloseButtonClick);
             }
@@ -39,6 +46,7 @@ using Event;
         {
             gameObject.SetActive(true);
             m_CurrentShopId = evt.ShopId;
+            m_Money.text = PlayerDataProxy.Instance.GetMoney(m_CurrentShopId).ToString();
             SetShopGoods(m_CurrentShopId);
         }
 
@@ -54,9 +62,21 @@ using Event;
         {
             var slotObj = Instantiate(m_ShopSlotPrefab, m_SlotRoot);
             var slot = slotObj.GetComponent<ShopSlotUI>();
-            slot.Initialize(entry.ItemName, entry.Price, entry.Discount,
-                entry.FinalPrice, entry.Amount, ItemUIUtils.GetItemSprite(entry.ItemId));
+            slot.Initialize(
+                entry.ItemName,
+                entry.Price,
+                entry.Discount,
+                entry.FinalPrice,
+                entry.Amount,
+                ItemUIUtils.GetItemSprite(entry.ItemId)
+            );
             m_Slots.Add(slot);
+            slot.OnClick += (ShopSlotUI slot) => {
+                if(slot.SeldOut) {
+                    return;
+                }
+                EventManager.Broadcast(new TryBuyEvent { Slot = m_Slots.IndexOf(slot) });
+            };
         }
 
         void OnShopClose(ShopCloseEvent evt)
@@ -69,7 +89,18 @@ using Event;
         }
         void OnShopBuy(ShopBuyEvent evt)
         {
+            if(evt.ShopId != m_CurrentShopId) {
+                return;
+            }
+            var slot = m_Slots[evt.Slot];
+            slot.OnSeldOut();
+        }
 
+        private void OnEconomyChanged(PlayerEconomyChangedEvent evt)
+        {
+            if(evt.MoneyId == ResourceManager.Instance.GetResource<ShopList>("Shop").GetConfig(m_CurrentShopId).MoneyId) {
+                m_Money.text = evt.Amount.ToString();
+            }
         }
 
         void HandleCloseButtonClick()

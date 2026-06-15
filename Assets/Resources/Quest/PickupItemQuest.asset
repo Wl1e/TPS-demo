@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7acd9dd3be110ab4ab3711e7a34645bb, type: 3}
+  m_Name: PickupItemQuest
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.QuestConfig
+  QuestId: 2001
+  QuestName: pick up item
+  QuestDescription: To pick up item
+  ObjectiveConfigs:
+  - {fileID: 11400000, guid: 1464e0771f8580847a2067b99d48fc2f, type: 2}
+  QuestReward:
+  - Key: {fileID: 11400000, guid: 05778468d06cb404b8c7e8fb7e9fa0a2, type: 2}
+    Value: 2

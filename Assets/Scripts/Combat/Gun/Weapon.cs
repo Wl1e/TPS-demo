@@ -25,7 +25,7 @@ namespace TPSDemo
         public Transform Muzzle;
 
         // Recoil
-        [Header("Recoil")]
+        [Header("后坐力")]
         [Tooltip("后坐力大小")]
         [SerializeField] private float m_RecoilForce;
         [Tooltip("后坐力频率")]
@@ -74,7 +74,7 @@ namespace TPSDemo
         AttachmentManager m_AttachmentManager;
         AttachableBehaviour m_Attachable;
 
-        // Crosshair
+        [Tooltip("准星")]
         [SerializeField] CrosshairData m_Crosshair;
         public CrosshairData Crosshair => m_Crosshair;
 
@@ -161,18 +161,15 @@ namespace TPSDemo
 
         void PlayAudioAndMuzzleFlash()
         {
-        if (MuzzleFlashPrefab) {
-                // 枪口焰方向朝向-z，所以取反
-                Director.Instance.RequestEffect(MuzzleFlashPrefab)
-                    .WithParent(transform)
-                    .WithPosition(Muzzle.localPosition)
-                    .LookAt(-Muzzle.forward)
-                    .WithDuration(m_FireMechanism.FireInternal)
-                    .Create();
-            }
-            if (ShootSfx) {
-                Director.Instance.RequestAudio(ShootSfx).AttachTo(transform).Play();
-            }
+            // 枪口焰方向朝向-z，所以取反
+            Director.Instance.RequestEffect(MuzzleFlashPrefab)
+                .WithParent(transform)
+                .WithPosition(Muzzle.localPosition)
+                .LookAt(-Muzzle.forward)
+                .WithDuration(m_FireMechanism.FireInternal)
+                .Create();
+            
+            Director.Instance.RequestAudio(ShootSfx).AttachTo(transform).Play();
         }
 
         void TryFire()

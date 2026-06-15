@@ -24,7 +24,7 @@ namespace TPSDemo
 
         public ShopEntry(int itemId, int price, int amount = 1, float discount = 1f)
         {
-            ItemName = ItemDataList.GetItemData(itemId).Name;
+            ItemName = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(itemId).Name;
             ItemId = itemId;
             Price = price;
             Amount = amount;
@@ -39,6 +39,7 @@ namespace TPSDemo
         public bool Restock;
         public float RestockTime;
         public bool RandomGoods;
+        private int m_MoneyId;
 
         List<ShopEntry> m_Goods;
         public List<ShopEntry> Goods => m_Goods;
@@ -65,6 +66,7 @@ namespace TPSDemo
         {
             ShopId = config.ShopId;
             ShopName = config.ShopName;
+            m_MoneyId = config.MoneyId;
             Restock = config.Restock;
             RestockTime = config.RestockTime;
             RandomGoods = config.RandomGoods;
@@ -112,8 +114,10 @@ namespace TPSDemo
                 return;
             }
 
+
+
             var good = m_Goods[slot];
-            var itemData = ItemDataList.GetItemData(good.ItemId);
+            var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(good.ItemId);
             if (itemData == null) {
                 Debug.LogError($"ItemData not found for id: {good.ItemId}");
                 return;
@@ -127,17 +131,16 @@ namespace TPSDemo
         {
             var good = m_Goods[slot];
             int finalPrice = good.FinalPrice;
-            var itemData = ItemDataList.GetItemData(good.ItemId);
+            var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(good.ItemId);
 
             bool isSuccess = false;
             string failInfo = "";
-            if (player.Economy.CanAfford(finalPrice)) {
-                player.Economy.SpendMoney(finalPrice);
+            if (player.Economy.CanAfford(m_MoneyId, finalPrice)) {
+                player.Economy.SpendMoney(m_MoneyId, finalPrice);
                 RemoveGood(slot);
                 player.Inventory.AddItem(itemData.Id, good.Amount);
                 isSuccess = true;
             } else {
-                Debug.Log($"Not enough money. Need: {finalPrice}, Have: {player.Economy.Money}");
                 isSuccess = false;
                 failInfo = $"¹ºÂò{itemData.Name}Ê§°Ü£¬½ð±Ò²»×ã";
             }
@@ -151,7 +154,22 @@ namespace TPSDemo
                     FailInfo = failInfo
                 }
             );
-            return true;
+
+            if (isSuccess) {
+                EventManager.Broadcast(
+                    new Event.MessageLogEvent {
+                        Message = $"Player{player.Id} ¹ºÂò{itemData.Name}³É¹¦"
+                    }
+                );
+            } else {
+                EventManager.Broadcast(
+                    new Event.MessageLogEvent {
+                        Message = $"Player{player.Id} ¹ºÂò{itemData.Name}Ê§°Ü£¬½ð±Ò²»×ã"
+                    }
+                );
+            }
+
+            return isSuccess;
         }
 
         public void Exit(PlayerController player)

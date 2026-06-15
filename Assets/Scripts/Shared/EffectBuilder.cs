@@ -74,6 +74,9 @@ namespace TPSDemo
 
         public GameObject Create()
         {
+            if(!m_EffectPrefab) {
+                return null;
+            }
             var effect = Object.Instantiate(m_EffectPrefab);
             effect.name = m_EffectName;
             effect.transform.localScale = Vector3.one * m_Scale;

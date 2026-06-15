@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TPSDemo
 {
-    public class WorldItemManager : MonoBehaviour
+    public class WorldItemManager : Singleton<WorldItemManager>
     {
         public Transform ItemRoot;
 

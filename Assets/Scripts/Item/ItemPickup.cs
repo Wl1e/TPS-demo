@@ -6,7 +6,6 @@ namespace TPSDemo
 
     public class ItemPickup : ItemBase, IPickupable
     {
-        public float InteractRadius => 3f;
         public void Interact(GameObject obj)
         {
             if (obj.TryGetComponent<PlayerController>(out var player)) {
@@ -15,6 +14,7 @@ namespace TPSDemo
                 } else {
                     player.Inventory.AddItem(this);
                 }
+                player.InteractionController.OnPickupItem(this);
                 Destroy(gameObject);
             }
         }
@@ -23,6 +23,6 @@ namespace TPSDemo
 
         }
 
-        private void OnDestroy() => FindAnyObjectByType<WorldItemManager>()?.EraseItem(this);
+        private void OnDestroy() => WorldItemManager.Instance.EraseItem(this);
     }
 }

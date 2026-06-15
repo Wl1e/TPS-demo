@@ -88,10 +88,12 @@ public class Grenade: MonoBehaviour, IGrenade
             }
         }
 
-        var audio = Director.Instance.RequestAudio(ExplosionAudio);
-        audio.WithPosition(transform.position).Play();
-        var effect = Director.Instance.RequestEffect(ExplosionEffectPrefab);
-        effect.WithPosition(transform.position).Create();
+        Director.Instance.RequestAudio(ExplosionAudio)
+            .WithPosition(transform.position)
+            .Play();
+        Director.Instance.RequestEffect(ExplosionEffectPrefab)
+            .WithPosition(transform.position)
+            .Create();
 
         Destroy(gameObject);
     }

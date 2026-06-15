@@ -96,7 +96,7 @@ namespace TPSDemo
         {
             if (m_Items[idx] == null) {
                 int amount = item is IStackable stackable ? stackable.Amount : 1;
-                m_Items[idx] = new InventorySlot(item, amount);
+                m_Items[idx] = new InventorySlot(item, ref amount);
                 UpdateInventory();
                 return true;
             }
@@ -110,12 +110,14 @@ namespace TPSDemo
                     break;
                 }
                 var item = m_Items[i];
-                if (item.Id == itemId) {
+                if (item != null && item.Id == itemId) {
                     amount -= item.Increase(amount);
                 }
                 if (item == null) {
-                    item = new InventorySlot(ItemDataList.GetItemData(itemId), amount);
-                    amount -= item.Amount;
+                    m_Items[i] = new InventorySlot(
+                        ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(itemId),
+                        ref amount
+                    );
                 }
             }
             if (amount > 0) {
@@ -141,7 +143,7 @@ namespace TPSDemo
             if (amount > 0) {
                 int idx = FindFirstEmptySlot();
                 if (idx != -1) {
-                    m_Items[idx] = new InventorySlot(item, amount);
+                    m_Items[idx] = new InventorySlot(item, ref amount);
                 }
             }
             UpdateInventory();

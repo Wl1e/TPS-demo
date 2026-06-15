@@ -60,16 +60,14 @@ namespace TPSDemo
             if (IsServer && DestroyOnHit) {
                 Destroy(gameObject);
             }
-            if (HitFlashPrefab) {
-                Director.Instance.RequestEffect(HitFlashPrefab)
-                    .WithPosition(hitInfo.point)
-                    .LookAt(hitInfo.normal)
-                    .WithDuration(1)
-                    .Create();
-            }
-            if (HitSfx) {
-                Director.Instance.RequestAudio(HitSfx).WithPosition(hitInfo.point).Play();
-            }
+            Director.Instance.RequestEffect(HitFlashPrefab)
+                .WithPosition(hitInfo.point)
+                .LookAt(hitInfo.normal)
+                .WithDuration(1)
+                .Create();
+            
+            Director.Instance.RequestAudio(HitSfx).WithPosition(hitInfo.point).Play();
+            
         }
 
     }

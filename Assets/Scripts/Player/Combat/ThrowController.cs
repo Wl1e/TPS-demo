@@ -80,7 +80,10 @@ namespace TPSDemo
             }
             m_CurrentGrenadeId = grenades[0].itemId;
 
-            m_CurrentGrenadeObj = Instantiate(ItemDataList.GetItemData(m_CurrentGrenadeId).Prefab, GrenadeRoot, false);
+            m_CurrentGrenadeObj = Instantiate(
+                ResourceManager.Instance.GetResource<ItemDataList>("ItemData")
+                .GetItemData(m_CurrentGrenadeId).Prefab, GrenadeRoot, false
+            );
             m_CurrentGrenadeObj.transform.localPosition = m_GrenadeRootOffset;
             m_CurrentGrenadeObj.transform.rotation = Quaternion.Euler(m_GrenadeRootRotate);
 

@@ -5,20 +5,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // 事件越来越多，后续考虑换成SO Event
+// 把GO统一换成ID
 namespace TPSDemo.Event
 {
     public abstract class InternalEvent
     { }
 
-    //public class ObjectiveGameEvent: InternalEvent
-    //{
-    //    public Objective objective;
-    //}
-    public class EntityDiedEvent: InternalEvent
+    #region Actor
+    /// <summary>
+    /// 死亡事件(玩家、敌人)
+    /// </summary>
+    public class ActorDiedEvent: InternalEvent
     {
-        public GameObject Entity;
-        public GameObject Attacker;
+        public int ActorId;
+        public int AttackerId;
     }
+    public class HealthChangedEvent : InternalEvent
+    {
+        public float value;
+    }
+    #endregion
+
     #region Player
 
     public class PlayerStateChangeEvent : InternalEvent
@@ -26,40 +33,28 @@ namespace TPSDemo.Event
         public string PreState;
         public string CurState;
     }
-    public class PlayerViewPerspectiveChangeEvent : InternalEvent
-    {
-        public Define.ViewPerspective ViewPerspective;
-    }
-    public class CrosshairChangedEvent : InternalEvent
-    {
-        public CrosshairData Data;
-    }
     public class AimEvent : InternalEvent
     {
         public bool IsAiming;
     }
 
-    public class HealthChangedEvent : InternalEvent
-    {
-        public float value;
-    }
-
-    public class PlayerCollisionEvent : InternalEvent
-    {
-        public Collision Collision;
-    }
-
     public class PlayerFinishedInitialzeEvent: InternalEvent
     {
     }
+    public class PickupItemEvent: InternalEvent
+    {
+        public int ActorId;
+        public int ItemId;
+        public int Amount;
+    }
+
+    public class PlayerEconomyChangedEvent: InternalEvent
+    {
+        public int MoneyId;
+        public int Amount;
+    }
 
     #endregion
-
-    public class PickupItemEvent: InternalEvent
-    {  public GameObject Item; }
-
-    public class QuestUpdateEvent: InternalEvent
-    { }
 
     #region Loadout
 
@@ -195,4 +190,35 @@ namespace TPSDemo.Event
     }
     #endregion
 
+    #region Quest
+    // logic -> ui
+    public class QuestStateChangeEvent: InternalEvent
+    {
+        public bool IsOpened;
+    }
+
+    public class QuestUpdateEvent : InternalEvent
+    { }
+
+    // ui -> logic
+    public class TryCancelQuestEvent: InternalEvent
+    {
+        public int QuestId;
+    }
+    public class TryQuestRewardEvent: InternalEvent
+    {
+        public int QuestId;
+    }
+    #endregion
+
+    #region MessageLog
+    /// <summary>
+    /// 屏幕上方消息提示（购买成功/任务更新等）
+    /// </summary>
+    public class MessageLogEvent: InternalEvent
+    {
+        public string Message;
+        public float Duration = -1f;
+    }
+    #endregion
 }

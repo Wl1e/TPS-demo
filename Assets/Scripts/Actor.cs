@@ -17,9 +17,8 @@ namespace TPSDemo
 
     public class Actor : MonoBehaviour
     {
-        int m_Id;
-        public int Affiliation;
-        ActorManager m_ActorManager = null;
+        private int m_Id;
+        private ActorManager m_ActorManager = null;
 
         public Transform AimPoint;
         public int Id => m_Id;
@@ -31,7 +30,7 @@ namespace TPSDemo
 
         void Start()
         {
-            m_ActorManager = FindAnyObjectByType<ActorManager>();
+            m_ActorManager = ActorManager.Instance;
             if (m_ActorManager && !m_ActorManager.Actors.ContainsKey(m_Id)) {
                 m_ActorManager.AddActor(this);
             }
@@ -42,11 +41,6 @@ namespace TPSDemo
             if (m_ActorManager) {
                 m_ActorManager.Actors.Remove(m_Id);
             }
-        }
-
-        public bool IsHostile(Actor actor)
-        {
-            return Affiliation != actor.Affiliation;
         }
     }
 }

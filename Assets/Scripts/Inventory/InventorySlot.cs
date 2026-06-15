@@ -15,13 +15,14 @@ namespace TPSDemo
 
         public bool Draging = false;
 
-        public InventorySlot(IItem item, int amount) : this(item?.Data, amount)
+        public InventorySlot(IItem item, ref int amount) : this(item?.Data, ref amount)
         {
         }
-        public InventorySlot(ItemData data, int amount)
+        public InventorySlot(ItemData data, ref int amount)
         {
             ItemData = data;
-            Amount = amount;
+            Amount = Mathf.Min(amount, data.MaxStack);
+            amount -= Amount;
         }
 
         public int Increase(int value)

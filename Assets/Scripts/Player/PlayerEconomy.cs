@@ -1,31 +1,48 @@
 using System;
-using UnityEngine;
+using System.Collections.Generic;
 
-public class PlayerEconomy : MonoBehaviour
+namespace TPSDemo
 {
-    [SerializeField] int m_Money;
-    public int Money => m_Money;
-
-    public Action<int> OnMoneyChanged;
-
-    public void AddMoney(int amount)
+    public class PlayerEconomy
     {
-        if (amount <= 0) return;
-        m_Money += amount;
-        OnMoneyChanged?.Invoke(m_Money);
-    }
+        private Dictionary<int, int> m_Money = new();
 
-    public bool SpendMoney(int amount)
-    {
-        if (amount <= 0) return false;
-        if (m_Money < amount) return false;
-        m_Money -= amount;
-        OnMoneyChanged?.Invoke(m_Money);
-        return true;
-    }
+        public Action<int, int> OnMoneyChanged;
+        public int GetMoney(int moneyId) => m_Money.GetValueOrDefault(moneyId, -1);
 
-    public bool CanAfford(int amount)
-    {
-        return amount > 0 && m_Money >= amount;
+        public void AddMoney(int moneyId, int amount)
+        {
+            if (amount <= 0) {
+                return;
+            }
+            if (!m_Money.ContainsKey(moneyId)) {
+                m_Money.Add(moneyId, 0);
+            }
+            m_Money[moneyId] += amount;
+            OnMoneyChanged?.Invoke(moneyId, m_Money[moneyId]);
+            EventManager.Broadcast(new Event.PlayerEconomyChangedEvent { MoneyId = moneyId, Amount = m_Money[moneyId] });
+        }
+
+        public bool SpendMoney(int moneyId, int amount)
+        {
+            if (amount <= 0) {
+                return false;
+            }
+            if (!m_Money.ContainsKey(moneyId)) {
+                return false;
+            }
+            if (m_Money[moneyId] < amount) {
+                return false;
+            }
+            m_Money[moneyId] -= amount;
+            OnMoneyChanged?.Invoke(moneyId, m_Money[moneyId]);
+            EventManager.Broadcast(new Event.PlayerEconomyChangedEvent { MoneyId = moneyId, Amount = m_Money[moneyId] });
+            return true;
+        }
+
+        public bool CanAfford(int moneyId, int amount)
+        {
+            return amount > 0 && m_Money.GetValueOrDefault(moneyId, -1) >= amount;
+        }
     }
 }

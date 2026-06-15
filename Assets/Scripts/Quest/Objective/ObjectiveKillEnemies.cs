@@ -5,13 +5,14 @@ using UnityEngine;
 namespace TPSDemo
 {
 
-    using EntityDiedEvent = Event.EntityDiedEvent;
+    using ActorDiedEvent = Event.ActorDiedEvent;
 
     public class ObjectiveKillEnemies : Objective
     {
         public GameObject Enemy;
         public int Cur;
         public int Count;
+
         public override void Initialize(ObjectiveConfig config)
         {
             if(config is not ObjectiveKillEnemiesConfig trueConfig) {
@@ -20,20 +21,25 @@ namespace TPSDemo
             Enemy = trueConfig.Target;
             Count = trueConfig.Count;
             Cur = 0;
-            EventManager.AddListener<EntityDiedEvent>(OnObjDied);
+            EventManager.AddListener<ActorDiedEvent>(OnObjDied);
         }
 
         public override void Destroy()
         {
-            EventManager.RemoveListener<EntityDiedEvent>(OnObjDied);
+            EventManager.RemoveListener<ActorDiedEvent>(OnObjDied);
         }
 
-        void OnObjDied(EntityDiedEvent evt)
+        void OnObjDied(ActorDiedEvent evt)
         {
-            if (evt.Entity != Enemy) {
+            if(!Enemy.TryGetComponent<Actor>(out var actor)) {
+                Debug.LogError("[ObjectiveKillEnemies] Enemy dont have Actor Component");
+                return;
+            }
+            if (evt.ActorId != actor.Id || evt.AttackerId != m_ActorId) {
                 return;
             }
             Cur++;
+            OnUpdate?.Invoke(this);
             Check();
         }
 

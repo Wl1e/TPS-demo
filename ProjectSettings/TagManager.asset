@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - Enemy
+  - Hitbox
+  - Pickup
   layers:
   - Default
   - TransparentFX
@@ -22,8 +24,8 @@ TagManager:
   - Enemy
   - Npc
   - 
-  - 
-  - 
+  - PlayerHitbox
+  - EnemyHitbox
   - 
   - 
   - Pickup

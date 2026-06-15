@@ -253,7 +253,7 @@ using Event;
             if (IsOwner) {
                 if (cur.TryGet(out var networkObject)) {
                     weapon = networkObject.GetComponentInChildren<IWeapon>();
-                    print($"Weapon: {weapon}, Player: {m_Player}");
+                    print($"Weapon: {weapon}, m_Player: {m_Player}");
                     weapon.Initialize(m_Player.gameObject);
                     OnAddWeapon?.Invoke(weapon, idx);
                 }

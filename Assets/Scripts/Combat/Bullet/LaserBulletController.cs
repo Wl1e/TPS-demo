@@ -6,14 +6,14 @@ namespace TPSDemo
 {
     public class LaserBulletController : BulletController
     {
+        [Tooltip("最远距离")]
         public float MaxDistance = 100f;
-        public LayerMask HitLayer;
-
-        public float LaserWidth = 0.1f;
+        [Tooltip("激光颜色")]
         [ColorUsage(true, true)]
         public Color LaserColor = Color.white;
         RaycastHit m_Info;
 
+        [Tooltip("激光起点")]
         public Transform LaserOrigin;
         public Transform Laser;
 
@@ -37,7 +37,7 @@ namespace TPSDemo
             var end = forward * MaxDistance + transform.position;
             if (
                 Physics.Raycast(transform.position, forward, out m_Info,
-                MaxDistance, HitLayer, QueryTriggerInteraction.Ignore)
+                MaxDistance, HitLayerMask, QueryTriggerInteraction.Ignore)
             ) {
                 end = m_Info.point;
                 distance = m_Info.distance;

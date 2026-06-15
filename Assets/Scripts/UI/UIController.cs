@@ -10,6 +10,7 @@ namespace TPSDemo.UI
         [SerializeField] InventoryUI m_InventoryUI;
         [SerializeField] DialogUI m_DialogUI;
         [SerializeField] LoadoutUI m_LoadoutUI;
+        [SerializeField] QuestPanelUI m_QuestUI;
 
         [SerializeField] Image Frame;
 
@@ -34,6 +35,7 @@ namespace TPSDemo.UI
             m_HUD.Initialze();
             m_InventoryUI.Initialize();
             m_LoadoutUI.Initialize();
+            m_QuestUI.Initialize();
         }
     }
 }

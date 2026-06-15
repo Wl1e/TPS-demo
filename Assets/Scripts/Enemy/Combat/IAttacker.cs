@@ -1,3 +1,5 @@
+using System;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace TPSDemo
@@ -7,13 +9,19 @@ namespace TPSDemo
         public bool CanFire();
         public bool InFireRange(Transform target);
         public void Fire(Vector3 pos);
+        public event Action OnAttack;
     }
 
-    public abstract class AttackerBase : MonoBehaviour, IAttacker
+    public class AttackerBase : NetworkBehaviour, IAttacker
     {
         public EnemyController Owner;
-        public abstract bool CanFire();
-        public abstract bool InFireRange(Transform target);
-        public abstract void Fire(Vector3 pos);
+        public virtual bool CanFire() => false;
+        public virtual bool InFireRange(Transform target) => false;
+        public virtual void Fire(Vector3 pos) { }
+        public event Action OnAttack;
+        protected void WhenAttack()
+        {
+            OnAttack?.Invoke();
+        }
     }
 }

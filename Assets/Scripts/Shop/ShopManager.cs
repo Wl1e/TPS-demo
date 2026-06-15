@@ -5,7 +5,6 @@ namespace TPSDemo
 {
     public class ShopManager : Singleton<ShopManager>
     {
-        [SerializeField] ShopList m_ShopConfigList;
         Dictionary<int, Shop> m_Shops = new Dictionary<int, Shop>();
 
         int m_CurrentShopId;
@@ -32,7 +31,8 @@ namespace TPSDemo
         {
             var shopRoot = new GameObject("ShopRoot");
 
-            foreach (var config in m_ShopConfigList.Configs) {
+            var shopConfig = ResourceManager.Instance.GetResource<ShopList>("Shop");
+            foreach (var config in shopConfig.Configs) {
                 var shopGO = new GameObject("Shop" + config.ShopId, typeof(Shop));
                 shopGO.transform.SetParent(shopRoot.transform, false);
                 var shop = shopGO.GetComponent<Shop>();

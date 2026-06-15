@@ -10,6 +10,7 @@ namespace TPSDemo
         {
             Assert.IsNotNull(config);
             Quest quest = new();
+            quest.Initialize(config.QuestId);
             foreach (var objectiveConfig in config.ObjectiveConfigs) {
                 var objective = ObjectiveFactory.CreateObjective(objectiveConfig);
                 quest.AddObjective(objective);

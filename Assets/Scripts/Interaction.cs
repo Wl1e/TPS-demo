@@ -1,7 +1,10 @@
 using UnityEngine;
 
-public interface IInteractive
+namespace TPSDemo
 {
-    public float InteractRadius { get; }
-    public void Interact(GameObject player);
+
+    public interface IInteractive
+    {
+        public void Interact(GameObject obj);
+    }
 }

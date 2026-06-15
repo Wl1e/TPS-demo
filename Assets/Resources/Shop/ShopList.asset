@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ec116176ca2a0547aef9a869eb415d3, type: 3}
   m_Name: ShopList
   m_EditorClassIdentifier: Assembly-CSharp::ShopList
+  Id: Shop
   Configs:
   - {fileID: 11400000, guid: 611ed107d7005c542865e6269cccb045, type: 2}

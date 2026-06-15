@@ -32,6 +32,14 @@ MonoBehaviour:
       Action: 4
       GotoIdx: 1
       ActionData: 1001
+    - Content: "\u63A5\u53D7\u4EFB\u52A11001"
+      Action: 3
+      GotoIdx: 2
+      ActionData: 1001
+    - Content: "\u63A5\u53D7\u4EFB\u52A12001"
+      Action: 3
+      GotoIdx: 2
+      ActionData: 2001
     - Content: "\u6682\u65F6\u6CA1\u6709\u9700\u8981"
       Action: 0
       GotoIdx: 2

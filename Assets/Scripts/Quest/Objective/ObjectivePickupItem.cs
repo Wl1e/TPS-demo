@@ -5,10 +5,9 @@ using UnityEngine;
 namespace TPSDemo
 {
     using PickupItemEvent = Event.PickupItemEvent;
-
     public class ObjectivePickupItem : Objective
     {
-        public GameObject Target;
+        public int TargetId;
         public int Total;
         public int Cur;
         
@@ -17,9 +16,15 @@ namespace TPSDemo
             if (config is not ObjectivePickupItemConfig trueConfig) {
                 return;
             }
-            Target = trueConfig.Item;
+            if(!trueConfig.Item.TryGetComponent<ItemPickup>(out var item)) {
+                Debug.LogError($"Objective {trueConfig.Id} Config Item is not ItemPickup");
+                return;
+            }
+            TargetId = item.Id;
             Total = trueConfig.Count;
             Cur = 0;
+            
+            //player.InteractionController.OnPickup += OnPickupItem;
             EventManager.AddListener<PickupItemEvent>(OnPickupItem);
         }
 
@@ -30,11 +35,12 @@ namespace TPSDemo
 
         public void OnPickupItem(PickupItemEvent evt)
         {
-            GameObject item = evt.Item;
-            if (item != Target) {
+            Debug.Log($"Pickup Item{evt.ItemId}, Target is {TargetId}");
+            if (TargetId != evt.ItemId || m_ActorId != evt.ActorId) {
                 return;
             }
-            Cur++;
+            Cur += evt.Amount;
+            OnUpdate?.Invoke(this);
             Check();
         }
 

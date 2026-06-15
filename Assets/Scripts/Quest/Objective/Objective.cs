@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.ConstrainedExecution;
+using Unity.Netcode;
 using UnityEngine;
 
 
@@ -18,6 +19,7 @@ namespace TPSDemo
         }
     }
 
+
     public abstract class ObjectiveConfig: ScriptableObject
     {
         public int Id;
@@ -25,7 +27,7 @@ namespace TPSDemo
     };
 
     [Serializable]
-    public struct ObjectiveProgress
+    public struct ObjectiveProgress: INetworkSerializeByMemcpy
     {
         public int ObjectiveId;
         public int Cur;
@@ -39,13 +41,25 @@ namespace TPSDemo
                 Max == other.Max
             );
         }
+
+        public ObjectiveProgress(int _ = 0)
+        {
+            ObjectiveId = 0;
+            Cur = 0;
+            Max = 0;
+        }
+
+        public readonly bool IsEmpty => ObjectiveId == 0;
     }
+
 
     public abstract class Objective
     {
         public int Id = 0;
+        protected int m_ActorId = -1;
         public bool IsCompleted { get; protected set; }
         public Action<Objective> OnCompleted;
+        public Action<Objective> OnUpdate;
         public abstract void Check();
         // For Test
         public abstract void Initialize(ObjectiveConfig config);
@@ -55,6 +69,16 @@ namespace TPSDemo
         {
             IsCompleted = true;
             OnCompleted?.Invoke(this);
+            Debug.Log($"Objective: {Id} Completed");
+        }
+
+        public void SetActor(int actorId)
+        {
+            m_ActorId = actorId;
+            if (!ActorManager.Instance.GetActor(m_ActorId).TryGetComponent<PlayerController>(out var player)) {
+                Debug.LogError("not player");
+                return;
+            }
         }
 
         public abstract void GetProcess(out ObjectiveProgress process);

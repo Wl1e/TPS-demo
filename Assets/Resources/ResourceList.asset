@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1117c4cbcc631d34f83b7bf9eb30c9c8, type: 3}
+  m_Name: ResourceList
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.GameResourceList
+  Resources:
+  - {fileID: 11400000, guid: 6d3f6afc36fa80948b8835b99f8e0305, type: 2}
+  - {fileID: 11400000, guid: 74d383d60e141ef488fb4cac9a279921, type: 2}
+  - {fileID: 11400000, guid: 53d611ca546f27641b35bc9c393ffb3e, type: 2}
+  - {fileID: 11400000, guid: a3f3372a5d7c30142a3a9768723163c2, type: 2}

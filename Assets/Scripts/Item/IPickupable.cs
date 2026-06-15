@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 
-public interface IPickupable: IInteractive
+namespace TPSDemo
 {
-    public void WhenSee();
+    public interface IPickupable : IInteractive
+    {
+        public void WhenSee();
+    }
 }

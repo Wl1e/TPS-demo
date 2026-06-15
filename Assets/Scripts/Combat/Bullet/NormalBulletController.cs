@@ -32,7 +32,6 @@ namespace TPSDemo
                 CheckHit();
             }
             UpdateMovement();
-            Debug.Log($"[Bullet] Update frame:{Time.frameCount} pos:{transform.position}");
         }
 
         public override void OnShoot()

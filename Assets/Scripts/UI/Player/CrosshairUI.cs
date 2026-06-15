@@ -75,7 +75,7 @@ using Event;
 
         void HandleHitd(BulletHitTargetEvent evt)
         {
-            if (evt.Attacker.CompareTag("Player")) {
+            if (evt.Attacker && evt.Attacker.CompareTag("Player")) {
                 FeedbackEndTime = Time.time + FeedbackTime;
             }
         }

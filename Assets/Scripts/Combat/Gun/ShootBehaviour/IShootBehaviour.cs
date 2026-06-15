@@ -45,6 +45,13 @@ namespace TPSDemo
             bullet.HitLayerMask = HitLayerMask;
             bullet.OnHitTarget += OnBulletHit;
 
+            // FIXME 耦合，而且目前enemy不使用Weapon
+            if(Owner.CompareTag("Player")) {
+                bullet.HitLayerMask |= LayerMask.NameToLayer("Enemy");
+            } else if(Owner.CompareTag("Enemy")) {
+                bullet.HitLayerMask |= LayerMask.NameToLayer("Player");
+            }
+
             var no = bullet.GetComponent<NetworkObject>();
             if (!no.IsSpawned) {
                 no.SpawnWithOwnership(clientId);
