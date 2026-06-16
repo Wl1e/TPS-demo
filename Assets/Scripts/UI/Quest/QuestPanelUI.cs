@@ -46,11 +46,14 @@ namespace TPSDemo.UI
 
             m_QuestList.OnQuestSelected += UpdateQuestDetail;
             m_RewardButton.onClick.AddListener(
-                () => EventManager.Broadcast(
-                    new Event.TryQuestRewardEvent {
-                        QuestId = m_QuestList.CurrentQuestId
-                    }
-                )
+                () => {
+                    EventManager.Broadcast(
+                        new Event.TryQuestRewardEvent {
+                            QuestId = m_QuestList.CurrentQuestId
+                        }
+                    );
+                    m_QuestList.SelectedIndex = -1;
+                }
             );
             m_CancelButton.onClick.AddListener(
                 () => {
@@ -119,7 +122,12 @@ namespace TPSDemo.UI
                 ClearQuestDetail();
                 return;
             }
-            var process = PlayerDataProxy.Instance.GetQuestProcesses()[idx];
+            var processes = PlayerDataProxy.Instance.GetQuestProcesses();
+            if(processes.Count <= idx) {
+                ClearQuestDetail();
+                return;
+            }
+            var process = processes[idx];
             var cfg = m_QuestDB.GetQuestConfig(process.Id);
             if (cfg == null) {
                 ClearQuestDetail();

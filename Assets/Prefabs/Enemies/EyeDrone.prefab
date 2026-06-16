@@ -348,9 +348,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4631553757167663517}
   - component: {fileID: 3260896787367868966}
-  - component: {fileID: 1213871218600254630}
+  - component: {fileID: 1561573761350038458}
   m_Layer: 13
-  m_Name: BulletAttacker
+  m_Name: Attacker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -469,7 +469,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1213871218600254630
+--- !u!114 &1561573761350038458
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -478,22 +478,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 2665565465178769710}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02a88c46a98e95745a932cc3b89806f7, type: 3}
+  m_Script: {fileID: 11500000, guid: 04d1e08293ff65848a99266e64a54559, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BulletAttacker
+  m_EditorClassIdentifier: Assembly-CSharp::Assets.Scripts.Enemy.Combat.MeleeAttacker
   ShowTopMostFoldoutHeaderGroup: 1
   Owner: {fileID: 2700602984528541365}
-  Muzzle: {fileID: 513074715700341461}
-  DelayBetweenShots: 1
-  BulletPrefab: {fileID: 6601797778091609916, guid: 8409e2dcc23d54643b69db518e4d9821, type: 3}
-  BulletSpeed: 1
-  HitLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
+  CD: 1
   Damage: 10
-  MaxFireRange: 1000
-  ShootSfx: {fileID: 8300000, guid: a56e3c9f90e17894eb1625f603eceb54, type: 3}
-  MuzzleFlashPrefab: {fileID: 0}
+  m_AttackRange: 1
+  m_Time: 0.1
+  m_Hitbox: {fileID: 9189784954787561295}
 --- !u!1 &4145649519649269496
 GameObject:
   m_ObjectHideFlags: 0
@@ -802,6 +796,7 @@ Transform:
   - {fileID: 4631553757167663517}
   - {fileID: 9005841851214850874}
   - {fileID: 4717315221636584696}
+  - {fileID: 2054457920873288758}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &4531998687336516583
@@ -816,7 +811,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3647326498
+  GlobalObjectIdHash: 2799024901
   InScenePlacedSourceGlobalObjectIdHash: 1011729811
   DeferredDespawnTick: 0
   Ownership: 1
@@ -925,7 +920,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   DamageAudio: {fileID: 0}
   DeadAudio: {fileID: 0}
-  m_Attacker: {fileID: 1213871218600254630}
+  m_Attacker: {fileID: 1561573761350038458}
   m_BehaviorTree: {fileID: 2758097229283135902}
 --- !u!114 &386272032009258269
 MonoBehaviour:
@@ -1002,7 +997,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2054457920873288758}
   - component: {fileID: 671275519239487653}
-  - component: {fileID: 4579611458034076071}
+  - component: {fileID: 7713725199031639507}
+  - component: {fileID: 6349173270770459842}
+  - component: {fileID: 9189784954787561295}
   m_Layer: 17
   m_Name: Hitbox
   m_TagString: Hitbox
@@ -1019,11 +1016,11 @@ Transform:
   m_GameObject: {fileID: 8763018216705361920}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7882513969263288767}
+  m_Father: {fileID: 5382857873328648158}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &671275519239487653
 MeshFilter:
@@ -1033,8 +1030,35 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8763018216705361920}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!135 &4579611458034076071
-SphereCollider:
+--- !u!54 &7713725199031639507
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8763018216705361920}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
+--- !u!65 &6349173270770459842
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1052,8 +1076,25 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &9189784954787561295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8763018216705361920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a67a9cffba72db458b1f1cf3a578414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.Hitbox
+  m_Hitbox:
+  - {fileID: 6349173270770459842}
+  m_CollisionLayer:
+    serializedVersion: 2
+    m_Bits: 4096
 --- !u!1 &9017519859924443699
 GameObject:
   m_ObjectHideFlags: 0
@@ -1371,10 +1412,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2054457920873288758}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
       insertIndex: -1
@@ -1409,7 +1447,11 @@ MonoBehaviour:
   m_Animator: {fileID: 5868615648092499241}
   TransitionStateInfoList: []
   AnimatorParameterEntries:
-    ParameterEntries: []
+    ParameterEntries:
+    - name: SpeedMagnitude
+      NameHash: 673482081
+      Synchronize: 1
+      ParameterType: 1
   AnimatorParametersExpanded: 0
 --- !u!95 &5868615648092499241
 Animator:
@@ -1446,6 +1488,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   m_Animator: {fileID: 5868615648092499241}
+  IdleClip: {fileID: -429512112410174799, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
+  WalkClip: {fileID: 0}
+  AttackClip: {fileID: -3510217540682870009, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
+  HitClip: {fileID: 3341008991451901215, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
   m_DefaultBlendDuration: 0.2
   mIdleStateName: Idle
 --- !u!4 &7882513969263288767 stripped

@@ -198,7 +198,8 @@ namespace TPSDemo.Event
     }
 
     public class QuestUpdateEvent : InternalEvent
-    { }
+    {
+    }
 
     // ui -> logic
     public class TryCancelQuestEvent: InternalEvent

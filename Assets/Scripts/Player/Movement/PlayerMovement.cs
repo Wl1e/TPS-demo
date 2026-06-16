@@ -54,6 +54,8 @@ namespace TPSDemo
         [Tooltip("÷ÿ¡¶")]
         public float Gravity = 9.81f;
 
+        public LayerMask GroundLayer = -1;
+
         [Tooltip("Ã¯‘æ¡¶")]
         public float JumpForce = 5f;
 
@@ -251,7 +253,7 @@ namespace TPSDemo
             Vector3 start = transform.position + m_CharacterController.center - m_CharacterController.height / 2 * Vector3.up + radius * Vector3.up;
             Vector3 end = transform.position + m_CharacterController.center + m_CharacterController.height / 2 * Vector3.up - radius * Vector3.up;
             if (Physics.CapsuleCast(start, end, m_CharacterController.radius,
-                Vector3.down, out RaycastHit hitInfo, checkDistance)
+                Vector3.down, out RaycastHit hitInfo, checkDistance, GroundLayer, QueryTriggerInteraction.Ignore)
             ) {
                 if (hitInfo.collider.gameObject != gameObject) {
                     m_IsGrounded = true;

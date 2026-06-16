@@ -21,17 +21,17 @@ public partial class AttackAction : Action
         if(m_Attacker == null) {
             return Status.Failure;
         }
-        return Status.Running;
-    }
-
-    protected override Status OnUpdate()
-    {
-        if (m_Attacker.CanFire()) {
-            var aimPoint = Target.Value.GetComponent<TPSDemo.Actor>()?.AimPoint.position??Target.Value.transform.position;
-            m_Attacker.Fire(aimPoint);
+        if (m_Attacker.CanAttack()) {
+            var aimPoint = Target.Value.GetComponent<TPSDemo.Actor>()?.AimPoint.position ?? Target.Value.transform.position;
+            m_Attacker.Attack(aimPoint);
         }
         return Status.Success;
     }
+
+    //protected override Status OnUpdate()
+    //{
+        
+    //}
 
     protected override void OnEnd()
     {

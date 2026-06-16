@@ -37,15 +37,15 @@ namespace TPSDemo
                 shopGO.transform.SetParent(shopRoot.transform, false);
                 var shop = shopGO.GetComponent<Shop>();
                 shop.Initialize(config);
-                m_Shops.Add(shop.ShopId, shop);
+                Register(shop);
             }
 
         }
 
         void OnOpenShop(Event.OpenShopEvent evt)
         {
-            OpenShop(evt.ShopId, evt.playerId);
             m_CurrentShopId = evt.ShopId;
+            OpenShop(m_CurrentShopId, evt.playerId);
         }
 
         void OpenShop(int shopId, int playerId)
@@ -65,16 +65,16 @@ namespace TPSDemo
             }
         }
 
-        public List<ShopEntry> GetGoods(int shopId)
+        public Shop GetCurrentShop()
         {
-            return m_Shops.TryGetValue(shopId, out Shop shop) ? shop.Goods : new List<ShopEntry>();
+            return m_Shops.GetValueOrDefault(m_CurrentShopId, null);
         }
 
         public void Register(Shop shop)
         {
             if (m_Shops.ContainsKey(shop.ShopId))
                 return;
-            m_Shops[shop.ShopId] = shop;
+            m_Shops.Add(shop.ShopId, shop);
         }
 
         public void Save()

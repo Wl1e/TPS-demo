@@ -1,5 +1,6 @@
 using Unity.Behavior;
 using Unity.Netcode;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -21,7 +22,7 @@ namespace TPSDemo
         Collider[] m_Colliders;
         HealthBar m_HealthBar;
         
-        public AttackerBase m_Attacker;
+        [SerializeField] AttackerBase m_Attacker;
 
         [Tooltip("行为树")]
         [SerializeField] BehaviorGraphAgent m_BehaviorTree;
@@ -45,8 +46,12 @@ namespace TPSDemo
         {
             base.OnNetworkSpawn();
             if (IsServer) {
-                if (m_Attacker) {
+                if (m_Attacker != null) {
                     m_Attacker.OnAttack += OnAttack;
+                    if (m_BehaviorTree.GetVariable("AttackRange", out BlackboardVariable<float> range)) {
+                        print("SetAttackRange " + m_Attacker.AttackRange);
+                        range.Value = m_Attacker.AttackRange;
+                    }
                 }
                 m_Health.OnTakeDamaged += OnTakeDamage;
                 m_Health.OnDied += OnDied;
@@ -59,7 +64,7 @@ namespace TPSDemo
         public override void OnNetworkDespawn()
         {
             if (IsServer) {
-                if (m_Attacker) {
+                if (m_Attacker != null) {
                     m_Attacker.OnAttack -= OnAttack;
                 }
                 m_Health.OnTakeDamaged -= OnTakeDamage;

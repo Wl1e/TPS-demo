@@ -1110,7 +1110,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   CameraRoot: {fileID: 7819201028269552593}
   Money:
-  - {x: 1, y: 30000}
+  - {x: 1001, y: 30000}
   OnJumpInput: {fileID: 11400000, guid: 49c897c2ed5fefd4bb01a8c68be3942d, type: 2}
   OnSprintInput: {fileID: 11400000, guid: 3a9bc1f19edf2b742bd1be91724ca875, type: 2}
   OnCrouchInput: {fileID: 11400000, guid: ac18f6c36c7033c44b1e0f84ab5a1050, type: 2}
@@ -1129,7 +1129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   ShowTopMostFoldoutHeaderGroup: 1
-  NetworkTransformExpanded: 1
+  NetworkTransformExpanded: 0
   AutoOwnerAuthorityTickOffset: 1
   PositionInterpolationType: 0
   RotationInterpolationType: 0
@@ -1162,11 +1162,14 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 0
   SlerpPosition: 0
-  MoverScriptExpanded: 0
+  MoverScriptExpanded: 1
   m_WalkSpeed: 2
   Acceleration: 8
   AirAcceleration: 5
   Gravity: 9.81
+  GroundLayer:
+    serializedVersion: 2
+    m_Bits: 3072
   JumpForce: 5
   RotationSmoothTime: 0.1
   RotationType: 0

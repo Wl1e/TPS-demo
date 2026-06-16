@@ -183,7 +183,7 @@ using FSM;
             AddState(ledgeState);
             ChangeState(idleState);
 
-            OnStateChanged += (string pre, string cur) => print($"{pre} => {cur}");
+            //OnStateChanged += (string pre, string cur) => print($"{pre} => {cur}");
         }
         public void StartFSM()
         {

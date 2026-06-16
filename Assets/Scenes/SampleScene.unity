@@ -7136,11 +7136,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1044638537}
   m_CullTransparentMesh: 1
---- !u!95 &1046991712 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 5868615648092499241, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-  m_PrefabInstance: {fileID: 1078186601}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1056129313
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7227,81 +7222,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: m_Animator
-      value: 
-      objectReference: {fileID: 1046991712}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AuthorityMode
+    - target: {fileID: 850370521829255415, guid: abfb88083101f834c888e9c53731de8d, type: 3}
+      propertyPath: m_Speed
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.size
-      value: 4
+    - target: {fileID: 1561573761350038458, guid: abfb88083101f834c888e9c53731de8d, type: 3}
+      propertyPath: m_AttackRange
+      value: 1.5
       objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[0].name
-      value: Attack
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[1].name
-      value: Move
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[2].name
-      value: FindTarget
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[3].name
-      value: Hit
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[0].NameHash
-      value: 1080829965
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[1].NameHash
-      value: 1326225478
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[2].NameHash
-      value: -898139784
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[3].NameHash
-      value: 1654612129
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[0].Synchronize
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[1].Synchronize
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[2].Synchronize
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[3].Synchronize
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[0].ParameterType
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[1].ParameterType
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[2].ParameterType
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511346147668211658, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-      propertyPath: AnimatorParameterEntries.ParameterEntries.Array.data[3].ParameterType
-      value: 9
+    - target: {fileID: 2054457920873288758, guid: abfb88083101f834c888e9c53731de8d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 4531998687336516583, guid: abfb88083101f834c888e9c53731de8d, type: 3}
       propertyPath: GlobalObjectIdHash

@@ -13,16 +13,8 @@ public partial class GetDistanceSqBetweenTransformAndTargetAction : Action
     [SerializeReference] public BlackboardVariable<float> Variable;
     protected override Status OnStart()
     {
-        return Status.Running;
-    }
-
-    protected override Status OnUpdate()
-    {
+        Variable.Value = Vector3.SqrMagnitude(Target.Value.transform.position - Transform.Value.position);
         return Status.Success;
-    }
-
-    protected override void OnEnd()
-    {
     }
 }
 

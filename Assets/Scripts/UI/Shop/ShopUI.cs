@@ -10,7 +10,7 @@ namespace TPSDemo.UI
 
     public class ShopUI : MonoBehaviour
     {
-        int m_CurrentShopId = 1;
+        int m_CurrentShopId = -1;
         [SerializeField] Button m_CloseButton;
 
         [SerializeField] GameObject m_ShopSlotPrefab;
@@ -63,12 +63,12 @@ namespace TPSDemo.UI
             var slotObj = Instantiate(m_ShopSlotPrefab, m_SlotRoot);
             var slot = slotObj.GetComponent<ShopSlotUI>();
             slot.Initialize(
-                entry.ItemName,
+                entry.GoodName,
                 entry.Price,
                 entry.Discount,
                 entry.FinalPrice,
                 entry.Amount,
-                ItemUIUtils.GetItemSprite(entry.ItemId)
+                ItemUIUtils.GetItemSprite(entry.GoodId)
             );
             m_Slots.Add(slot);
             slot.OnClick += (ShopSlotUI slot) => {
@@ -85,6 +85,7 @@ namespace TPSDemo.UI
             for (int idx = m_SlotRoot.childCount - 1; idx >= 0; idx--) {
                 Destroy(m_SlotRoot.GetChild(idx).gameObject);
             }
+            m_CurrentShopId = -1;
             gameObject.SetActive(false);
         }
         void OnShopBuy(ShopBuyEvent evt)
@@ -98,7 +99,7 @@ namespace TPSDemo.UI
 
         private void OnEconomyChanged(PlayerEconomyChangedEvent evt)
         {
-            if(evt.MoneyId == ResourceManager.Instance.GetResource<ShopList>("Shop").GetConfig(m_CurrentShopId).MoneyId) {
+            if(m_CurrentShopId != -1 && evt.MoneyId == ResourceManager.Instance.GetResource<ShopList>("Shop").GetConfig(m_CurrentShopId).MoneyId) {
                 m_Money.text = evt.Amount.ToString();
             }
         }

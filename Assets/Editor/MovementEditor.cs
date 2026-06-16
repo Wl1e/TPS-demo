@@ -18,6 +18,7 @@ namespace TPSDemo.Editor
         private SerializedProperty m_JumpForce;
         private SerializedProperty m_RotationSmoothTime;
         private SerializedProperty m_OnMoveInput;
+        private SerializedProperty m_GroundLayer;
 
         public override void OnEnable()
         {
@@ -28,7 +29,7 @@ namespace TPSDemo.Editor
             m_JumpForce = serializedObject.FindProperty(nameof(PlayerMovement.JumpForce));
             m_RotationSmoothTime = serializedObject.FindProperty(nameof(PlayerMovement.RotationLerpSmoothing));
             m_OnMoveInput = serializedObject.FindProperty("OnMoveInput");
-
+            m_GroundLayer = serializedObject.FindProperty(nameof(PlayerMovement.GroundLayer));
             base.OnEnable();
         }
 
@@ -48,6 +49,7 @@ namespace TPSDemo.Editor
             EditorGUILayout.PropertyField(m_JumpForce);
             EditorGUILayout.PropertyField(m_RotationSmoothTime);
             EditorGUILayout.PropertyField(m_OnMoveInput);
+            EditorGUILayout.PropertyField(m_GroundLayer);
         }
 	}
 }

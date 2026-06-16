@@ -58,7 +58,8 @@ namespace TPSDemo
         //Shop
         public List<ShopEntry> GetShopGoods(int shopId)
         {
-            return ShopManager.Instance.GetGoods(shopId);
+            var shop = ShopManager.Instance.GetCurrentShop();
+            return shop != null ? shop.Goods : new List<ShopEntry>();
         }
         public int GetMoney(int shopId)
         {

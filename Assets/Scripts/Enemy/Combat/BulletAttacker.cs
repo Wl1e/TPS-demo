@@ -1,6 +1,4 @@
-using System;
 using Unity.Netcode;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace TPSDemo
@@ -10,8 +8,6 @@ namespace TPSDemo
     {
         [Tooltip("枪口位置")]
         public Transform Muzzle;
-        [Tooltip("攻击间隔")]
-        public float DelayBetweenShots;
 
         [Header("子弹相关")]
         [Tooltip("子弹预制体")]
@@ -20,12 +16,8 @@ namespace TPSDemo
         public float BulletSpeed;
         [Tooltip("子弹碰撞层")]
         public LayerMask HitLayerMask = -1;
-        [Tooltip("伤害")]
-        public float Damage;
+        
         //public event Action<GameObject> OnTargetHit;
-
-        [Tooltip("攻击范围")]
-        public float MaxFireRange = 10f;
 
         [Header("资源")]
         [Tooltip("攻击音效")]
@@ -33,30 +25,11 @@ namespace TPSDemo
         [Tooltip("枪口闪光")]
         public GameObject MuzzleFlashPrefab;
 
-        float m_TimeLastFired = 0f;
-
-        public override bool InFireRange(Transform target)
-        {
-            return (transform.position - target.position).sqrMagnitude <= MaxFireRange * MaxFireRange;
-        }
-
-        public override bool CanFire()
-        {
-            if (!enabled) {
-                return false;
-            }
-            if (m_TimeLastFired + DelayBetweenShots > Time.time) {
-                return false;
-            }
-            return true;
-        }
-
-        public override void Fire(Vector3 pos)
+        public override void Attack(Vector3 pos)
         {
             if(!IsServer) {
                 return;
             }
-            m_TimeLastFired = Time.time;
 
             NormalBulletController bullet = Instantiate(BulletPrefab, Muzzle.position, Quaternion.LookRotation(Vector3.Normalize(pos - Muzzle.position)));
             bullet.Owner = Owner.gameObject;

@@ -7,11 +7,13 @@ namespace TPSDemo
     [System.Serializable]
     public struct ShopEntry
     {
-        public string ItemName;
-        public int ItemId;
+        public ItemData Good;
         public int Amount;
         public int Price;
         public float Discount;
+
+        public int GoodId => Good.Id;
+        public string GoodName => Good.Name;
 
         public int FinalPrice
         {
@@ -24,8 +26,7 @@ namespace TPSDemo
 
         public ShopEntry(int itemId, int price, int amount = 1, float discount = 1f)
         {
-            ItemName = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(itemId).Name;
-            ItemId = itemId;
+            Good = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(itemId);
             Price = price;
             Amount = amount;
             Discount = discount;
@@ -47,11 +48,6 @@ namespace TPSDemo
 
         PlayerController m_Player;
 
-        void Awake()
-        {
-            ShopManager.Instance.Register(this);
-        }
-
         private void OnEnable()
         {
             EventManager.AddListener<Event.TryBuyEvent>(TryBuy);
@@ -70,7 +66,9 @@ namespace TPSDemo
             Restock = config.Restock;
             RestockTime = config.RestockTime;
             RandomGoods = config.RandomGoods;
-            m_Goods = config.Goods?.Count > 0 ? config.Goods : new List<ShopEntry>();
+            // 修改会同步到SO，变相的存储?
+            // m_Goods = config.Goods?.Count > 0 ? config.Goods : new List<ShopEntry>();
+            m_Goods = new List<ShopEntry>(config.Goods);
         }
 
         public void AddGood(int itemId, int price, int amount = 1, float discount = 1f)
@@ -87,7 +85,9 @@ namespace TPSDemo
         {
             if (slot < 0 || slot >= m_Goods.Count)
                 return false;
-            m_Goods.RemoveAt(slot);
+            // 如果直接RemoveAt，会导致UI的slot和logic的slot不同步
+            // m_Goods.RemoveAt(slot);
+            m_Goods[slot] = default;
             return true;
         }
 
@@ -117,9 +117,9 @@ namespace TPSDemo
 
 
             var good = m_Goods[slot];
-            var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(good.ItemId);
+            var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(good.GoodId);
             if (itemData == null) {
-                Debug.LogError($"ItemData not found for id: {good.ItemId}");
+                Debug.LogError($"ItemData not found for id: {good.GoodId}");
                 return;
             }
             if (m_Player) {
@@ -129,16 +129,16 @@ namespace TPSDemo
 
         public bool Buy(PlayerController player, int slot)
         {
-            var good = m_Goods[slot];
-            int finalPrice = good.FinalPrice;
-            var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(good.ItemId);
+            var goodEntry = m_Goods[slot];
+            int finalPrice = goodEntry.FinalPrice;
+            var itemData = goodEntry.Good;
 
             bool isSuccess = false;
             string failInfo = "";
             if (player.Economy.CanAfford(m_MoneyId, finalPrice)) {
                 player.Economy.SpendMoney(m_MoneyId, finalPrice);
                 RemoveGood(slot);
-                player.Inventory.AddItem(itemData.Id, good.Amount);
+                player.Inventory.AddItem(itemData.Id, goodEntry.Amount);
                 isSuccess = true;
             } else {
                 isSuccess = false;

@@ -1,14 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ShopConfig", menuName = "Shop/ShopConfig")]
-public class ShopConfig: ScriptableObject
+namespace TPSDemo
 {
-    public int ShopId;
-    public string ShopName;
-    public int MoneyId;
-    public bool Restock = false;
-    public float RestockTime = 0f;
-    public bool RandomGoods = false;
-    public List<TPSDemo.ShopEntry> Goods = new List<TPSDemo.ShopEntry>();
+
+    [CreateAssetMenu(fileName = "ShopConfig", menuName = "Shop/ShopConfig")]
+    public class ShopConfig : ScriptableObject
+    {
+        public int ShopId;
+        public string ShopName;
+        public int MoneyId;
+        public bool Restock = false;
+        public float RestockTime = 0f;
+        public bool RandomGoods = false;
+        public List<ShopEntry> Goods = new List<ShopEntry>();
+    }
 }

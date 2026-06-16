@@ -1,21 +1,51 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
-namespace Assets.Scripts.Enemy.Combat
+namespace TPSDemo
 {
-	public class MeleeAttacker: MonoBehaviour
-	{
+    /// <summary>
+    /// 需要放在Enemy的下一级
+    /// </summary>
+	public class MeleeAttacker: AttackerBase
+    {
+        [Tooltip("攻击盒持续时间（需小于等于攻击间隔）")]
+        [SerializeField] private float m_Time = 0.1f;
+        [Tooltip("攻击盒")]
+        [SerializeField] private Hitbox m_Hitbox;
 
-		// Use this for initialization
-		void Start()
-		{
+        private Coroutine m_Coroutine;
 
-		}
+        protected void Awake()
+        {
+            m_Hitbox.OnCollision += OnCollisionPlayerHurtbox;
+        }
+        public override void Attack(Vector3 pos)
+        {
+            if (!IsServer) {
+                return;
+            }
 
-		// Update is called once per frame
-		void Update()
-		{
+            transform.LookAt(pos);
+            m_Hitbox.SetEnable(true);
 
-		}
-	}
+            if (m_Coroutine != null) {
+                StopCoroutine(m_Coroutine);
+                m_Coroutine = null;
+            }
+
+            WhenAttack();
+            m_Coroutine = StartCoroutine(CloseHitboxCoroutine());
+        }
+
+        private IEnumerator CloseHitboxCoroutine()
+        {
+            yield return new WaitForSeconds(m_Time);
+            m_Hitbox.SetEnable(false);
+        }
+
+        private void OnCollisionPlayerHurtbox(Damageable damageable)
+        {
+            damageable.InflictDamage(transform.parent.gameObject, Damage);
+        }
+    }
 }

@@ -43,7 +43,6 @@ namespace TPSDemo
         {
             base.OnNetworkSpawn();
             if (IsServer) {
-                print("Set max life time: " + MaxLifeTime);
                 Destroy(gameObject, MaxLifeTime);
             }
         }

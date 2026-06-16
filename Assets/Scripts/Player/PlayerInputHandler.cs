@@ -51,8 +51,8 @@ public class PlayerInputHandler : NetworkBehaviour
         map.FindAction("Scroll").performed += OnScroll;
         map.FindAction("Aim").performed += OnAimPressed;
         map.FindAction("Aim").canceled += OnAimReleased;
-        map.FindAction("Fire").performed += OnFire;
-        map.FindAction("Fire").canceled += OnFire;
+        map.FindAction("Attack").performed += OnFire;
+        map.FindAction("Attack").canceled += OnFire;
         map.FindAction("Reload").performed += OnReload;
         map.FindAction("Interaction").performed += OnInteraction;
         map.FindAction("Inventory").performed += OnInventory;
@@ -74,8 +74,8 @@ public class PlayerInputHandler : NetworkBehaviour
         map.FindAction("Look").performed -= OnLook;
         map.FindAction("Aim").performed -= OnAimPressed;
         map.FindAction("Aim").canceled -= OnAimReleased;
-        map.FindAction("Fire").performed -= OnFire;
-        map.FindAction("Fire").canceled -= OnFire;
+        map.FindAction("Attack").performed -= OnFire;
+        map.FindAction("Attack").canceled -= OnFire;
         map.FindAction("Reload").performed -= OnReload;
         map.FindAction("Interaction").performed -= OnInteraction;
         map.FindAction("Inventory").performed -= OnInventory;

@@ -12,7 +12,10 @@ namespace TPSDemo
     {
         [Header("References")]
         [SerializeField] private Animator m_Animator = null;
-        [SerializeField] AnimationClip[] m_Clips;
+
+        [SerializeField] AnimationClip IdleClip, WalkClip, AttackClip, HitClip;
+
+        private AnimatorOverrideController m_Override;
 
         [Header("Settings")]
         [SerializeField] private float m_DefaultBlendDuration = 0.2f;
@@ -21,6 +24,9 @@ namespace TPSDemo
         private void Awake()
         {
             m_Animator = GetComponent<Animator>();
+            m_Override = new AnimatorOverrideController(m_Animator.runtimeAnimatorController);
+            m_Animator.runtimeAnimatorController = m_Override;
+            InitializeOverride();
         }
 
         private bool Valid() => m_Animator != null;
@@ -40,7 +46,7 @@ namespace TPSDemo
 
             if (duration > 0) {
                 int hash = Animator.StringToHash(stateName);
-                m_Animator.CrossFadeInFixedTime(hash, duration);
+                m_Animator.CrossFadeInFixedTime(hash, duration, 0);
             } else {
                 m_Animator.Play(stateName, 0, 0f);
             }
@@ -64,8 +70,6 @@ namespace TPSDemo
             }
             m_Animator.speed = 0f;
         }
-
-        // ===== 查询接口 =====
 
         /// <summary>
         /// 当前是否正在播放指定动画（可带前缀匹配，如 "Run" 匹配 "Run_Forward"）
@@ -112,6 +116,14 @@ namespace TPSDemo
             }
             var clipInfo = m_Animator.GetCurrentAnimatorClipInfo(0);
             return clipInfo.Length > 0 ? clipInfo[0].clip.name : "None";
+        }
+
+        private void InitializeOverride()
+        {
+            m_Override["Idle"] = IdleClip;
+            m_Override["Walk"] = WalkClip;
+            m_Override["Attack"] = AttackClip;
+            m_Override["Hit"] = HitClip;
         }
     }
 }

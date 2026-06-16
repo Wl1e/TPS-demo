@@ -19,8 +19,11 @@ MonoBehaviour:
   RestockTime: 0
   RandomGoods: 0
   Goods:
-  - ItemName: Ammo
-    ItemId: 1
-    Amount: 30
+  - Good: {fileID: 11400000, guid: c39d5ab3fb5697143999f38ccb7f39dd, type: 2}
+    Amount: 1
     Price: 100
-    Discount: 100
+    Discount: 97
+  - Good: {fileID: 11400000, guid: 05778468d06cb404b8c7e8fb7e9fa0a2, type: 2}
+    Amount: 2
+    Price: 10000
+    Discount: 50
