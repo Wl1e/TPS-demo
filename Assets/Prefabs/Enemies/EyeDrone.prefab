@@ -485,7 +485,7 @@ MonoBehaviour:
   Owner: {fileID: 2700602984528541365}
   CD: 1
   Damage: 10
-  m_AttackRange: 1
+  m_AttackRange: 1.5
   m_Time: 0.1
   m_Hitbox: {fileID: 9189784954787561295}
 --- !u!1 &4145649519649269496
@@ -893,7 +893,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 0
+  m_Speed: 1
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -1016,7 +1016,7 @@ Transform:
   m_GameObject: {fileID: 8763018216705361920}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0.2}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

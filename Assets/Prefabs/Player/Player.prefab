@@ -1169,7 +1169,7 @@ MonoBehaviour:
   Gravity: 9.81
   GroundLayer:
     serializedVersion: 2
-    m_Bits: 3072
+    m_Bits: 4197376
   JumpForce: 5
   RotationSmoothTime: 0.1
   RotationType: 0

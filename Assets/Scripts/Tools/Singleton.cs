@@ -8,7 +8,7 @@ public abstract class Singleton<T>: MonoBehaviour where T : Singleton<T>
     static public T Instance => m_Instance;
     protected virtual void Awake()
     {
-        if(m_Instance != null) {
+        if(m_Instance != null && m_Instance != this) {
             Destroy(gameObject);
         }
         m_Instance = (T)this;
@@ -21,7 +21,7 @@ public abstract class NetworkSingleton<T> : NetworkBehaviour where T : NetworkSi
     static public T Instance => m_Instance;
     protected virtual void Awake()
     {
-        if (m_Instance != null) {
+        if (m_Instance != null && m_Instance != this) {
             Destroy(gameObject);
         }
         m_Instance = (T)this;

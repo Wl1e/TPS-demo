@@ -2,6 +2,7 @@
 
 
 using System.Collections.Generic;
+using TPSDemo;
 using UnityEngine;
 
 // 事件越来越多，后续考虑换成SO Event
@@ -220,6 +221,22 @@ namespace TPSDemo.Event
     {
         public string Message;
         public float Duration = -1f;
+    }
+    #endregion
+
+    #region Map
+    /// <summary>地图状态变更（Idle/Active/Completed）</summary>
+
+    public class MapChangeEvent: InternalEvent
+    {
+        public int OldMapId;
+        public int NewMapId;
+    }
+
+    public class MapStateChangedEvent: InternalEvent
+    {
+        public int MapId;
+        public MapState State;
     }
     #endregion
 }

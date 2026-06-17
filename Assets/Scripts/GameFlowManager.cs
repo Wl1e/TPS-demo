@@ -4,21 +4,12 @@ namespace TPSDemo
 {
     public class GameFlowManager : MonoBehaviour
     {
-        PlayerManager m_PlayerManager;
-        [SerializeField] UI.UIController m_UI;
-        void Start()
+        [SerializeField] System.Collections.Generic.List<GameObject> m_PersistentObjects;
+        private void Awake()
         {
-            //Cursor.lockState = CursorLockMode.Locked;
-            m_PlayerManager = GetComponentInChildren<PlayerManager>();
-        }
-
-        private void OnDestroy()
-        {
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
+            foreach (var go in m_PersistentObjects) {
+                DontDestroyOnLoad(go);
+            }
         }
     }
 }
