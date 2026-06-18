@@ -18,6 +18,9 @@ namespace TPSDemo.UI
                 Loadout.SwapWeapon(SlotIdx, drag.SlotIdx);
             } else if(itemType == ItemType.Ammo) {
                 EventManager.Broadcast(new Event.TryReloadEvent { WeaponIdx = SlotIdx });
+                // 合并ItemType中的各个部件为一个枚举吗？
+            } else if(itemType == ItemType.Scope || itemType == ItemType.Magazine) {
+                EventManager.Broadcast(new Event.TryEquipAttachment { InventoryIdx = drag.SlotIdx });
             }
         }
         public void SetWeapon(WeaponUIData data)

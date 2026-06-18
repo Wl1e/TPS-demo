@@ -15,8 +15,8 @@ MonoBehaviour:
   Id: ItemData
   m_DataList:
   - {fileID: 11400000, guid: c39d5ab3fb5697143999f38ccb7f39dd, type: 2}
-  - {fileID: 11400000, guid: 05778468d06cb404b8c7e8fb7e9fa0a2, type: 2}
   - {fileID: 11400000, guid: b63405bd50e52f246852d8a85e3588f8, type: 2}
   - {fileID: 11400000, guid: 4f323663f215b0c4dada5a50b0594dee, type: 2}
   - {fileID: 11400000, guid: 3f399f0df03f2ea4db0526385546c8e3, type: 2}
+  - {fileID: 11400000, guid: 05778468d06cb404b8c7e8fb7e9fa0a2, type: 2}
   - {fileID: 11400000, guid: 1d0f1fa940c33bb439b4e700f10cb459, type: 2}

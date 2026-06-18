@@ -226,10 +226,7 @@ using Event;
             data.WeaopnId = weapon.WeaponId;
             data.CurAmmo = weapon.CurrentAmmo;
             data.MaxAmmo = m_Player.Inventory.GetAmount(weapon.AmmoId);
-            data.AttachmentIdList = new List<(IAttachment.AttachmentSlot, int)>();
-            foreach (var attachment in weapon.Attachments) {
-                data.AttachmentIdList.Add((attachment.Key, attachment.Value.Id));
-            }
+            data.AttachmentIdList = weapon.GetAttachmentList();
             return data;
         }
 

@@ -948,6 +948,37 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!1 &7697645733594970520
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7516226008607085663}
+  m_Layer: 0
+  m_Name: CineCameraRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7516226008607085663
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7697645733594970520}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.22651, y: 1.03218, z: -0.1646}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6091626507694201701}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8301697018837147508
 GameObject:
   m_ObjectHideFlags: 0
@@ -1001,6 +1032,7 @@ Transform:
   - {fileID: 6594114352117876478}
   - {fileID: 6643544838676493280}
   - {fileID: 1167400201805697760}
+  - {fileID: 7516226008607085663}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8103732551799067159
@@ -1227,6 +1259,7 @@ MonoBehaviour:
   DefaultMode: FreeLook
   VerticalLookLimit: 70
   EnableLook: 1
+  m_ModeRoot: {fileID: 7516226008607085663}
   LookEvent: {fileID: 11400000, guid: cc086036077558b4c9781c6f968b7fe1, type: 2}
   AimType: 0
 --- !u!114 &2565274116203356825

@@ -155,6 +155,8 @@ namespace TPSDemo
             foreach(var e in Money) {
                 m_Economy.AddMoney(e.x, e.y);
             }
+
+            //DontDestroyOnLoad(gameObject);
         }
 
         public override void OnDestroy()

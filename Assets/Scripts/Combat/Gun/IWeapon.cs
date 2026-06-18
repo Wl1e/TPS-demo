@@ -28,9 +28,11 @@ namespace TPSDemo
         public void StartReload();
         public void EndReload(int amount);
         public void ClearAmmo();
-        public void AddAttachment(AttachmentBase attachment);
-        public void RemoveAttachment(AttachmentBase attachment);
+        public bool SupportAttachment(IAttachment.AttachmentSlot slot, int attachmentId);
+        public void AddAttachment(IAttachment.AttachmentSlot slot, int attachmentId);
+        public void RemoveAttachment(IAttachment.AttachmentSlot slot);
         public Dictionary<IAttachment.AttachmentSlot, IAttachment> Attachments { get; }
+        public List<(IAttachment.AttachmentSlot, int)> GetAttachmentList();
         public float GetScopeRatio();
         public void OnEquip();
         public void OnUnequip();

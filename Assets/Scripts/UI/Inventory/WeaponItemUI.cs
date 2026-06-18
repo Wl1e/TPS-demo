@@ -10,7 +10,7 @@ namespace TPSDemo.UI
         public Image Base;
         public Image Scope;
         public Image Magazine;
-        List<Image> Attachments;
+        private List<Image> m_Attachments;
         public int WeaponId;
 
         public DragType Type { get; private set; }
@@ -22,7 +22,7 @@ namespace TPSDemo.UI
 
         private void Awake()
         {
-            Attachments = new List<Image>{
+            m_Attachments = new List<Image>{
                 Scope,
                 Magazine
             };
@@ -35,6 +35,10 @@ namespace TPSDemo.UI
             Base.sprite = icon;
             Base.enabled = icon != null;
             Type = ItemUIUtils.GetDragType(WeaponId);
+
+            print("m_Attachments: " + m_Attachments);
+
+            UpdateAttachmentImage(false);
 
             foreach (var attachment in attachmentList) {
                 SetAttachmentSprite(attachment.Item1, attachment.Item2);
@@ -64,9 +68,8 @@ namespace TPSDemo.UI
         {
             DragManager.Instance.StartDrag(this);
             Base.enabled = false;
-            foreach(var attachment in Attachments) {
-                attachment.enabled = false;
-            }
+
+            UpdateAttachmentImage(false);
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -77,13 +80,26 @@ namespace TPSDemo.UI
         {
             DragManager.Instance.EndDrag();
             Base.enabled = true;
-            foreach (var attachment in Attachments) {
-                attachment.enabled = true;
-            }
+
+            UpdateAttachmentImage(true);
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
+        }
+
+        private void UpdateAttachmentImage(bool enable)
+        {
+            if (Scope.sprite != null) {
+                Scope.enabled = enable;
+            } else {
+                Scope.enabled = false;
+            }
+            if (Magazine.sprite != null) {
+                Magazine.enabled = enable;
+            } else {
+                Magazine.enabled = false;
+            }
         }
     }
 }

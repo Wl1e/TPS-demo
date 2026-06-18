@@ -17,6 +17,7 @@ namespace TPSDemo
         [SerializeField] List<MapConfig> m_MapConfigs;
         private Map m_CurrentMap;
         public Map CurrentMap => m_CurrentMap;
+        private Scene m_CurrentScene;
         public MapState State => m_CurrentMap != null ? m_CurrentMap.State : MapState.Idle;
 
         /// <summary>同步给客户端：当前地图状态</summary>
@@ -29,6 +30,7 @@ namespace TPSDemo
             {
                 //m_SyncedMapId.OnValueChanged += OnMapIdChanged;
                 m_SyncedState.OnValueChanged += OnStateChanged;
+                NetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
             }
         }
 
@@ -71,6 +73,18 @@ namespace TPSDemo
         }
 
         /// <summary>
+        /// 注册Map
+        /// </summary>
+        public void RegisterMap(Map map)
+        {
+            if (map == null) {
+                return;
+            }
+            m_CurrentMap = map;
+            OnMapEntered();
+        }
+
+        /// <summary>
         /// 切换到指定地图配置的场景（仅服务器调用
         /// </summary>
         public void EnterMap(MapConfig config)
@@ -91,18 +105,23 @@ namespace TPSDemo
             NetworkManager.SceneManager.LoadScene(config.SceneName, LoadSceneMode.Single);
         }
 
-        //void OnSceneEvent(SceneEvent e)
-        //{
-        //    if (e.SceneEventType == SceneEventType.UnloadComplete) {
-        //        NetworkManager.SceneManager.LoadScene(m_NextMapConfig.SceneName, LoadSceneMode.Single);
-        //    } else if(e.SceneEventType == SceneEventType.LoadComplete) {
-        //        m_CurrentMap = e.Scene;
-        //        m_CurrentMap.OnEnter();
-        //        m_SyncedState.Value = (int)MapState.Active;
-        //        NetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
-        //        EventManager.Broadcast(new Event.MessageLogEvent { Message = $"进入: {config.MapName}" });
-        //    }
-        //}
+        private void OnMapEntered()
+        {
+            m_CurrentMap.OnEnter();
+        }
+
+        void OnSceneEvent(SceneEvent e)
+        {
+            if (e.SceneEventType == SceneEventType.UnloadComplete) {
+                //NetworkManager.SceneManager.LoadScene(SceneName, LoadSceneMode.Single);
+            } else if (e.SceneEventType == SceneEventType.LoadComplete) {
+                m_CurrentScene = e.Scene;
+                m_CurrentMap.OnEnter();
+                m_SyncedState.Value = (int)MapState.Active;
+                NetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
+                //EventManager.Broadcast(new Event.MessageLogEvent { Message = $"进入: {config.MapName}" });
+            }
+        }
 
         /// <summary>完成当前地图</summary>
         public void CompleteCurrentMap()

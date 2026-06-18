@@ -12,5 +12,6 @@ namespace TPSDemo
         public void Equip(IWeapon weapon);
         public void Unequip();
         public void SetParent(Transform parent);
+        public void Destroy();
     }
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 namespace TPSDemo
 {
 using Event;
+    using System.Net.Mail;
     using System.Runtime.ConstrainedExecution;
 
     public class WeaponManager : FirearmCombatSlot
@@ -59,6 +60,7 @@ using Event;
                 m_Loadout.OnAddWeapon += OnWeaponAdded;
                 m_Loadout.OnRemoveWeapon += OnWeaponRemoved;
                 EventManager.AddListener<TryReloadEvent>(TryReload2);
+                EventManager.AddListener<TryEquipAttachment>(FirearmTryEquipAttachment);
 
                 var firearms = m_Loadout.GetAllWeapon();
                 int index = -1;
@@ -83,6 +85,7 @@ using Event;
                 m_Loadout.OnAddWeapon -= OnWeaponAdded;
                 m_Loadout.OnRemoveWeapon -= OnWeaponRemoved;
                 EventManager.RemoveListener<TryReloadEvent>(TryReload2);
+                EventManager.RemoveListener<TryEquipAttachment>(FirearmTryEquipAttachment);
             }
             m_CurrentFirearmIndex.OnValueChanged -= OnWeaponChanged;
             base.OnNetworkDespawn();
@@ -320,6 +323,25 @@ using Event;
             if (IsOwner) {
                 EventManager.Broadcast(new WeaponChangedEvent { OldIdx = pre, NewIdx = CurrentFirearmIndex });
             }
+        }
+
+        private void FirearmTryEquipAttachment(TryEquipAttachment evt)
+        {
+            var weapon = m_Loadout.GetWeapon(evt.WeaponIdx);
+            if (weapon == null) {
+                return;
+            }
+
+            var item = m_Inventory.GetItem(evt.InventoryIdx);
+            if(!item.ItemData.Prefab.TryGetComponent<IAttachment>(out var attachment)) {
+                return;
+            }
+
+            if (!weapon.SupportAttachment(attachment.Slot, attachment.Id)) {
+                return;
+            }
+
+            weapon.AddAttachment(attachment.Slot, attachment.Id);
         }
     }
 }

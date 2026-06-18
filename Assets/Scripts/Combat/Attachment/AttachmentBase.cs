@@ -24,14 +24,19 @@ namespace TPSDemo
         public void Equip(IWeapon weapon)
         {
             Weapon = weapon;
-            Weapon.AddAttachment(this);
             OnEquip();
         }
         public void Unequip()
         {
-            Weapon.RemoveAttachment(this);
             OnUnequip();
+            Weapon = null;
         }
+
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
+
         public abstract void OnEquip();
         public abstract void OnUnequip();
         public abstract void OnAim();

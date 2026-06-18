@@ -42,6 +42,8 @@ namespace TPSDemo
             m_Owner = GetComponent<PlayerController>();
         }
 
+        public InventorySlot GetItem(int slotIdx) => m_Items[slotIdx];
+
         int FindFirstEmptySlot()
         {
             return m_Items.FindIndex(0, item => item == null);
@@ -221,8 +223,6 @@ namespace TPSDemo
             //DropItem(m_Items[idx].ItemData, m_Items[idx].Amount);
             m_Items[idx] = null;
         }
-
-
 
         // 基本上更新都和Slot的修改有关，直接给Slot加一个ChangedAction，然后让Inventory监听修改直接更新？
         void UpdateInventory()

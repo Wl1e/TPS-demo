@@ -32,7 +32,7 @@ namespace TPSDemo
 
         private void Awake()
         {
-            MapManager.Instance
+            MapManager.Instance.RegisterMap(this);
         }
 
         #region 公共方法

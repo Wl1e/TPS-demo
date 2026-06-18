@@ -90,6 +90,12 @@ namespace TPSDemo.Event
         public int WeaponIdx;
     }
 
+    public class TryEquipAttachment: InternalEvent
+    {
+        public int WeaponIdx;
+        public int InventoryIdx;
+    }
+
     #endregion
 
     #region Combat

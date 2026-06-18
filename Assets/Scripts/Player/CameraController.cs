@@ -14,12 +14,12 @@ namespace TPSDemo
         [Tooltip("灵敏度")]
         public float Sensitivity;
         [Tooltip("相机根节点")]
-        [SerializeField] Transform m_CameraRoot;
+        [SerializeField] private Transform m_CameraRoot;
 
         // Cinemachine
         [Tooltip("Cinemachine列表")]
-        [SerializeField] List<CameraMode> m_Modes = new List<CameraMode>();
-        List<CameraMode> m_InitializedCameraModes = new List<CameraMode>();
+        [SerializeField] private List<CameraMode> m_Modes = new();
+        private readonly List<CameraMode> m_InitializedCameraModes = new();
         [Tooltip("默认模式")]
         public string DefaultMode;
         public CameraMode CurrentMode { get; private set; }
@@ -27,6 +27,9 @@ namespace TPSDemo
         public float VerticalLookLimit = 70f;
         [Tooltip("是否启用视角旋转")]
         public bool EnableLook;
+
+        [Tooltip("存放CameraMode的根节点（需设置为DontDestroyOnLoad）")]
+        [SerializeField] private Transform m_ModeRoot;
         /// <summary>
         ///  当前水平角度
         /// </summary>
@@ -68,7 +71,7 @@ namespace TPSDemo
                 }
                 
                 foreach (var mode in m_Modes) {
-                    var instance = Instantiate(mode);
+                    var instance = Instantiate(mode, m_ModeRoot);
                     m_InitializedCameraModes.Add(instance);
                     instance.SetTarget(m_CameraRoot);
                 }
@@ -120,6 +123,7 @@ namespace TPSDemo
 
         void OnLookInput(Vector2 lookInput)
         {
+            Debug.Log("Look: " + lookInput);
             if (!EnableLook) {
                 return;
             }

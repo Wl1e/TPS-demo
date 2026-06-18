@@ -123,6 +123,8 @@ namespace TPSDemo
             m_Owner = holder;
         }
 
+        #region Fire
+
         public void StartFire(Transform target)
         {
             m_Target = target;
@@ -181,6 +183,9 @@ namespace TPSDemo
 
             PlayAudioAndMuzzleFlash();
         }
+        #endregion
+
+        #region Ammo
 
         public bool ValidReload() => m_AmmoHandler.ValidReload();
         public void StartReload() => m_AmmoHandler.StartReload();
@@ -188,9 +193,18 @@ namespace TPSDemo
 
         public void ClearAmmo() => m_AmmoHandler.ComsumeAmmo(CurrentAmmo);
 
-        public void AddAttachment(AttachmentBase attachment) => m_AttachmentManager.AddAttachment(attachment);
-        public void RemoveAttachment(AttachmentBase attachment) => m_AttachmentManager.RemoveAttachment(attachment);
+        #endregion
+
+        #region Attachment
+
+        public bool SupportAttachment(IAttachment.AttachmentSlot slot, int attachmentId)
+        {
+            return true;
+        }
+        public void AddAttachment(IAttachment.AttachmentSlot slot, int attachmentId) => m_AttachmentManager.AddAttachment(slot, attachmentId);
+        public void RemoveAttachment(IAttachment.AttachmentSlot slot) => m_AttachmentManager.RemoveAttachment(slot);
         public Dictionary<IAttachment.AttachmentSlot, IAttachment> Attachments => m_AttachmentManager.Attachments;
+
         public float GetScopeRatio()
         {
             var scope = m_AttachmentManager.GetAttachment(IAttachment.AttachmentSlot.Scope);
@@ -200,6 +214,12 @@ namespace TPSDemo
             }
             return 1f;
         }
+
+        public List<(IAttachment.AttachmentSlot, int)> GetAttachmentList() => m_AttachmentManager.GetAttachmentList();
+
+        #endregion
+
+        #region Pos
 
         public void OnEquip()
         {
@@ -217,6 +237,7 @@ namespace TPSDemo
         {
             m_Attachable.Attach(node);
         }
+        #endregion
 
         public NetworkObject GetNO() => GetComponentInParent<NetworkObject>();
     }

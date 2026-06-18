@@ -8,7 +8,7 @@ namespace TPSDemo
     {
         public Transform ItemRoot;
 
-        HashSet<ItemPickup> m_WorldItems = new HashSet<ItemPickup>();
+        private readonly HashSet<ItemPickup> m_WorldItems = new();
 
         public void SpawnItem(ItemData data, Vector3 pos)
         {
@@ -21,5 +21,8 @@ namespace TPSDemo
         {
             m_WorldItems.Remove(item);
         }
+
+        static public GameObject CreateItemGO(ItemData data) => Instantiate(data.Prefab);
+        static public T CreateItemGO<T>(ItemData data) => CreateItemGO(data).GetComponent<T>();
     }
 }
