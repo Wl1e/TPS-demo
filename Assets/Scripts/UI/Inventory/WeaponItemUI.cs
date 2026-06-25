@@ -10,9 +10,12 @@ namespace TPSDemo.UI
         public Image Base;
         public Image Scope;
         public Image Magazine;
-        private List<Image> m_Attachments;
+        public Image Grip;
+        public Image Laser;
+        public Image Muzzle;
         public int WeaponId;
 
+        public DragResource Resource => DragResource.Loadout;
         public DragType Type { get; private set; }
         public Image DragIcon => Base;
         public WeaponSlotUI Slot;   
@@ -20,38 +23,30 @@ namespace TPSDemo.UI
 
         int IDragable.ItemId => WeaponId;
 
-        private void Awake()
+        public void UpdateInfo(int weaponId, List<(IAttachment.AttachmentSlot, int)> attachmentList)
         {
-            m_Attachments = new List<Image>{
-                Scope,
-                Magazine
-            };
-        }
-
-        public void UpdateInfo(int itemId, List<(IAttachment.AttachmentSlot, int)> attachmentList)
-        {
-            WeaponId = itemId;
-            var icon = ItemUIUtils.GetItemSprite(WeaponId);
+            WeaponId = weaponId;
+            var icon = ItemUIUtils.GetItemIcon(WeaponId);
             Base.sprite = icon;
             Base.enabled = icon != null;
             Type = ItemUIUtils.GetDragType(WeaponId);
 
-            print("m_Attachments: " + m_Attachments);
-
-            UpdateAttachmentImage(false);
+            SetAttachmentEnable(false);
 
             foreach (var attachment in attachmentList) {
+                print($"{attachment.Item1} is {attachment.Item2}");
                 SetAttachmentSprite(attachment.Item1, attachment.Item2);
             }
         }
 
         void SetAttachmentSprite(IAttachment.AttachmentSlot slot, int attachmentId)
         {
-            var sprite = ItemUIUtils.GetItemSprite(attachmentId);
+            var sprite = ItemUIUtils.GetAttachmentSprite(WeaponId, attachmentId);
             if (sprite == null) {
                 print($"attachment{attachmentId} dont have Icon");
                 return;
             }
+            print($"Set {slot} is {sprite}");
             switch (slot) {
                 case IAttachment.AttachmentSlot.Scope:
                     Scope.sprite = sprite;
@@ -61,6 +56,18 @@ namespace TPSDemo.UI
                     Magazine.sprite = sprite;
                     Magazine.enabled = true;
                     break;
+                case IAttachment.AttachmentSlot.Grip:
+                    Grip.sprite = sprite;
+                    Grip.enabled = true;
+                    break;
+                case IAttachment.AttachmentSlot.Muzzle:
+                    Muzzle.sprite = sprite;
+                    Muzzle.enabled = true;
+                    break;
+                case IAttachment.AttachmentSlot.Laser:
+                    Laser.sprite = sprite;
+                    Laser.enabled = true;
+                    break;
             }
         }
 
@@ -69,7 +76,7 @@ namespace TPSDemo.UI
             DragManager.Instance.StartDrag(this);
             Base.enabled = false;
 
-            UpdateAttachmentImage(false);
+            SetAttachmentEnable(false);
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -81,25 +88,28 @@ namespace TPSDemo.UI
             DragManager.Instance.EndDrag();
             Base.enabled = true;
 
-            UpdateAttachmentImage(true);
+            SetAttachmentEnable(true);
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
         }
 
-        private void UpdateAttachmentImage(bool enable)
+        private void SetAttachmentEnable(bool enable)
         {
-            if (Scope.sprite != null) {
-                Scope.enabled = enable;
-            } else {
-                Scope.enabled = false;
+            void f(Image image)
+            {
+                if (image.sprite != null) {
+                    image.enabled = enable;
+                } else {
+                    image.enabled = false;
+                }
             }
-            if (Magazine.sprite != null) {
-                Magazine.enabled = enable;
-            } else {
-                Magazine.enabled = false;
-            }
+            f(Scope);
+            f(Magazine);
+            f(Grip);
+            f(Laser);
+            f(Muzzle);
         }
     }
 }

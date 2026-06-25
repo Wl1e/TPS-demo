@@ -27,6 +27,7 @@ public class PlayerInputHandler : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
         if (IsOwner) {
             RegisterInputAction();
             Cursor.lockState = CursorLockMode.Locked;
@@ -37,6 +38,7 @@ public class PlayerInputHandler : NetworkBehaviour
         if (IsOwner) {
             UnregisterInputAction();
         }
+        base.OnNetworkDespawn();
     }
 
     private void RegisterInputAction()

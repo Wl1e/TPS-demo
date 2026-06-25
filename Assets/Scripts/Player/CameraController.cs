@@ -61,9 +61,8 @@ namespace TPSDemo
         }
         public override void OnNetworkSpawn()
         {
+            base.OnNetworkSpawn();
             if (IsOwner) {
-                base.OnNetworkSpawn();
-
                 m_Camera = Camera.main;
                 m_Camera.TryGetComponent(out m_CameraBrain);
                 if (!m_CameraBrain) {
@@ -93,8 +92,8 @@ namespace TPSDemo
                 m_Modes.Clear();
                 EventManager.RemoveListener<AimEvent>(OnAim);
                 LookEvent.UnregisterListener(OnLookInput);
-                base.OnNetworkDespawn();
             }
+            base.OnNetworkDespawn();
         }
 
         // Update is called once per frame
@@ -123,7 +122,6 @@ namespace TPSDemo
 
         void OnLookInput(Vector2 lookInput)
         {
-            Debug.Log("Look: " + lookInput);
             if (!EnableLook) {
                 return;
             }

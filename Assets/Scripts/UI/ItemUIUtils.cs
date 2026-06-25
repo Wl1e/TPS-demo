@@ -22,9 +22,21 @@ namespace TPSDemo.UI
             return itemData.DragType;
         }
 
-        public static Sprite GetItemSprite(int itemId) =>
+        public static Sprite GetItemIcon(int itemId) =>
             ResourceManager.Instance.GetResource<ItemDataList>("ItemData")
                 .GetItemData(itemId)?.Icon;
+        public static Sprite GetAttachmentSprite(int weaponId, int attachmentId)
+        {
+            var weaponData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData")
+                .GetItemData(weaponId);
+            var attachmentData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData")
+                .GetItemData(attachmentId);
+            if(!weaponData || !attachmentData) {
+                return null;
+            }
+            return ResourceManager.Instance.GetResource<AttachmentSpriteMap>("AttachmentSprite")
+                .GetSprite(weaponData, attachmentData);
+        }
         static public ItemType GetItemType(int itemId) =>
             ResourceManager.Instance.GetResource<ItemDataList>("ItemData")
                 .GetItemData(itemId)?.Type ?? ItemType.None;

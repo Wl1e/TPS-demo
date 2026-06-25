@@ -15,11 +15,11 @@ namespace TPSDemo
         public float Scale;
     }
 
-    [RequireComponent(typeof(AudioSource))]
     public class Weapon: NetworkBehaviour, IWeapon
     {
         // 武器所有者
         GameObject m_Owner;
+        public GameObject GO => gameObject;
         public GameObject Owner => m_Owner;
         [Tooltip("枪口位置")]
         public Transform Muzzle;
@@ -80,11 +80,14 @@ namespace TPSDemo
 
         // Action
         public event Action OnFire;
+        public event Action OnAttachmentChanged;
 
         // Resrouce
         [Header("资源")]
         [Tooltip("枪口特效预制体")]
         public GameObject MuzzleFlashPrefab;
+        [Tooltip("枪焰持续时间")]
+        public float MuzzleFlashTime = 0.09f;
         [Tooltip("射击音效")]
         public AudioClip ShootSfx;
         [Tooltip("换弹音效")]
@@ -98,7 +101,6 @@ namespace TPSDemo
             m_AttachmentManager = GetComponentInChildren<AttachmentManager>();
             m_Attachable = GetComponent<AttachableBehaviour>();
             m_Behaviour.SetMuzzle(Muzzle);
-            
         }
 
         void Update()
@@ -115,6 +117,7 @@ namespace TPSDemo
             }
             if(IsOwner) {
                 m_FireMechanism.OnShouldFire += TryFire;
+                m_AttachmentManager.OnAttachmentChanged += AttachmentChanged;
             }
         }
 
@@ -165,10 +168,9 @@ namespace TPSDemo
         {
             // 枪口焰方向朝向-z，所以取反
             Director.Instance.RequestEffect(MuzzleFlashPrefab)
-                .WithParent(transform)
-                .WithPosition(Muzzle.localPosition)
+                .WithParent(Muzzle)
                 .LookAt(-Muzzle.forward)
-                .WithDuration(m_FireMechanism.FireInternal)
+                .WithDuration(MuzzleFlashTime)
                 .Create();
             
             Director.Instance.RequestAudio(ShootSfx).AttachTo(transform).Play();
@@ -179,7 +181,7 @@ namespace TPSDemo
             if (!m_AmmoHandler.EnoughAmmo()) {
                 return;
             }
-            FireServerRpc(Vector3.Normalize(m_Target.position - Muzzle.position));
+            FireServerRpc(m_Target.position - Muzzle.position);
 
             PlayAudioAndMuzzleFlash();
         }
@@ -197,10 +199,7 @@ namespace TPSDemo
 
         #region Attachment
 
-        public bool SupportAttachment(IAttachment.AttachmentSlot slot, int attachmentId)
-        {
-            return true;
-        }
+        public bool SupportAttachment(IAttachment.AttachmentSlot slot, int attachmentId) => m_AttachmentManager.SupportAttachment(slot, attachmentId);
         public void AddAttachment(IAttachment.AttachmentSlot slot, int attachmentId) => m_AttachmentManager.AddAttachment(slot, attachmentId);
         public void RemoveAttachment(IAttachment.AttachmentSlot slot) => m_AttachmentManager.RemoveAttachment(slot);
         public Dictionary<IAttachment.AttachmentSlot, IAttachment> Attachments => m_AttachmentManager.Attachments;
@@ -209,7 +208,7 @@ namespace TPSDemo
         {
             var scope = m_AttachmentManager.GetAttachment(IAttachment.AttachmentSlot.Scope);
             // ？
-            if (scope is Scope scope1) {
+            if (scope is ScopeAttachment scope1) {
                 return (float)scope1.Ratio;
             }
             return 1f;
@@ -233,12 +232,24 @@ namespace TPSDemo
             transform.localRotation = Quaternion.Euler(Vector3.zero);
         }
 
+        private AttachableNode m_AttachableNode;
+        public AttachableNode AttachNode => m_AttachableNode;
+
         public void Attach(AttachableNode node)
         {
-            m_Attachable.Attach(node);
+            m_AttachableNode = node;
+            m_Attachable.Attach(m_AttachableNode);
         }
+
+        public void Detach() => m_Attachable.Detach();
+
         #endregion
 
-        public NetworkObject GetNO() => GetComponentInParent<NetworkObject>();
+
+        private void AttachmentChanged()
+        {
+            print("Weapon.AttachmentChanged");
+            OnAttachmentChanged?.Invoke();
+        }
     }
 }

@@ -8,16 +8,19 @@ namespace TPSDemo.UI
 {
     public class DragManager : Singleton<DragManager>
     {
-        [SerializeField] Image m_DragSprite;
-        [SerializeField] DropZoneUI m_DropZone;
-        [SerializeField] GraphicRaycaster m_Raycaster;
+        
 
-        IDragable m_Drag;
-        IDropTarget m_Target;
+        [SerializeField] private Image m_DragSprite;
+        [SerializeField] private DropZoneUI m_DropZone1;
+        [SerializeField] private DropZoneUI m_DropZone2;
+        [SerializeField] private GraphicRaycaster m_Raycaster;
+
+        private IDragable m_Drag;
+        private IDropTarget m_Target;
         bool m_IsDragging;
 
-        PointerEventData m_PointerData;
-        List<RaycastResult> m_RaycastResults = new List<RaycastResult>();
+        private PointerEventData m_PointerData;
+        private readonly List<RaycastResult> m_RaycastResults = new();
 
         public bool IsDragging => m_IsDragging;
 
@@ -25,7 +28,8 @@ namespace TPSDemo.UI
         {
             m_PointerData = new PointerEventData(EventSystem.current);
             m_DragSprite.gameObject.SetActive(false);
-            m_DropZone.gameObject.SetActive(false);
+            m_DropZone1.gameObject.SetActive(false);
+            m_DropZone2.gameObject.SetActive(false);
         }
 
         public void StartDrag(IDragable dragable)
@@ -34,7 +38,8 @@ namespace TPSDemo.UI
             m_DragSprite.sprite = dragable.DragIcon.sprite;
 
             m_DragSprite.gameObject.SetActive(true);
-            m_DropZone.gameObject.SetActive(true);
+            m_DropZone1.gameObject.SetActive(true);
+            m_DropZone2.gameObject.SetActive(true);
 
             m_IsDragging = true;
         }
@@ -55,7 +60,8 @@ namespace TPSDemo.UI
             }
 
             m_DragSprite.gameObject.SetActive(false);
-            m_DropZone.gameObject.SetActive(false);
+            m_DropZone1.gameObject.SetActive(false);
+            m_DropZone2.gameObject.SetActive(false);
         }
 
         void Update()

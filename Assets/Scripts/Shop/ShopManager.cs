@@ -29,15 +29,12 @@ namespace TPSDemo
 
         void InitializeAllShop()
         {
-            var shopRoot = new GameObject("ShopRoot");
-
             var shopConfig = ResourceManager.Instance.GetResource<ShopList>("Shop");
             foreach (var config in shopConfig.Configs) {
-                var shopGO = new GameObject("Shop" + config.ShopId, typeof(Shop));
-                shopGO.transform.SetParent(shopRoot.transform, false);
-                var shop = shopGO.GetComponent<Shop>();
-                shop.Initialize(config);
-                Register(shop);
+                if (m_Shops.ContainsKey(config.ShopId)) {
+                    return;
+                }
+                m_Shops.Add(config.ShopId, new Shop(config));
             }
 
         }
@@ -68,13 +65,6 @@ namespace TPSDemo
         public Shop GetCurrentShop()
         {
             return m_Shops.GetValueOrDefault(m_CurrentShopId, null);
-        }
-
-        public void Register(Shop shop)
-        {
-            if (m_Shops.ContainsKey(shop.ShopId))
-                return;
-            m_Shops.Add(shop.ShopId, shop);
         }
 
         public void Save()

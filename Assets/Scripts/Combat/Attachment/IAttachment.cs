@@ -7,7 +7,7 @@ namespace TPSDemo
     {
         public string Name { get; }
         public int Id { get; }
-        public enum AttachmentSlot { Scope, Muzzle, Grip, Stock, Magazine }
+        public enum AttachmentSlot { Scope, Muzzle, Grip, Laser, Magazine }
         public AttachmentSlot Slot { get; }
         public void Equip(IWeapon weapon);
         public void Unequip();

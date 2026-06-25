@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Services.Authentication;
@@ -7,9 +6,9 @@ using Unity.Services.Core;
 using Unity.Services.Multiplayer;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace TPSDemo
 {
-	public class GameNetworkManager: NetworkManager
+    public class GameNetworkManager : NetworkManager
     {
         public enum ConnectionState
         {
@@ -50,10 +49,10 @@ namespace Assets.Scripts
             if (UnityServices.Instance != null && UnityServices.Instance.State != ServicesInitializationState.Initialized) {
                 await UnityServices.InitializeAsync();
             }
-            if(!AuthenticationService.Instance.IsSignedIn) {
+            if (!AuthenticationService.Instance.IsSignedIn) {
                 AuthenticationService.Instance.SignInFailed += SignInFailed;
                 AuthenticationService.Instance.SignedIn += SignedIn;
-                if(m_ProfileName.Length <= 0) {
+                if (m_ProfileName.Length <= 0) {
                     m_ProfileName = "InitPrefileName";
                 }
                 AuthenticationService.Instance.SwitchProfile(m_ProfileName);
@@ -72,37 +71,42 @@ namespace Assets.Scripts
         {
             LogMessage($"[{Time.realtimeSinceStartup}] Connected event invoked for Client-{clientId}.");
         }
+
         private void OnClientDisconnect(ulong clientId)
         {
             LogMessage($"[{Time.realtimeSinceStartup}] Disconnected event invoked for Client-{clientId}.");
         }
+
         private void OnClientConnectionEvent(NetworkManager mgr, ConnectionEventData eventData)
         {
             LogMessage($"[{Time.realtimeSinceStartup}] Connection event {eventData.EventType} for Client-{eventData.ClientId}.");
         }
 
         #region AuthenticationService
+
         private void SignInFailed(RequestFailedException exp)
         {
             AuthenticationService.Instance.SignInFailed -= SignInFailed;
             Debug.LogError($"Failed to sign in {m_ProfileName} anonymously: {exp}");
         }
+
         private void SignedIn()
         {
             AuthenticationService.Instance.SignedIn -= SignedIn;
             Debug.Log($"Signed in anonymously with profile {m_ProfileName}");
         }
-        #endregion
+
+        #endregion AuthenticationService
 
         private void OnDrawDAHostGUI()
         {
-            if(GUILayout.Button("Start Host")) {
+            if (GUILayout.Button("Start Host")) {
                 OnClientStarted += ClientStarted;
                 OnClientStopped += ClientStopped;
                 StartHost();
                 Cursor.lockState = CursorLockMode.Locked;
             }
-            if(GUILayout.Button("Start Client")) {
+            if (GUILayout.Button("Start Client")) {
                 OnClientStarted += ClientStarted;
                 OnClientStopped += ClientStopped;
                 StartClient();
@@ -115,7 +119,7 @@ namespace Assets.Scripts
             GUILayout.Label("Session Name", GUILayout.Width(100));
 
             var connectionType = m_ConnectionState;
-            if(NetworkConfig.NetworkTopology == NetworkTopologyTypes.ClientServer &&
+            if (NetworkConfig.NetworkTopology == NetworkTopologyTypes.ClientServer &&
                 connectionType != ConnectionState.Host) {
                 connectionType = ConnectionState.Host;
             }
@@ -194,7 +198,7 @@ namespace Assets.Scripts
 
         private void Update()
         {
-            if(m_MessageLogs.Count == 0) {
+            if (m_MessageLogs.Count == 0) {
                 return;
             }
             for (int i = m_MessageLogs.Count - 1; i >= 0; i--) {
@@ -205,10 +209,12 @@ namespace Assets.Scripts
         }
 
         #region MessageLog
+
         private class MessageLog
         {
             public string Message { get; private set; }
             public float ExpirationTime { get; private set; }
+
             public MessageLog(string msg, float timeToLive)
             {
                 Message = msg;
@@ -218,13 +224,14 @@ namespace Assets.Scripts
 
         public void LogMessage(string msg, float liveTime = 10f)
         {
-            if(m_MessageLogs.Count > 0) {
+            if (m_MessageLogs.Count > 0) {
                 m_MessageLogs.Insert(0, new MessageLog(msg, liveTime));
             } else {
                 m_MessageLogs.Add(new MessageLog(msg, liveTime));
             }
             Debug.Log(msg);
         }
-        #endregion
+
+        #endregion MessageLog
     }
 }

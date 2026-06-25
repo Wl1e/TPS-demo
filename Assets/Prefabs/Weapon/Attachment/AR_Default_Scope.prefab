@@ -48,8 +48,7 @@ MonoBehaviour:
   m_Slot: 0
   m_PositionOffset: {x: 0, y: 0, z: 0}
   m_EulerOffset: {x: 0, y: 0, z: 0}
-  m_AttachmentName: ARDefaultScope
-  m_Id: 403
+  m_ItemData: {fileID: 11400000, guid: 3f399f0df03f2ea4db0526385546c8e3, type: 2}
   Type: 0
   m_Ratio: 1
   m_TransitionDuration: 0.2
@@ -84,23 +83,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9f4d52975d229e74fa27561b00052caa, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9f4d52975d229e74fa27561b00052caa, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9f4d52975d229e74fa27561b00052caa, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9f4d52975d229e74fa27561b00052caa, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9f4d52975d229e74fa27561b00052caa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 270
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9f4d52975d229e74fa27561b00052caa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y

@@ -11,7 +11,7 @@ namespace TPSDemo
 
         // TrajectoryLine
         public LineRenderer TrajectoryLine;
-        TrajectoryLine m_TrajectoryLine = new TrajectoryLine();
+        TrajectoryLine m_TrajectoryLine = new();
         bool m_ShowTrajectoryLine = false;
         public float HorizonalAngle = 30f;
 
@@ -32,19 +32,29 @@ namespace TPSDemo
         [Tooltip("投掷延迟（为了和动画同步）")]
         public float ThrowDelay = 0.2f;
 
-        private void Start()
+        private void Awake()
         {
             m_Owner = GetComponentInParent<PlayerController>();
             m_Inventory = m_Owner.Inventory;
-            m_Inventory.OnInventoryUpdate += CheckGrenade;
             m_PlayerRuntimeData = m_Owner.RuntimeData;
             m_TrajectoryLine.Line = TrajectoryLine;
-            m_TrajectoryLine.CollisionMask = -1;
         }
 
-        public override void OnDestroy()
+        public override void OnNetworkSpawn()
         {
-            m_Inventory.OnInventoryUpdate -= CheckGrenade;
+            base.OnNetworkSpawn();
+            if (IsOwner) {
+                m_Inventory.OnInventoryUpdate += CheckGrenade;
+                m_TrajectoryLine.CollisionMask = -1;
+            }
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            if (IsOwner) {
+                m_Inventory.OnInventoryUpdate -= CheckGrenade;
+            }
+            base.OnNetworkDespawn();
         }
 
         private void Update()
@@ -80,19 +90,27 @@ namespace TPSDemo
             }
             m_CurrentGrenadeId = grenades[0].itemId;
 
-            m_CurrentGrenadeObj = Instantiate(
-                ResourceManager.Instance.GetResource<ItemDataList>("ItemData")
-                .GetItemData(m_CurrentGrenadeId).Prefab, GrenadeRoot, false
-            );
-            m_CurrentGrenadeObj.transform.localPosition = m_GrenadeRootOffset;
-            m_CurrentGrenadeObj.transform.rotation = Quaternion.Euler(m_GrenadeRootRotate);
+            StartCoroutine(WorldItemManager.CreateItemGO(
+                ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(m_CurrentGrenadeId),
+                obj => {
+                    m_CurrentGrenadeObj = obj;
+                    if(m_CurrentGrenadeObj == null) {
+                        return;
+                    }
 
-            CurrentGrenade = m_CurrentGrenadeObj.GetComponent<IGrenade>();
+                    m_CurrentGrenadeObj.transform.localPosition = m_GrenadeRootOffset;
+                    m_CurrentGrenadeObj.transform.rotation = Quaternion.Euler(m_GrenadeRootRotate);
 
-            // Ignore Collsion
-            CurrentGrenade.Rigidbody.isKinematic = true;
+                    CurrentGrenade = m_CurrentGrenadeObj.GetComponent<IGrenade>();
 
-            CurrentGrenade.OnHold();
+                    // Ignore Collsion
+                    CurrentGrenade.Rigidbody.isKinematic = true;
+
+                    CurrentGrenade.OnHold();
+                }
+            ));
+
+            
             m_TrajectoryLine.CollisionMask = m_CurrentGrenadeObj.layer;
         }
 

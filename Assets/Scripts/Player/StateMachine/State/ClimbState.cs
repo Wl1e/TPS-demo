@@ -14,6 +14,7 @@ namespace TPSDemo.FSM
             m_StateMachine.WantJump = false;
             m_StateMachine.RuntimeData.AniParameter.IsClimb = true;
             m_StateMachine.RuntimeData.AniParameter.DisableAimLayer = true;
+            m_StateMachine.Controller.CombatController.ExitCurrentSlot();
         }
 
         public override void OnExit()

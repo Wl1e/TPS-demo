@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using TPSDemo.Combat;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -9,31 +10,36 @@ namespace TPSDemo
 
     public class Inventory : MonoBehaviour
     {
-        List<InventorySlot> m_Items = new List<InventorySlot>();
-        int m_Size;
+        private readonly List<InventorySlot> m_Items = new();
+        private int m_Size;
         public int DefaultSize = 12;
 
-        bool m_IsOpened = false;
+        private bool m_IsOpened = false;
 
-        [SerializeField] GameEvent m_InventoryEvent;
+        [SerializeField] private GameEvent m_InventoryEvent;
 
-        PlayerController m_Owner;
+        private PlayerController m_Owner;
 
         public event Action OnInventoryUpdate;
 
-        void Awake()
+        private void Awake()
         {
             Resize(DefaultSize);
         }
 
         private void OnEnable()
         {
-            EventManager.AddListener<Event.InventoryTrySwapItem>(SwapItem);
+            EventManager.AddListener<Event.InventoryTrySwapItemEvent>(SwapItem);
+            EventManager.AddListener<Event.InventoryDropItemEvent>(DropItem);
             m_InventoryEvent.RegisterListener(OnInventoryInput);
         }
+
+        
+
         private void OnDisable()
         {
-            EventManager.RemoveListener<Event.InventoryTrySwapItem>(SwapItem);
+            EventManager.RemoveListener<Event.InventoryTrySwapItemEvent>(SwapItem);
+            EventManager.RemoveListener<Event.InventoryDropItemEvent>(DropItem);
             m_InventoryEvent.UnregisterListener(OnInventoryInput);
         }
 
@@ -44,11 +50,11 @@ namespace TPSDemo
 
         public InventorySlot GetItem(int slotIdx) => m_Items[slotIdx];
 
-        int FindFirstEmptySlot()
+        private int FindFirstEmptySlot()
         {
             return m_Items.FindIndex(0, item => item == null);
         }
-        int FindLastTypeSlot(ItemType type)
+        private int FindLastTypeSlot(ItemType type)
         {
             return m_Items.FindLastIndex(item => item.Type == type);
         }
@@ -89,7 +95,7 @@ namespace TPSDemo
             return m_Items.Find(slot => slot.Id == itemId)?.ItemData;
         }
 
-        bool ValidIndex(int index)
+        private bool ValidIndex(int index)
         {
             return index >= 0 && index < m_Size;
         }
@@ -157,7 +163,7 @@ namespace TPSDemo
             UpdateInventory();
         }
 
-        public void SwapItem(Event.InventoryTrySwapItem evt)
+        public void SwapItem(Event.InventoryTrySwapItemEvent evt)
         {
             int idx1 = evt.SlotIdx1;
             int idx2 = evt.SlotIdx2;
@@ -201,7 +207,7 @@ namespace TPSDemo
             return amount - remainAmount;
         }
 
-        void Resize(int size)
+        private void Resize(int size)
         {
             bool needUpdate = false;
             m_Size = size;
@@ -218,20 +224,25 @@ namespace TPSDemo
             }
         }
 
-        void Drop(int idx)
+        private void Drop(int idx)
         {
             //DropItem(m_Items[idx].ItemData, m_Items[idx].Amount);
+            var itemData = m_Items[idx].ItemData;
             m_Items[idx] = null;
+            StartCoroutine(WorldItemManager.Instance.SpawnItem(itemData, transform.position));
+            UpdateInventory();
         }
 
+        private void DropItem(Event.InventoryDropItemEvent evt) => Drop(evt.Slot);
+
         // 基本上更新都和Slot的修改有关，直接给Slot加一个ChangedAction，然后让Inventory监听修改直接更新？
-        void UpdateInventory()
+        private void UpdateInventory()
         {
             OnInventoryUpdate?.Invoke();
             EventManager.Broadcast(new Event.InventoryUpdateEvent());
         }
 
-        void OnInventoryInput()
+        private void OnInventoryInput()
         {
             m_IsOpened = !m_IsOpened;
             if (m_IsOpened) {

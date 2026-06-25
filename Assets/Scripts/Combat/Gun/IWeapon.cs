@@ -7,6 +7,7 @@ namespace TPSDemo
 {
     public interface IWeapon
     {
+        public GameObject GO { get; }
         public GameObject Owner { get; }
         public int WeaponId { get; }
         public float ReloadTime { get; }
@@ -19,7 +20,11 @@ namespace TPSDemo
         public int CurrentAmmo { get; }
         public int ClipAmmo { get; }
         public CrosshairData Crosshair { get; }
+
         public event Action OnFire;
+        public event Action OnAttachmentChanged;
+
+        public AttachableNode AttachNode { get; }
 
         public void Initialize(GameObject holder);
         public void StartFire(Transform target);
@@ -41,6 +46,6 @@ namespace TPSDemo
         /// </summary>
         /// <param name="node"></param>
         public void Attach(AttachableNode node);
-        public NetworkObject GetNO();
+        public void Detach();
     }
 }

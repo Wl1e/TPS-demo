@@ -7,7 +7,7 @@ using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 namespace TPSDemo
 {
 
-    public class QuestController: NetworkSingleton<QuestController>
+    public class QuestController: NetworkBehaviour
     {
         Actor m_Actor;
         private QuestDatabase m_QuestDatabase => ResourceManager.Instance.GetResource<QuestDatabase>("Quest");

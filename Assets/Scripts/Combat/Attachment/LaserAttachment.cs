@@ -1,0 +1,16 @@
+﻿
+namespace TPSDemo
+{
+	public class LaserAttachment: AttachmentBase
+    {
+
+        public override void OnEquip()
+        { }
+        public override void OnUnequip()
+        { }
+        public override void OnAim()
+        { }
+        public override void OnFire()
+        { }
+    }
+}

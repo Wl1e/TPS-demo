@@ -1,35 +1,35 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using TPSDemo.UI;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace TPSDemo
 {
-using Event;
-    using System.Collections;
-    using System.Runtime.ConstrainedExecution;
-    using TPSDemo.UI;
-    using Unity.Netcode.Components;
-
-    public class Loadout: NetworkBehaviour
+    public class Loadout : NetworkBehaviour
     {
         // Only Use by Server
-        NetworkVariable<NetworkObjectReference> m_WeaponRef1 = new NetworkVariable<NetworkObjectReference>();
-        NetworkVariable<NetworkObjectReference> m_WeaponRef2 = new NetworkVariable<NetworkObjectReference>();
+        private NetworkVariable<NetworkObjectReference> m_WeaponRef1 = new(default);
+
+        private NetworkVariable<NetworkObjectReference> m_WeaponRef2 = new(default);
 
         private IWeapon m_WeaponSlot1 = null;
         private IWeapon m_WeaponSlot2 = null;
 
-        public GameObject DefaultWeapon;
+        public ItemData DefaultWeapon;
         public AttachableNode WeaponPlaceRoot;
 
-        PlayerController m_Player = null;
+        private PlayerController m_Player = null;
 
         // Shield
-        Shield m_Shield;
+        private Shield m_Shield;
 
         // Action
         public Action<IWeapon, int> OnAddWeapon;
+
         public Action<IWeapon> OnRemoveWeapon;
 
         private void Awake()
@@ -41,14 +41,12 @@ using Event;
         {
             base.OnNetworkSpawn();
 
-            if(IsOwner) {
-                m_WeaponRef1.OnValueChanged += OnWeapon1Changed;
-                m_WeaponRef2.OnValueChanged += OnWeapon2Changed;
-                EventManager.AddListener<SwapWeaponEvent>(OnSwapWeapon);
-            }
-
-            if(IsServer) {
-                if (DefaultWeapon) {
+            m_WeaponRef1.OnValueChanged += OnWeapon1Changed;
+            m_WeaponRef2.OnValueChanged += OnWeapon2Changed;
+            if (IsOwner) {
+                EventManager.AddListener<Event.SwapWeaponEvent>(OnSwapWeapon);
+                EventManager.AddListener<Event.TryUnequipWeaponEvent>(UnequipWeapon);
+                if (DefaultWeapon != null) {
                     EquipWeapon(DefaultWeapon);
                 }
             }
@@ -56,10 +54,11 @@ using Event;
 
         public override void OnNetworkDespawn()
         {
+            m_WeaponRef1.OnValueChanged -= OnWeapon1Changed;
+            m_WeaponRef2.OnValueChanged -= OnWeapon2Changed;
             if (IsOwner) {
-                m_WeaponRef1.OnValueChanged -= OnWeapon1Changed;
-                m_WeaponRef2.OnValueChanged -= OnWeapon2Changed;
-                EventManager.RemoveListener<SwapWeaponEvent>(OnSwapWeapon);
+                EventManager.RemoveListener<Event.SwapWeaponEvent>(OnSwapWeapon);
+                EventManager.RemoveListener<Event.TryUnequipWeaponEvent>(UnequipWeapon);
             }
             base.OnNetworkDespawn();
         }
@@ -79,20 +78,44 @@ using Event;
             return false;
         }
 
-        #region equip
 
-        // 穿脱装备只能由Server端调用
+        #region Client
 
-        public int EquipWeapon(IWeapon weapon)
+        public void EquipWeapon(ItemData WeaponData)
         {
+            EquipWeaponServerRpc(WeaponData.Id);
+        }
+
+        public void UnequipWeapon(Event.TryUnequipWeaponEvent evt)
+        {
+            UnequipWeaponServerRpc(evt.WeaponIdx);
+        }
+
+        #endregion
+
+
+        #region equip(Server)
+
+        /// <summary>
+        /// 将武器放在空槽上
+        /// </summary>
+        /// <returns>
+        /// 放置槽位，如果没有位置，返回-1
+        /// </returns>
+        public int EquipWeapon(NetworkObject weaponNO)
+        {
+            print("TryEquipWeapon");
+            var weapon = weaponNO.GetComponentInChildren<IWeapon>();
             if (weapon == null) {
                 Debug.LogError("err weapon");
             }
-            if (EquipWeapon(weapon, m_WeaponRef1)) {
-                m_WeaponSlot1 = weapon;
+            if (!m_WeaponRef1.Value.TryGet(out var no1)) {
+                print("EquipWeapon1");
+                m_WeaponRef1.Value = weaponNO;
                 return 1;
-            } else if (EquipWeapon(weapon, m_WeaponRef2)) {
-                m_WeaponSlot2 = weapon;
+            } else if (!m_WeaponRef2.Value.TryGet(out var no2)) {
+                print("EquipWeapon2");
+                m_WeaponRef2.Value = weaponNO;
                 return 2;
             }
             return -1;
@@ -101,43 +124,38 @@ using Event;
         [ServerRpc]
         private void WeaponAttachServerRpc(int idx)
         {
-            if(idx == 1) {
+            if (idx == 1) {
                 m_WeaponSlot1.Attach(WeaponPlaceRoot);
-            } else if(idx == 2) {
+            } else if (idx == 2) {
                 m_WeaponSlot2.Attach(WeaponPlaceRoot);
             }
         }
 
-        bool EquipWeapon(IWeapon weapon, NetworkVariable<NetworkObjectReference> weaponSlot)
+        [ServerRpc]
+        private void EquipWeaponServerRpc(int weaponId)
         {
-            
-            if (weaponSlot.Value.TryGet(out var go)) {
-                return false;
+            if (!CanAddWeapon()) {
+                return;
             }
-
-            weaponSlot.Value = weapon.GetNO();
-            weapon.Initialize(m_Player.gameObject);
-            // Server端修改后，weaponSlot的ValueChanged能马上触发吗？
-
-            return true;
+            var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(weaponId);
+            StartCoroutine(EquipWeaponCoroutine(itemData));
         }
 
-        public void EquipWeapon(GameObject WeaponPrefab)
-        {
-            StartCoroutine(EquipWeaponCoroutine(WeaponPrefab));
-        }
-
-        private IEnumerator EquipWeaponCoroutine(GameObject weaponPrefab)
+        /// <summary>
+        /// 通过ItemData创建武器，并检查合法性，然后装备武器
+        /// </summary>
+        /// <param name="itemData"> 武器ItemData </param>
+        private IEnumerator EquipWeaponCoroutine(ItemData itemData)
         {
             yield return null;
 
-            if(!CanAddWeapon()) {
-                yield break;
-            }
+            NetworkObject instance = null;
+            yield return WorldItemManager.CreateItemGO<NetworkObject>(
+                itemData,
+                obj => instance = obj
+            );
 
-            var instance = Instantiate(weaponPrefab);
-            if (!instance.TryGetComponent<NetworkObject>(out var no)) {
-                Destroy(instance);
+            if(!instance) {
                 yield break;
             }
 
@@ -147,37 +165,46 @@ using Event;
                 yield break;
             }
 
-            if(!attachable.TryGetComponent<IWeapon>(out var weapon)) {
+            if (!attachable.TryGetComponent<IWeapon>(out var weapon)) {
                 Destroy(instance);
                 yield break;
             }
 
-            no.SpawnWithOwnership(OwnerClientId);
-            yield return new WaitUntil(() => no.IsSpawned);
+            instance.SpawnWithOwnership(OwnerClientId);
+            yield return new WaitUntil(() => instance.IsSpawned);
 
-            EquipWeapon(weapon);
+            EquipWeapon(instance);
         }
 
-        public void UnequipWeapon(IWeapon weapon)
+        [ServerRpc]
+        public void UnequipWeaponServerRpc(int weaponIdx)
         {
+            var weapon = GetWeapon(weaponIdx);
+            if(weapon == null) {
+                return;
+            }
+
             if (weapon == m_WeaponSlot1) {
-                m_WeaponRef1 = default;
+                m_WeaponRef1.Value = default;
             } else if (weapon == m_WeaponSlot2) {
-                m_WeaponRef2 = default;
+                m_WeaponRef2.Value = default;
             } else {
                 return;
             }
 
-            if (IsOwner) {
-                OnRemoveWeapon?.Invoke(weapon);
-                EventManager.Broadcast(new UpdateLoadoutUIEvent {
-                    Weapon1 = ParseWeapon(m_WeaponSlot1),
-                    Weapon2 = ParseWeapon(m_WeaponSlot1)
-                });
-            }
+            var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(weapon.WeaponId);
+            StartCoroutine(WorldItemManager.Instance.SpawnItem(itemData, transform.position));
         }
 
-        #endregion
+        [ServerRpc]
+        private void SwapWeaponServerRpc()
+        {
+            var temp = m_WeaponRef1;
+            m_WeaponRef2 = m_WeaponRef1;
+            m_WeaponRef1 = temp;
+        }
+
+        #endregion equip
 
         public bool ValidSlotIdx(int index)
         {
@@ -202,21 +229,14 @@ using Event;
             return new List<IWeapon> { m_WeaponSlot1, m_WeaponSlot2 };
         }
 
-        [ServerRpc]
-        void SwapWeaponServerRpc()
-        {
-            var temp = m_WeaponRef1;
-            m_WeaponRef2 = m_WeaponRef1;
-            m_WeaponRef1 = temp;
-        }
-
-        void OnSwapWeapon(SwapWeaponEvent evt)
+        private void OnSwapWeapon(Event.SwapWeaponEvent evt)
         {
             SwapWeaponServerRpc();
         }
 
         #region For UI
-        UI.WeaponUIData ParseWeapon(IWeapon weapon)
+
+        private UI.WeaponUIData ParseWeapon(IWeapon weapon)
         {
             var data = new UI.WeaponUIData();
             if (weapon == null) {
@@ -239,43 +259,78 @@ using Event;
 
             return result;
         }
-        #endregion
 
-        private void OnWeapon1Changed(NetworkObjectReference pre, NetworkObjectReference cur) => OnWeaponChanged(cur, 1);
-        private void OnWeapon2Changed(NetworkObjectReference pre, NetworkObjectReference cur) => OnWeaponChanged(cur, 2);
+        #endregion For UI
 
-        private void OnWeaponChanged(NetworkObjectReference cur, int idx)
+        private void OnWeapon1Changed(NetworkObjectReference pre, NetworkObjectReference cur) => OnWeaponChanged(pre, cur, 1);
+
+        private void OnWeapon2Changed(NetworkObjectReference pre, NetworkObjectReference cur) => OnWeaponChanged(pre, cur, 2);
+
+        /// <summary>
+        /// 会直接销毁旧武器，如果要交换武器，需新加方法
+        /// </summary>
+        private void OnWeaponChanged(NetworkObjectReference pre, NetworkObjectReference cur, int idx)
         {
-            IWeapon weapon = null;
-            if (IsOwner) {
-                if (cur.TryGet(out var networkObject)) {
-                    weapon = networkObject.GetComponentInChildren<IWeapon>();
-                    print($"Weapon: {weapon}, m_Player: {m_Player}");
-                    weapon.Initialize(m_Player.gameObject);
-                    OnAddWeapon?.Invoke(weapon, idx);
-                }
-                if (idx == 1) {
-                    m_WeaponSlot1 = weapon;
-                } else if (idx == 2) {
-                    m_WeaponSlot2 = weapon;
-                }
+            IWeapon weapon = GetWeapon(idx);
 
-                if (weapon != null) {
-                    // 为什么在这执行attach
-                    // 因为在Server执行EquipWeapon，设置WeaponRef后，
-                    // Client的OnWeaponChanged还未调用，如果那时直接Attach，
-                    // 会导致现在获取的NO下拿不到IWeapon（被Attach移到别的地方了）
-                    WeaponAttachServerRpc(idx);
+            // 删除旧武器
+            if (weapon != null) {
+                if (IsServer) {
+                    weapon.Detach();
+                    pre.TryGet(out var no);
+                    if (no != null) {
+                        no.Despawn();
+                    }
                 }
             }
 
+            weapon = null;
+            // 初始化武器
+            if (cur.TryGet(out var networkObject)) {
+                    weapon = networkObject.GetComponentInChildren<IWeapon>();
+                // Server需要weapon初始化，因为weapon的实际攻击逻辑在Server端
+                if (IsServer || IsOwner) {
+                    weapon.Initialize(m_Player.gameObject);
+                }
+                if (IsOwner) {
+                    weapon.OnAttachmentChanged += OnWeaponAttachmentChanged;
+                    OnAddWeapon?.Invoke(weapon, idx);
+                }
+            }
+
+            // 设置WeaponSlot
+            if (idx == 1) {
+                m_WeaponSlot1 = weapon;
+            } else if (idx == 2) {
+                m_WeaponSlot2 = weapon;
+            }
+
+            // 修改武器位置
+            if (IsOwner && weapon != null) {
+                // 为什么在这执行attach
+                // 因为在Server执行EquipWeapon，设置WeaponRef后，
+                // Client的OnWeaponChanged还未调用，如果那时直接Attach，
+                // 会导致现在获取的NO下拿不到IWeapon（被Attach移到别的地方了）
+                WeaponAttachServerRpc(idx);
+            }
+
+            // 更新UI
             if (IsOwner) {
-                EventManager.Broadcast(new UpdateLoadoutUIEvent {
-                Weapon1 = ParseWeapon(m_WeaponSlot1),
-                Weapon2 = ParseWeapon(m_WeaponSlot2)
-            });
+                EventManager.Broadcast(new Event.UpdateLoadoutUIEvent {
+                    Weapon1 = ParseWeapon(m_WeaponSlot1),
+                    Weapon2 = ParseWeapon(m_WeaponSlot2)
+                });
             }
         }
 
+        private void OnWeaponAttachmentChanged()
+        {
+            if (IsOwner) {
+                EventManager.Broadcast(new Event.UpdateLoadoutUIEvent {
+                    Weapon1 = ParseWeapon(m_WeaponSlot1),
+                    Weapon2 = ParseWeapon(m_WeaponSlot2)
+                });
+            }
+        }
     }
 }

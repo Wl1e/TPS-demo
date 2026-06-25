@@ -29,12 +29,14 @@ namespace TPSDemo.Combat
 namespace TPSDemo
 {
     using Combat;
+    using System.Collections;
+
     public class CombatController : NetworkBehaviour
     {
-        NetworkVariable<Slot> m_ActiveSlot = new NetworkVariable<Slot>(Slot.Unarmed);
+        NetworkVariable<Slot> m_ActiveSlot = new(Slot.Unarmed);
         //EquipState m_EquipState = EquipState.None;
         [SerializeField] List<SlotEntry> m_Slots;
-        Dictionary<Slot, ICombatSlot> m_Lookup = new Dictionary<Slot, ICombatSlot>();
+        Dictionary<Slot, ICombatSlot> m_Lookup = new();
 
         PlayerController m_PlayerController;
         PlayerRuntimeData m_PlayerRuntimeData;
@@ -56,6 +58,12 @@ namespace TPSDemo
         public BoolEvent TryFireEvent;
         public GameEvent EquipGrenadeEvent;
 
+        // ActiveSlot要调用Rpc，等待Server修改m_ActiveSlot，然后才能调用WeaponManager的TrySwitchFirearm
+        // 为了不在TryEquipFirearm中等待，所以改成设置m_FirearmIdx
+        // 在OnSlotChanged中检测WeaponManager，再设置Idx
+        // 加重了Combat和WeaponManager的耦合，目前没有更简单的方法，或许给ActiveSlot传参
+        private int m_FirearmIdx = -1;
+
         private void Awake()
         {
             m_PlayerController = GetComponentInParent<PlayerController>();
@@ -74,7 +82,14 @@ namespace TPSDemo
 
             if(IsOwner) {
                 RegisterEvents();
-                ActiveSlot(Slot.Firearm);
+            }
+
+            if(IsServer) {
+                if (!m_Lookup[Slot.Unarmed].ValidActive()) {
+                    return;
+                }
+                m_ActiveSlot.Value = Slot.Unarmed;
+                //StartCoroutine(ActiveUnarm());
             }
         }
         public override void OnNetworkDespawn()
@@ -84,6 +99,12 @@ namespace TPSDemo
             }
             m_ActiveSlot.OnValueChanged -= OnSlotChanged;
             base.OnNetworkDespawn();
+        }
+
+        private IEnumerator ActiveUnarm()
+        {
+            yield return null;
+            ActiveSlotServerRpc(Slot.Unarmed);
         }
 
         private void RegisterEvents()
@@ -116,20 +137,26 @@ namespace TPSDemo
         [ServerRpc]
         void ActiveSlotServerRpc(Slot slot)
         {
-            print("TryActive: " + slot);
             if (!m_Lookup[slot].ValidActive()) {
                 return;
             }
             print("Active: " + slot);
             m_ActiveSlot.Value = slot;
-            //foreach (var entry in m_Lookup) {
-            //    entry.Value.SetActive(CurrentActiveSlot == entry.Key);
-            //}
         }
 
         void ActiveSlot(Slot slot)
         {
             ActiveSlotServerRpc(slot);
+            if(slot != Slot.Firearm) {
+                m_FirearmIdx = -1;
+            }
+        }
+
+        public void ExitCurrentSlot()
+        {
+            if (CurrentActiveSlot != Slot.Unarmed) {
+                SlotExited(CurrentActiveSlot);
+            }
         }
 
         void SlotExited(Slot slot)
@@ -153,17 +180,19 @@ namespace TPSDemo
         void TryEquipFirearm(int index)
         {
             print("TryEquipFirearm");
+            if(m_ActiveSlot.Value == Slot.Firearm) {
+                if (m_Lookup[Slot.Firearm] is IFirearmSlot firearmSlot) {
+                    firearmSlot.TrySwitchFirearm(index);
+                }
+                return;
+            }
             if (!m_PlayerController.Loadout.HasWeapon(index)) {
                 ActiveSlot(Slot.Unarmed);
                 return;
             }
+            m_FirearmIdx = index;
             if (CurrentActiveSlot != Slot.Firearm) {
-                ActiveSlot(Slot.Firearm);
-            }
-            if (GetActiveSlot() is IFirearmSlot firearmSlot) {
-                firearmSlot.TrySwitchFirearm(index);
-                //m_EquipState = EquipState.Switching;
-                EndTime = Time.time + SwitchTime;
+                 ActiveSlot(Slot.Firearm);
             }
         }
 
@@ -201,8 +230,8 @@ namespace TPSDemo
         }
         void OnSlotChanged(Slot pre, Slot cur)
         {
-            print("OnSlotChanged");
-            if(IsOwner) {
+            if (IsOwner) {
+                print($"Owner OnSlotChanged {pre} => {cur}");
                 foreach (var entry in m_Lookup) {
                     entry.Value.SetActive(CurrentActiveSlot == entry.Key);
                 }
@@ -210,7 +239,14 @@ namespace TPSDemo
                 m_PlayerRuntimeData.ActiveSlot = CurrentActiveSlot;
                 m_PlayerRuntimeData.AniParameter.CombatSlot = (int)CurrentActiveSlot;
                 OnSlotChange?.Invoke(CurrentActiveSlot);
-                print("Active: " + m_ActiveSlot);
+
+                if(cur == Slot.Firearm && m_FirearmIdx != -1) {
+                    if (m_Lookup[Slot.Firearm] is IFirearmSlot firearmSlot) {
+                        firearmSlot.TrySwitchFirearm(m_FirearmIdx);
+                        //m_EquipState = EquipState.Switching;
+                        EndTime = Time.time + SwitchTime;
+                    }
+                }
             }
         }
     }

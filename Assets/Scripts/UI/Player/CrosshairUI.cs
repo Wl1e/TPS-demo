@@ -9,7 +9,17 @@ using Event;
         public Image CrosshairImage;
         public Image FeedbackImage;
 
-        bool showCrosshair = true;
+        private bool m_ShowCrosshair = true;
+        public bool ShowCrosshair
+        {
+            get => m_ShowCrosshair;
+            set
+            {
+                m_ShowCrosshair = value;
+                CrosshairImage.gameObject.SetActive(m_ShowCrosshair);
+                FeedbackImage.gameObject.SetActive(m_ShowCrosshair);
+            }
+        }
 
         public CrosshairData DefaultCrosshair;
 
@@ -37,21 +47,10 @@ using Event;
             EventManager.RemoveListener<WeaponChangedEvent>(HandleWeaponChanged);
             EventManager.RemoveListener<BulletHitTargetEvent>(HandleHitd);
         }
-        public void Initialize()
-        {
-            m_CrosshairData = PlayerDataProxy.Instance.GetCurrentFirearm()?.Crosshair ?? DefaultCrosshair;
-            UpdateCrosshair();
-        }
+        public void Initialize() => UpdateCrosshair();
 
         private void Update()
         {
-            if (!showCrosshair) {
-                if (FeedbackImage.IsActive() || CrosshairImage.IsActive()) {
-                    CrosshairImage.gameObject.SetActive(false);
-                    FeedbackImage.gameObject.SetActive(false);
-                }
-                return;
-            }
             if (FeedbackEndTime >= Time.time) {
                 FeedbackImage.gameObject.SetActive(true);
             } else {
@@ -61,13 +60,21 @@ using Event;
 
         void HandleWeaponChanged(WeaponChangedEvent evt)
         {
-            showCrosshair = true;
-            m_CrosshairData = PlayerDataProxy.Instance.GetCurrentFirearm()?.Crosshair ?? DefaultCrosshair;
             UpdateCrosshair();
         }
 
         void UpdateCrosshair()
         {
+            if(!m_ShowCrosshair) {
+                return;
+            }
+            var crosshair = PlayerDataProxy.Instance.GetCurrentFirearm()?.Crosshair;
+            if (crosshair.HasValue && crosshair.Value.Sprite != null) {
+                m_CrosshairData = crosshair.Value;
+            } else {
+                m_CrosshairData = DefaultCrosshair;
+            }
+            print("m_CrosshairData: " + m_CrosshairData.Sprite);
             CrosshairImage.sprite = m_CrosshairData.Sprite;
             CrosshairImage.color = m_CrosshairData.Color;
             CrosshairImage.rectTransform.sizeDelta = m_CrosshairData.Sprite.rect.size * m_CrosshairData.Scale;

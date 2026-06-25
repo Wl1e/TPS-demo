@@ -10,7 +10,7 @@ namespace TPSDemo
         {
             if (obj.TryGetComponent<PlayerController>(out var player)) {
                 if (Type == ItemType.Weapon) {
-                    player.Loadout.EquipWeapon(Data.Prefab);
+                    player.Loadout.EquipWeapon(Data);
                 } else {
                     player.Inventory.AddItem(this);
                 }
@@ -23,6 +23,6 @@ namespace TPSDemo
 
         }
 
-        private void OnDestroy() => WorldItemManager.Instance.EraseItem(this);
+        //private void OnDestroy() => WorldItemManager.Instance.EraseItem(this);
     }
 }

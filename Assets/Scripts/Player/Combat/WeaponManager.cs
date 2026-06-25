@@ -5,14 +5,13 @@ using UnityEngine;
 
 namespace TPSDemo
 {
-using Event;
-    using System.Net.Mail;
-    using System.Runtime.ConstrainedExecution;
+    using Event;
 
     public class WeaponManager : FirearmCombatSlot
     {
         // IFirearmController
-        bool m_IsActive = false;
+        private bool m_IsActive = false;
+
         public override bool IsActive => m_IsActive;
         public override float ReloadTime => m_ReloadTime;
 
@@ -21,25 +20,26 @@ using Event;
 
         public Action<int, bool> m_OnAttack;
 
+        private PlayerRuntimeData m_RuntimeData;
+        private Inventory m_Inventory;
+        private Loadout m_Loadout;
+        private NetworkVariable<int> m_CurrentFirearmIndex = new(-1);
+        private IWeapon m_CurrentFirearm = null;
+        [SerializeField] private float m_ReloadTime = 1f;
 
-        PlayerRuntimeData m_RuntimeData;
-        Inventory m_Inventory;
-        Loadout m_Loadout;
-        NetworkVariable<int> m_CurrentFirearmIndex = new NetworkVariable<int>(-1);
-        IWeapon m_CurrentFirearm = null;
-        [SerializeField] float m_ReloadTime = 1f;
-
-        private NetworkVariable<bool> m_Reloading = new NetworkVariable<bool>(false);
-        Coroutine m_ReloadCoroutine = null;
+        private NetworkVariable<bool> m_Reloading = new(false);
+        private Coroutine m_ReloadCoroutine = null;
 
         /// <summary>
         /// 瞄准对象
         /// </summary>
         public Transform AimTarget;
+
         /// <summary>
         /// 右手绑定位置
         /// </summary>
         public AttachableNode RightHandAttach;
+
         /// <summary>
         /// 背部绑定位置
         /// </summary>
@@ -57,23 +57,17 @@ using Event;
         {
             base.OnNetworkSpawn();
             if (IsOwner) {
+                m_Reloading.OnValueChanged += OnReloadStateChanged;
                 m_Loadout.OnAddWeapon += OnWeaponAdded;
                 m_Loadout.OnRemoveWeapon += OnWeaponRemoved;
                 EventManager.AddListener<TryReloadEvent>(TryReload2);
-                EventManager.AddListener<TryEquipAttachment>(FirearmTryEquipAttachment);
+                EventManager.AddListener<TryEquipAttachmentEvent>(FirearmTryEquipAttachment);
 
                 var firearms = m_Loadout.GetAllWeapon();
-                int index = -1;
                 for (int i = 0; i < firearms.Count; ++i) {
                     if (firearms[i] != null) {
                         OnWeaponAdded(firearms[i], i);
-                        if (index == -1) {
-                            index = i;
-                        }
                     }
-                }
-                if (index != -1) {
-                    TrySwitchFirearm(index);
                 }
             }
             m_CurrentFirearmIndex.OnValueChanged += OnWeaponChanged;
@@ -85,7 +79,7 @@ using Event;
                 m_Loadout.OnAddWeapon -= OnWeaponAdded;
                 m_Loadout.OnRemoveWeapon -= OnWeaponRemoved;
                 EventManager.RemoveListener<TryReloadEvent>(TryReload2);
-                EventManager.RemoveListener<TryEquipAttachment>(FirearmTryEquipAttachment);
+                EventManager.RemoveListener<TryEquipAttachmentEvent>(FirearmTryEquipAttachment);
             }
             m_CurrentFirearmIndex.OnValueChanged -= OnWeaponChanged;
             base.OnNetworkDespawn();
@@ -96,7 +90,7 @@ using Event;
         /// </summary>
         /// <param name="weapon"> 射击的武器 </param>
         /// <param name="idx"> 射击武器的下标 </param>
-        void OnWeaponAdded(IWeapon weapon, int idx)
+        private void OnWeaponAdded(IWeapon weapon, int idx)
         {
             weapon.OnFire += () => OnWeaponFire(idx);
         }
@@ -106,7 +100,7 @@ using Event;
         /// 其实可以让武器自己广播
         /// </summary>
         /// <param name="idx"></param>
-        void OnWeaponFire(int idx)
+        private void OnWeaponFire(int idx)
         {
             if (idx != CurrentFirearmIndex) {
                 return;
@@ -114,7 +108,7 @@ using Event;
             EventManager.Broadcast(new WeaponFiredEvent());
         }
 
-        void OnWeaponRemoved(IWeapon weapon)
+        private void OnWeaponRemoved(IWeapon weapon)
         {
             // FIXME 这里应该删掉武器OnFire的回调
         }
@@ -169,7 +163,7 @@ using Event;
         #region Equip
 
         [ServerRpc]
-        void TrySwitchFirearmServerRpc(int idx)
+        private void TrySwitchFirearmServerRpc(int idx)
         {
             // 按下当前武器对应数字键收回武器
             if (CurrentFirearmIndex == idx) {
@@ -187,25 +181,22 @@ using Event;
             m_CurrentFirearmIndex.Value = idx;
         }
 
-        public override bool TrySwitchFirearm(int idx)
+        public override void TrySwitchFirearm(int idx)
         {
-            int oldIdx = CurrentFirearmIndex;
+            if (!m_IsActive) {
+                return;
+            }
             TrySwitchFirearmServerRpc(idx);
-            return CurrentFirearmIndex != oldIdx;
-            // Wait?
         }
 
-        #endregion
+        #endregion Equip
 
         #region Reload
 
         [ServerRpc]
-        void TryReloadServerRpc()
+        private void TryReloadServerRpc()
         {
-            if (CurrentFirearmIndex == -1) {
-                return;
-            }
-            if (!m_CurrentFirearm.ValidReload() || m_Inventory.GetAmount(m_CurrentFirearm.AmmoId) <= 0) {
+            if (!ValidReload()) {
                 return;
             }
             int amount = m_CurrentFirearm.CurrentAmmo;
@@ -213,58 +204,46 @@ using Event;
             m_CurrentFirearm.StartReload();
             PutAmmoIntoInventory(ammoId, amount);
             m_ReloadCoroutine = StartCoroutine(ReloadCoroutine(m_CurrentFirearm.ReloadTime));
-            StartReloadClientRpc();
+            //StartReloadClientRpc();
         }
 
-        [ClientRpc]
-        void EndReloadClientRpc()
+        private bool ValidReload()
         {
-            if(!IsOwner) {
-                return;
+            if(m_Reloading.Value) {
+                return false;
             }
-            EventManager.Broadcast(new WeaponEndReloadEvent {
-                WeaponIdx = CurrentFirearmIndex
-            });
-        }
-        [ClientRpc]
-        void StartReloadClientRpc()
-        {
-            if (!IsOwner) {
-                return;
+            if (CurrentFirearmIndex == -1) {
+                return false;
             }
-            EventManager.Broadcast(new WeaponStartReloadEvent {
-                WeaponIdx = CurrentFirearmIndex
-            });
-            m_RuntimeData.AniParameter.Reload = true;
+            if (!m_CurrentFirearm.ValidReload() || m_Inventory.GetAmount(m_CurrentFirearm.AmmoId) <= 0) {
+                return false;
+            }
+            return true;
         }
 
         public override void TryReload()
         {
-            if (CurrentFirearmIndex == -1) {
-                return;
-            }
-            if (!m_CurrentFirearm.ValidReload() || m_Inventory.GetAmount(m_CurrentFirearm.AmmoId) <= 0) {
+            if(!ValidReload()) {
                 return;
             }
             TryReloadServerRpc();
-            
         }
 
         // 当通过在UI中拖动子弹到武器槽时执行
-        void TryReload2(TryReloadEvent evt)
+        private void TryReload2(TryReloadEvent evt)
         {
             // FIXME: 界面拖动是有可能让当前未持有的武器换弹的，怎么办，要切枪吗
             TryReload();
         }
 
-        void PutAmmoIntoInventory(int ammoId, int amount)
+        private void PutAmmoIntoInventory(int ammoId, int amount)
         {
             if (amount > 0) {
                 m_Inventory.AddItem(ammoId, amount);
             }
         }
 
-        int GetLoadAmmo(IWeapon weapon)
+        private int GetLoadAmmo(IWeapon weapon)
         {
             int ammoId = weapon.AmmoId;
             int ammoAmount = m_Inventory.GetAmount(ammoId);
@@ -272,7 +251,8 @@ using Event;
             ammoAmount = m_Inventory.ReduceItemAmount(ammoId, ammoAmount);
             return ammoAmount;
         }
-        IEnumerator ReloadCoroutine(float time)
+
+        private IEnumerator ReloadCoroutine(float time)
         {
             m_Reloading.Value = true;
             yield return new WaitForSeconds(time);
@@ -280,17 +260,34 @@ using Event;
             m_Reloading.Value = false;
 
             m_ReloadCoroutine = null;
-            EndReloadClientRpc();
+            //EndReloadClientRpc();
         }
 
-        #endregion
+        private void OnReloadStateChanged(bool previousValue, bool newValue)
+        {
+            if(!IsOwner) {
+                return;
+            }
+            if(newValue) {
+                EventManager.Broadcast(new WeaponStartReloadEvent {
+                    WeaponIdx = CurrentFirearmIndex
+                });
+                m_RuntimeData.AniParameter.Reload = true;
+            } else {
+                EventManager.Broadcast(new WeaponEndReloadEvent {
+                    WeaponIdx = CurrentFirearmIndex
+                });
+            }
+        }
+
+        #endregion Reload
 
         // 非Owner检测到武器更换时同步更换
-        void OnWeaponChanged(int pre, int cur)
+        private void OnWeaponChanged(int pre, int cur)
         {
             // m_ReloadCoroutine修改起来太麻烦了，后续通过WeaponStateManager同步
             if (IsServer) {
-                if(m_CurrentFirearm != null) {
+                if (m_CurrentFirearm != null) {
                     m_CurrentFirearm.Attach(BackAttach);
                 }
 
@@ -300,7 +297,7 @@ using Event;
                 }
             }
 
-            if(IsServer || IsOwner) {
+            if (IsServer || IsOwner) {
                 if (CurrentFirearmIndex == -1) {
                     if (IsOwner) {
                         m_CurrentFirearm.EndFire();
@@ -325,7 +322,7 @@ using Event;
             }
         }
 
-        private void FirearmTryEquipAttachment(TryEquipAttachment evt)
+        private void FirearmTryEquipAttachment(TryEquipAttachmentEvent evt)
         {
             var weapon = m_Loadout.GetWeapon(evt.WeaponIdx);
             if (weapon == null) {
@@ -333,15 +330,17 @@ using Event;
             }
 
             var item = m_Inventory.GetItem(evt.InventoryIdx);
-            if(!item.ItemData.Prefab.TryGetComponent<IAttachment>(out var attachment)) {
+            //if (!item.ItemData.Prefab.TryGetComponent<IAttachment>(out var attachment)) {
+            //    return;
+            //}
+            var attachmentData = item.ItemData as AttachmentItemData;
+
+            if (!weapon.SupportAttachment(attachmentData.Slot, attachmentData.Id)) {
                 return;
             }
 
-            if (!weapon.SupportAttachment(attachment.Slot, attachment.Id)) {
-                return;
-            }
-
-            weapon.AddAttachment(attachment.Slot, attachment.Id);
+            weapon.AddAttachment(attachmentData.Slot, attachmentData.Id);
+            m_Inventory.RemoveItem(evt.InventoryIdx);
         }
     }
 }

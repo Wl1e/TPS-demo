@@ -9,17 +9,19 @@ namespace TPSDemo.UI
     {
         public Image Icon;
         public TextMeshProUGUI Amount;
-        public DragType Type => DragType.Inventory;
-        public Image DragIcon => Icon;
         public InventorySlotUI Slot;
+        private int m_ItemId;
+
+        public Image DragIcon => Icon;
+        public DragType Type => DragType.Inventory;
+        public DragResource Resource => DragResource.Inventory;
         public int SlotIdx => Slot.SlotIdx;
-        int m_ItemId;
         public int ItemId => m_ItemId;
 
         public void UpdateIcon(int itemId)
         {
             m_ItemId = itemId;
-            var icon = ItemUIUtils.GetItemSprite(m_ItemId);
+            var icon = ItemUIUtils.GetItemIcon(m_ItemId);
             Icon.sprite = icon;
             Icon.enabled = icon != null;
         }

@@ -4,12 +4,15 @@ namespace TPSDemo
 {
     public class GameFlowManager : Singleton<GameFlowManager>
     {
-        [SerializeField] System.Collections.Generic.List<GameObject> m_PersistentObjects;
+        [SerializeField] private System.Collections.Generic.List<GameObject> m_PersistentObjects;
+
         protected override void Awake()
         {
             base.Awake();
             foreach (var go in m_PersistentObjects) {
-                DontDestroyOnLoad(go);
+                if (go != null) {
+                    DontDestroyOnLoad(go);
+                }
             }
         }
 

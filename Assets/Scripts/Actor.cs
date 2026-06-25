@@ -1,5 +1,4 @@
-using System;
-using Unity.VisualScripting;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace TPSDemo
@@ -15,32 +14,47 @@ namespace TPSDemo
 
     }
 
-    public class Actor : MonoBehaviour
+    public class Actor : NetworkBehaviour
     {
         private int m_Id;
-        private ActorManager m_ActorManager = null;
 
         public Transform AimPoint;
         public int Id => m_Id;
 
-        private void Awake()
+        public override void OnNetworkSpawn()
         {
-            m_Id = NextId.GetNextId();
-        }
-
-        void Start()
-        {
-            m_ActorManager = ActorManager.Instance;
-            if (m_ActorManager && !m_ActorManager.Actors.ContainsKey(m_Id)) {
-                m_ActorManager.AddActor(this);
+            base.OnNetworkSpawn();
+            if (IsServer) {
+                m_Id = NextId.GetNextId();
+                ActorManager.Instance.AddActor(this);
             }
         }
 
-        private void OnDestroy()
+        public override void OnNetworkDespawn()
         {
-            if (m_ActorManager) {
-                m_ActorManager.Actors.Remove(m_Id);
+            if (IsServer) {
+                ActorManager.Instance.Actors.Remove(m_Id);
             }
+            base.OnNetworkDespawn();
         }
     }
+
+    //public class Actor : MonoBehaviour
+    //{
+    //    private int m_Id;
+
+    //    public Transform AimPoint;
+    //    public int Id => m_Id;
+
+    //    private void Awake()
+    //    {
+    //        m_Id = NextId.GetNextId();
+    //        ActorManager.Instance.AddActor(this);
+    //    }
+
+    //    private void OnDestroy()
+    //    {
+    //        ActorManager.Instance.Actors.Remove(m_Id);
+    //    }
+    //}
 }

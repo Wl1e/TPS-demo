@@ -48,8 +48,7 @@ MonoBehaviour:
   m_Slot: 4
   m_PositionOffset: {x: 0, y: 0, z: 0}
   m_EulerOffset: {x: 0, y: 0, z: 0}
-  m_AttachmentName: ARMagazine
-  m_Id: 402
+  m_ItemData: {fileID: 11400000, guid: 4f323663f215b0c4dada5a50b0594dee, type: 2}
 --- !u!1001 &2870131123122116175
 PrefabInstance:
   m_ObjectHideFlags: 0

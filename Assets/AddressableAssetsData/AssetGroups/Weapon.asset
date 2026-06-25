@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Weapon
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Weapon
+  m_GUID: d04eeab92ab2f104ab4617107717a2dc
+  m_SerializeEntries:
+  - m_GUID: 2691831eea41ac84883a2ec99dc067cb
+    m_Address: Assets/Prefabs/Weapon/Attachment/Scope2.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 430e2aa2f8ddaa542844b1b3bf051bc6
+    m_Address: Assets/Prefabs/Weapon/Grenade.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 46a90a4fc3490b54abd6dea5267a858d
+    m_Address: Assets/Prefabs/Weapon/Attachment/AR_Default_Scope.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 599b94dcaec819e49815631b7eb37f07
+    m_Address: Assets/Prefabs/Weapon/AR.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 619c2f23b58e7264dab2f08d65f9f522
+    m_Address: Assets/Prefabs/Weapon/Attachment/LaserSight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8409e2dcc23d54643b69db518e4d9821
+    m_Address: Assets/Prefabs/Weapon/Bullet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 970e272ced799d34cafe9bf1f7ee7f96
+    m_Address: Assets/Prefabs/Weapon/Attachment/AR_Default_Magazine.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9fb6b724080d60742802d70f1a0a0d6c
+    m_Address: Assets/Prefabs/Weapon/Shotgun.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad0dbfebd2652644f9dedd056999a584
+    m_Address: Assets/Prefabs/Weapon/Attachment/LaserFlashlight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: feb52bdc2e7ce3a479ceb7b58e1db393
+    m_Address: Assets/Prefabs/Weapon/Attachment/Grip.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 894afe9e368169540bd214d4811b6138, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: ec8aaac1f4e445447822628dc78a2052, type: 2}
+    - {fileID: 11400000, guid: 6436d8a84b0e2134382816086c75aeb4, type: 2}

@@ -90,10 +90,15 @@ namespace TPSDemo.Event
         public int WeaponIdx;
     }
 
-    public class TryEquipAttachment: InternalEvent
+    public class TryEquipAttachmentEvent: InternalEvent
     {
         public int WeaponIdx;
         public int InventoryIdx;
+    }
+
+    public class TryUnequipWeaponEvent : InternalEvent
+    {
+        public int WeaponIdx;
     }
 
     #endregion
@@ -122,11 +127,17 @@ namespace TPSDemo.Event
     public class InventoryUpdateEvent: InternalEvent
     {
     }
-    public class InventoryTrySwapItem: InternalEvent
+    public class InventoryTrySwapItemEvent: InternalEvent
     {
         public int SlotIdx1;
         public int SlotIdx2;
     }
+
+    public class InventoryDropItemEvent: InternalEvent
+    {
+        public int Slot;
+    }
+
     #endregion
 
     #region DialogueSystem

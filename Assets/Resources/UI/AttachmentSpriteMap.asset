@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c2d9f82efcb7a74ca296908ffe6b8ed, type: 3}
+  m_Name: AttachmentSpriteMap
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.AttachmentSpriteMap
+  Id: AttachmentSprite
+  m_Weapons:
+  - Weapon: {fileID: 11400000, guid: b63405bd50e52f246852d8a85e3588f8, type: 2}
+    Sprites:
+    - Attachment: {fileID: 11400000, guid: 3f399f0df03f2ea4db0526385546c8e3, type: 2}
+      Sprite: {fileID: 21300000, guid: bbbb29d2cf3c91741bc1a1b953ca5776, type: 3}
+    - Attachment: {fileID: 11400000, guid: 4f323663f215b0c4dada5a50b0594dee, type: 2}
+      Sprite: {fileID: 21300000, guid: 51d720b69910c244aa44a082bddf0155, type: 3}
+    - Attachment: {fileID: 11400000, guid: 01a9e061e99d95e41ba5f5976fda888a, type: 2}
+      Sprite: {fileID: 21300000, guid: 0e7f7770865ee0344a6742ba4edf8466, type: 3}
+    - Attachment: {fileID: 11400000, guid: 9b47d1f63123164418f630eac2d9b18c, type: 2}
+      Sprite: {fileID: 21300000, guid: 9cac75e41b9310444ae0df2025422ef7, type: 3}
+    - Attachment: {fileID: 11400000, guid: af18d3fb2f68635499fc14dc1952f304, type: 2}
+      Sprite: {fileID: 21300000, guid: 405f111e0741d34479323db52502ee80, type: 3}
+    - Attachment: {fileID: 11400000, guid: b6081799fccd21041964a6ff39b1aef4, type: 2}
+      Sprite: {fileID: 21300000, guid: 92cdb883338b1c24c983e17964d2f5a4, type: 3}

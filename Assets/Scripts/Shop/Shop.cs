@@ -33,7 +33,7 @@ namespace TPSDemo
         }
     }
 
-    public class Shop : MonoBehaviour
+    public class Shop
     {
         public int ShopId;
         public string ShopName;
@@ -48,17 +48,7 @@ namespace TPSDemo
 
         PlayerController m_Player;
 
-        private void OnEnable()
-        {
-            EventManager.AddListener<Event.TryBuyEvent>(TryBuy);
-        }
-
-        private void OnDisable()
-        {
-            EventManager.RemoveListener<Event.TryBuyEvent>(TryBuy);
-        }
-
-        public void Initialize(ShopConfig config)
+        public Shop(ShopConfig config)
         {
             ShopId = config.ShopId;
             ShopName = config.ShopName;
@@ -69,6 +59,8 @@ namespace TPSDemo
             // 修改会同步到SO，变相的存储?
             // m_Goods = config.Goods?.Count > 0 ? config.Goods : new List<ShopEntry>();
             m_Goods = new List<ShopEntry>(config.Goods);
+
+            
         }
 
         public void AddGood(int itemId, int price, int amount = 1, float discount = 1f)
@@ -103,6 +95,7 @@ namespace TPSDemo
         {
             m_Player = player;
             m_Player.SetInputActive(false, false);
+            EventManager.AddListener<Event.TryBuyEvent>(TryBuy);
             EventManager.Broadcast(new Event.ShopOpenEvent { ShopId = ShopId, ShopName = ShopName, Goods = Goods });
         }
 
@@ -175,6 +168,7 @@ namespace TPSDemo
         public void Exit(PlayerController player)
         {
             player.SetInputActive(true, true);
+            EventManager.RemoveListener<Event.TryBuyEvent>(TryBuy);
             EventManager.Broadcast(new Event.ShopCloseEvent { ShopId = ShopId });
         }
     }

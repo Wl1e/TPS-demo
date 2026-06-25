@@ -8,17 +8,16 @@ namespace TPSDemo
 
         public IWeapon Weapon;
 
-        [SerializeField] IAttachment.AttachmentSlot m_Slot;
+        [SerializeField] private IAttachment.AttachmentSlot m_Slot;
+
+        [SerializeField] private Vector3 m_PositionOffset;
+        [SerializeField] private Vector3 m_EulerOffset;
+
+        [SerializeField] private ItemData m_ItemData;
+
         public IAttachment.AttachmentSlot Slot => m_Slot;
-
-        [SerializeField] Vector3 m_PositionOffset;
-        [SerializeField] Vector3 m_EulerOffset;
-
-        [SerializeField] string m_AttachmentName;
-        [SerializeField] int m_Id;
-
-        public string Name => m_AttachmentName;
-        public int Id => m_Id;
+        public string Name => m_ItemData.Name;
+        public int Id => m_ItemData.Id;
 
 
         public void Equip(IWeapon weapon)

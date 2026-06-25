@@ -11,8 +11,7 @@ namespace TPSDemo
         Weapon,
         Ammo,
         Grenade,
-        Magazine,
-        Scope
+        Attachment,
     }
 
     public interface IItem

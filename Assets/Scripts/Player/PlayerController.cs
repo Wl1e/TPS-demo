@@ -20,65 +20,76 @@ namespace TPSDemo
     public class PlayerController : NetworkBehaviour
     {
         #region component
-        PlayerMovement m_Movement;
-        CharacterController m_CharacterController;
-        PlayerStateMachine m_FSM;
-        CameraController m_CameraController;
-        AimController m_AimController;
-        Health m_Health;
-        WeaponManager m_WeaponManager;
-        Inventory m_Inventory;
-        readonly PlayerEconomy m_Economy = new();
-        Actor m_Actor;
-        PlayerInputHandler m_InputHandle;
-        Loadout m_Loadout;
-        ClimbContoller m_ClimbContoller;
-        CombatController m_CombatController;
-        AnimatorController m_AnimatorController;
-        QuestController m_QuestController;
-        InteractionController m_InteractionController;
 
-        CountDownLatch m_CursorBlock = new CountDownLatch();
+        private PlayerMovement m_Movement;
+        private CharacterController m_CharacterController;
+        private PlayerStateMachine m_FSM;
+        private CameraController m_CameraController;
+        private AimController m_AimController;
+        private Health m_Health;
+        private WeaponManager m_WeaponManager;
+        private Inventory m_Inventory;
+        private readonly PlayerEconomy m_Economy = new();
+        private Actor m_Actor;
+        private PlayerInputHandler m_InputHandle;
+        private Loadout m_Loadout;
+        private ClimbContoller m_ClimbContoller;
+        private CombatController m_CombatController;
+        private AnimatorController m_AnimatorController;
+        private QuestController m_QuestController;
+        private InteractionController m_InteractionController;
 
-        #endregion
+        private CountDownLatch m_CursorBlock = new();
+
+        #endregion component
 
         #region Property
+
         /// <summary>
         /// 移动控制
         /// </summary>
         public PlayerMovement Movement => m_Movement;
+
         /// <summary>
         /// 生命
         /// </summary>
         public Health Health => m_Health;
+
         /// <summary>
         /// 相机控制
         /// </summary>
         public CameraController CameraController => m_CameraController;
+
         /// <summary>
         /// 枪械控制
         /// </summary>
         public WeaponManager WeaponManager => m_WeaponManager;
+
         /// <summary>
         /// 装备
         /// </summary>
         public Loadout Loadout => m_Loadout;
+
         /// <summary>
         /// 战斗控制
         /// </summary>
         public CombatController CombatController => m_CombatController;
+
         /// <summary>
         /// 玩家仓库
         /// </summary>
         public Inventory Inventory => m_Inventory;
+
         /// <summary>
         /// 经济系统
         /// </summary>
         public PlayerEconomy Economy => m_Economy;
+
         /// <summary>
         /// Actor基类
         /// </summary>
         public Actor Actor => m_Actor;
+
         /// <summary>
         /// 攀爬控制
         /// </summary>
@@ -90,6 +101,7 @@ namespace TPSDemo
         public AnimatorController AnimatorController => m_AnimatorController;
 
         public CharacterController CharacterController => m_CharacterController;
+
         /// <summary>
         /// 状态机
         /// </summary>
@@ -104,16 +116,18 @@ namespace TPSDemo
         /// 相机根节点
         /// </summary>
         public Transform CameraRoot;
+
         /// <summary>
         /// 玩家运行时数据
         /// </summary>
         public PlayerRuntimeData RuntimeData = new PlayerRuntimeData();
+
         /// <summary>
         /// 交互控制
         /// </summary>
         public InteractionController InteractionController => m_InteractionController;
 
-        #endregion
+        #endregion Property
 
         public System.Collections.Generic.List<Vector2Int> Money;
 
@@ -125,6 +139,7 @@ namespace TPSDemo
         public Action<string, string> OnStateChanged;
 
         public int Id => m_Actor.Id;
+
         private void Awake()
         {
             m_CharacterController = GetComponent<CharacterController>();
@@ -152,24 +167,14 @@ namespace TPSDemo
             RuntimeData.CameraRoot = CameraRoot;
             RuntimeData.State = PlayerMovementState.Idle;
 
-            foreach(var e in Money) {
+            foreach (var e in Money) {
                 m_Economy.AddMoney(e.x, e.y);
             }
-
-            //DontDestroyOnLoad(gameObject);
         }
 
-        public override void OnDestroy()
+        private void DisableClientComponents()
         {
-            if (IsOwner) {
-                PlayerDataProxy.Instance.UnregisterPlayer();
-            }
-            base.OnDestroy();
-        }
-
-        void DisableClientComponents()
-        {
-            if(m_Movement != null) {
+            if (m_Movement != null) {
                 m_Movement.enabled = false;
             }
             if (m_FSM != null) {
@@ -182,12 +187,13 @@ namespace TPSDemo
                 m_CameraController.enabled = false;
             }
         }
+
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
 
             if (IsOwner) {
-                m_FSM.OnStateChanged += (string pre, string cur) => OnStateChanged?.Invoke(pre, cur);
+                m_FSM.OnStateChanged += (pre, cur) => OnStateChanged?.Invoke(pre, cur);
                 m_FSM.InitializeFSM();
                 RegisterEvents();
                 PlayerDataProxy.Instance.RegisterPlayer(this);
@@ -200,7 +206,10 @@ namespace TPSDemo
 
         public override void OnNetworkDespawn()
         {
-            UnregisterEvents();
+            if (IsOwner) {
+                UnregisterEvents();
+                PlayerDataProxy.Instance.UnregisterPlayer();
+            }
             base.OnNetworkDespawn();
         }
 
@@ -215,7 +224,6 @@ namespace TPSDemo
 
         private void UnregisterEvents()
         {
-
             OnJumpInput.UnregisterListener(OnJump);
             OnSprintInput.UnregisterListener(OnSprint);
             OnCrouchInput.UnregisterListener(OnCrouch);
@@ -223,22 +231,22 @@ namespace TPSDemo
             //OnLookInput.UnregisterListener(OnLook);
         }
 
-        void OnJump()
+        private void OnJump()
         {
             m_FSM.WantJump = true;
         }
 
-        void OnSprint()
+        private void OnSprint()
         {
             m_FSM.WantSprint = !m_FSM.WantSprint;
         }
 
-        void OnCrouch()
+        private void OnCrouch()
         {
             m_FSM.WantCrouch = !m_FSM.WantCrouch;
         }
 
-        void OnActiveCursor(bool active)
+        private void OnActiveCursor(bool active)
         {
             print("ActiveCursor: " + active);
             SetInputActive(active, active);

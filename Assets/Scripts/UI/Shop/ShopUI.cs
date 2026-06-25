@@ -68,7 +68,7 @@ namespace TPSDemo.UI
                 entry.Discount,
                 entry.FinalPrice,
                 entry.Amount,
-                ItemUIUtils.GetItemSprite(entry.GoodId)
+                ItemUIUtils.GetItemIcon(entry.GoodId)
             );
             m_Slots.Add(slot);
             slot.OnClick += (ShopSlotUI slot) => {

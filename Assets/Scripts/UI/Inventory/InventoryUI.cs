@@ -60,7 +60,7 @@ using InventoryStateChangeEvent = Event.InventoryStateChangeEvent;
         public void Swap(int slotIdx1, int slotIdx2)
         {
             EventManager.Broadcast(
-                new Event.InventoryTrySwapItem {
+                new Event.InventoryTrySwapItemEvent {
                     SlotIdx1 = slotIdx1, SlotIdx2 = slotIdx2
                 }
             );

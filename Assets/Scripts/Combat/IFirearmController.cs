@@ -6,7 +6,7 @@ namespace TPSDemo
     {
         public float ReloadTime { get; }
 
-        public bool TrySwitchFirearm(int index);
+        public void TrySwitchFirearm(int index);
 
         public void TryReload();
     }

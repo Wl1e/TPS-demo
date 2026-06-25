@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa296b2a93b78404196aae366124c1f4, type: 3}
+  m_Name: GripData
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.AttachmentItemData
+  Id: 531
+  Name: Grip
+  Type: 4
+  Description: 
+  Icon: {fileID: 21300000, guid: 8b42b44d48199fb4c8094eae182ce063, type: 3}
+  MaxStack: 1
+  Prefab:
+    m_AssetGUID: feb52bdc2e7ce3a479ceb7b58e1db393
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  PickupPrefab:
+    m_AssetGUID: ae31c45a949833b429cce2a2ab309055
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  DragType: -1
+  Slot: 2

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5c8a669e312a5e42a780b8b24f2bcc3, type: 3}
+  m_Name: ChestConfig
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ChestConfig
+  ChestId: 1
+  ChestName: "\u5B9D\u7BB1"
+  LootTable:
+  - Item: {fileID: 11400000, guid: c39d5ab3fb5697143999f38ccb7f39dd, type: 2}
+    MinAmount: 30
+    MaxAmount: 60
+  - Item: {fileID: 11400000, guid: 05778468d06cb404b8c7e8fb7e9fa0a2, type: 2}
+    MinAmount: 1
+    MaxAmount: 1
+  ItemSpawnRadius: 0.5

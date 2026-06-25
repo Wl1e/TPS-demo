@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 using Unity.Netcode;
@@ -8,7 +9,7 @@ namespace TPSDemo
 {
     public class AttachmentManager : NetworkBehaviour
     {
-        Dictionary<IAttachment.AttachmentSlot, IAttachment> m_Attachments = new();
+        readonly Dictionary<IAttachment.AttachmentSlot, IAttachment> m_Attachments = new();
 
         public Dictionary<IAttachment.AttachmentSlot, IAttachment> Attachments => m_Attachments;
 
@@ -17,16 +18,34 @@ namespace TPSDemo
         public Transform ScopeSocket;
         [Tooltip("弹匣挂点")]
         public Transform MagazineSocket;
+        [Tooltip("激光挂点")]
+        public Transform LaserSocket;
+        [Tooltip("握把挂点")]
+        public Transform GripSocket;
+        [Tooltip("枪管挂点")]
+        public Transform MuzzleSocket;
+
 
         [Header("默认配件")]
         [Tooltip("默认瞄准镜")]
-        public Scope DefaultScope;
+        public ScopeAttachment DefaultScope = null;
         [Tooltip("默认弹匣")]
-        public Magazine DefaultMagazine;
+        public MagazineAttachment DefaultMagazine = null;
+        [Tooltip("默认握把")]
+        public ScopeAttachment DefaultGrip = null;
+        [Tooltip("默认枪管")]
+        public MagazineAttachment DefaultMuzzle = null;
+        [Tooltip("默认镭射")]
+        public ScopeAttachment DefaultLaser = null;
 
         // NetWorkVariable
-        private NetworkVariable<int> m_ScopeNV = new();
-        private NetworkVariable<int> m_MagazineNV = new();
+        private NetworkVariable<int> m_ScopeNV = new(-1);
+        private NetworkVariable<int> m_MagazineNV = new(-1);
+        private NetworkVariable<int> m_LaserNV = new(-1);
+        private NetworkVariable<int> m_GripNV = new(-1);
+        private NetworkVariable<int> m_MuzzleNV = new(-1);
+
+        public event Action OnAttachmentChanged;
 
         public override void OnNetworkSpawn()
         {
@@ -38,15 +57,26 @@ namespace TPSDemo
             //if (DefaultMagazine != null) {
             //    m_Attachments[IAttachment.AttachmentSlot.Magazine] = DefaultMagazine;
             //}
-            m_ScopeNV.OnValueChanged += OnScopeChanged;
-            m_MagazineNV.OnValueChanged += OnMagazineChanged;
+            m_ScopeNV.OnValueChanged += ScopeChanged;
+            m_MagazineNV.OnValueChanged += MagazineChanged;
+            m_LaserNV.OnValueChanged += LaserChanged;
+            m_GripNV.OnValueChanged += GripChanged;
+            m_MuzzleNV.OnValueChanged += MuzzleChanged;
         }
 
         public override void OnNetworkDespawn()
         {
-            m_ScopeNV.OnValueChanged -= OnScopeChanged;
-            m_MagazineNV.OnValueChanged -= OnMagazineChanged;
+            m_ScopeNV.OnValueChanged -= ScopeChanged;
+            m_MagazineNV.OnValueChanged -= MagazineChanged;
+            m_LaserNV.OnValueChanged -= LaserChanged;
+            m_GripNV.OnValueChanged -= GripChanged;
+            m_MuzzleNV.OnValueChanged -= MuzzleChanged;
             base.OnNetworkDespawn();
+        }
+
+        public bool SupportAttachment(IAttachment.AttachmentSlot slot, int attachmentId)
+        {
+            return GetTargetSocket(slot) != null;
         }
 
         public void AddAttachment(IAttachment.AttachmentSlot slot, int attachmentId)
@@ -65,19 +95,19 @@ namespace TPSDemo
             RemoveAttachmentServerRpc(slot);
         }
 
-        Transform GetTargetSocket(IAttachment.AttachmentSlot slot)
+        private Transform GetTargetSocket(IAttachment.AttachmentSlot slot)
         {
             switch (slot) {
                 case IAttachment.AttachmentSlot.Scope:
                     return ScopeSocket;
                 case IAttachment.AttachmentSlot.Muzzle:
-                    return null;
+                    return MuzzleSocket;
                 case IAttachment.AttachmentSlot.Grip:
-                    return null;
-                case IAttachment.AttachmentSlot.Stock:
-                    return null;
+                    return GripSocket;
+                case IAttachment.AttachmentSlot.Laser:
+                    return LaserSocket;
                 case IAttachment.AttachmentSlot.Magazine:
-                    return null;
+                    return MagazineSocket;
             }
             return null;
         }
@@ -95,10 +125,17 @@ namespace TPSDemo
         [ServerRpc]
         private void AddAttachmentServerRpc(IAttachment.AttachmentSlot slot, int attachmentId)
         {
+            print($"Slot: {slot}, Id: {attachmentId}");
             if (slot == IAttachment.AttachmentSlot.Scope) {
                 m_ScopeNV.Value = attachmentId;
-            } else if(slot == IAttachment.AttachmentSlot.Magazine) {
+            } else if (slot == IAttachment.AttachmentSlot.Magazine) {
                 m_MagazineNV.Value = attachmentId;
+            } else if (slot == IAttachment.AttachmentSlot.Grip) {
+                m_GripNV.Value = attachmentId;
+            } else if (slot == IAttachment.AttachmentSlot.Laser) {
+                m_LaserNV.Value = attachmentId;
+            } else if(slot == IAttachment.AttachmentSlot.Muzzle) {
+                m_MuzzleNV.Value = attachmentId;
             }
         }
 
@@ -115,10 +152,13 @@ namespace TPSDemo
         #endregion
 
 
-        private void OnScopeChanged(int oldId, int newId) => OnAttachmentChanged(IAttachment.AttachmentSlot.Scope, oldId, newId);
-        private void OnMagazineChanged(int oldId, int newId) => OnAttachmentChanged(IAttachment.AttachmentSlot.Magazine, oldId, newId);
+        private void ScopeChanged(int oldId, int newId) => AttachmentChanged(IAttachment.AttachmentSlot.Scope, oldId, newId);
+        private void MagazineChanged(int oldId, int newId) => AttachmentChanged(IAttachment.AttachmentSlot.Magazine, oldId, newId);
+        private void LaserChanged(int oldId, int newId) => AttachmentChanged(IAttachment.AttachmentSlot.Laser, oldId, newId);
+        private void GripChanged(int oldId, int newId) => AttachmentChanged(IAttachment.AttachmentSlot.Grip, oldId, newId);
+        private void MuzzleChanged(int oldId, int newId) => AttachmentChanged(IAttachment.AttachmentSlot.Muzzle, oldId, newId);
 
-        private void OnAttachmentChanged(IAttachment.AttachmentSlot slot, int oldId, int newId)
+        private void AttachmentChanged(IAttachment.AttachmentSlot slot, int oldId, int newId)
         {
             bool Unequip = newId == -1;
 
@@ -128,28 +168,36 @@ namespace TPSDemo
 
             if (newId != -1) {
                 OnAddAttachment(slot, newId);
-            } 
+            }
         }
 
         private void OnAddAttachment(IAttachment.AttachmentSlot slot, int attachmentId)
         {
             var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(attachmentId);
-            var attachment = WorldItemManager.CreateItemGO<IAttachment>(itemData);
-            m_Attachments[slot] = attachment;
-            attachment.SetParent(GetTargetSocket(slot));
+            StartCoroutine(
+                WorldItemManager.CreateItemGO<IAttachment>(
+                    itemData,
+                    attachment => {
+                        m_Attachments[slot] = attachment;
+                        attachment.SetParent(GetTargetSocket(slot));
+                        // 生成变异步了，所以放在这
+                        OnAttachmentChanged?.Invoke();
+                    }
+                )
+            );
         }
 
         private void OnRemoveAttachment(IAttachment.AttachmentSlot slot, int attachmentId, bool enableDefault)
         {
-            var attachment = m_Attachments[slot];
+            var attachment = GetAttachment(slot);
             m_Attachments[slot] = null;
             if (attachment != null) {
                 attachment.Destroy();
+                // FIXME: 不要往地上扔，往背包扔
+                var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(attachmentId);
+                WorldItemManager.Instance.SpawnItem(itemData, transform.position);
+                OnAttachmentChanged?.Invoke();
             }
-
-            // FIXME: 不要往地上扔，往背包扔
-            var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(attachmentId);
-            WorldItemManager.Instance.SpawnItem(itemData, transform.position);
 
             if (enableDefault) {
                 if (slot == IAttachment.AttachmentSlot.Scope) {
@@ -172,16 +220,24 @@ namespace TPSDemo
         // For UI
         public List<(IAttachment.AttachmentSlot, int)> GetAttachmentList()
         {
-            var list = new List<(IAttachment.AttachmentSlot, int)> {
-                (
-                    IAttachment.AttachmentSlot.Scope,
-                    m_Attachments.GetValueOrDefault(IAttachment.AttachmentSlot.Scope, DefaultScope).Id
-                ),
-                (
-                    IAttachment.AttachmentSlot.Magazine,
-                    m_Attachments.GetValueOrDefault(IAttachment.AttachmentSlot.Magazine, DefaultMagazine).Id
-                )
-            };
+            var list = new List<(IAttachment.AttachmentSlot, int)>();
+
+            void f(IAttachment.AttachmentSlot slot, AttachmentBase defaultAttachment)
+            {
+                int id = -1;
+                if (m_Attachments.TryGetValue(slot, out var attachment) && attachment != null) {
+                    id = attachment.Id;
+                } else if(defaultAttachment != null) {
+                    id = defaultAttachment.Id;
+                }
+                list.Add((IAttachment.AttachmentSlot.Laser, id));
+            }
+
+            f(IAttachment.AttachmentSlot.Scope, DefaultScope);
+            f(IAttachment.AttachmentSlot.Magazine, DefaultMagazine);
+            f(IAttachment.AttachmentSlot.Laser, DefaultLaser);
+            f(IAttachment.AttachmentSlot.Grip, DefaultGrip);
+            f(IAttachment.AttachmentSlot.Muzzle, DefaultMuzzle);
 
             return list;
         }

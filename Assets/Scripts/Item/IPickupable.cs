@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-
+﻿
 namespace TPSDemo
 {
     public interface IPickupable : IInteractive

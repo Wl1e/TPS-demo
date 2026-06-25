@@ -5,12 +5,14 @@ namespace TPSDemo
 {
     public class SingleMechanism : MonoBehaviour, IFireMechanism
     {
-        [SerializeField]
-        float m_FireInternal;
-        [SerializeField]
-        bool m_ReleaseTrigger = false;
+        [Tooltip("射击间隔")]
+        [SerializeField] float m_FireInternal;
+        [Tooltip("是否为释放射击")]
+        [SerializeField] bool m_ReleaseTrigger = false;
 
         bool m_Held = false;
+
+        private float m_FireCD = 0f;
 
         public float FireInternal { get; }
         public bool IsFiring { get; }
@@ -20,8 +22,9 @@ namespace TPSDemo
         public void StartFire()
         {
             m_Held = true;
-            if (!m_ReleaseTrigger && m_Held) {
+            if (!m_ReleaseTrigger && m_Held && m_FireCD <= 0f) {
                 OnShouldFire?.Invoke();
+                m_FireCD = m_FireInternal;
             }
         }
         public void StopFire()
@@ -34,6 +37,14 @@ namespace TPSDemo
 
         public void UpdateFire(float deltaTime)
         {
+            
+        }
+
+        private void Update()
+        {
+            if (m_FireCD > 0f) {
+                m_FireCD -= Time.deltaTime;
+            }
         }
     }
 }
