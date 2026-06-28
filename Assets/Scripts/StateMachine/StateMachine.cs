@@ -11,8 +11,6 @@ namespace TPSDemo.FSM
         IState m_PreviouState = null;
         public IState CurrentState => m_CurrentState;
 
-        public Action<string, string> OnStateChanged;
-
         protected void FixedUpdate()
         {
             m_CurrentState?.Update();
@@ -62,19 +60,16 @@ namespace TPSDemo.FSM
             m_PreviouState = m_CurrentState;
             m_CurrentState = state;
             m_CurrentState.Enter();
-            OnStateChanged?.Invoke(m_PreviouState?.GetName() ?? "", m_CurrentState.GetName());
         }
 
         public void Run()
         {
             m_CurrentState?.Enter();
-            OnStateChanged?.Invoke("", m_CurrentState.GetName());
         }
 
         public void Exit()
         {
             m_CurrentState?.Exit();
-            OnStateChanged?.Invoke(m_CurrentState.GetName(), "");
         }
 
         public abstract void InitializeFSM();

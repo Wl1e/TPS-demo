@@ -55,9 +55,11 @@ namespace TPSDemo
 
     public abstract class Objective
     {
-        public int Id = 0;
+        // Objective的Id不是一个好设计，它可能会随着Quest的增多而变得很多
+        public int Id;
         protected int m_ActorId = -1;
-        public bool IsCompleted { get; protected set; }
+        protected bool m_IsCompleted = false;
+        public bool IsCompleted => m_IsCompleted;
         public Action<Objective> OnCompleted;
         public Action<Objective> OnUpdate;
         public abstract void Check();
@@ -67,7 +69,7 @@ namespace TPSDemo
 
         public void Complete()
         {
-            IsCompleted = true;
+            m_IsCompleted = true;
             OnCompleted?.Invoke(this);
             Debug.Log($"Objective: {Id} Completed");
         }

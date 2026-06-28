@@ -113,7 +113,10 @@ namespace TPSDemo
             // FIXME 这里应该删掉武器OnFire的回调
         }
 
-        public override bool ValidActive() => m_Loadout != null && (m_Loadout.HasWeapon(1) || m_Loadout.HasWeapon(2));
+        public override bool ValidActive() {
+            print($"Weapon1 {m_Loadout.HasWeapon(1)}, Weapon2 {m_Loadout.HasWeapon(2)}");
+            return m_Loadout != null && (m_Loadout.HasWeapon(1) || m_Loadout.HasWeapon(2));
+        }
 
         public override void SetActive(bool isActive)
         {
@@ -165,10 +168,10 @@ namespace TPSDemo
         [ServerRpc]
         private void TrySwitchFirearmServerRpc(int idx)
         {
+            print($"CurIdx: {CurrentFirearmIndex}, NewIdx: {idx}");
             // 按下当前武器对应数字键收回武器
             if (CurrentFirearmIndex == idx) {
                 m_CurrentFirearmIndex.Value = -1;
-                Exit();
                 return;
             }
 
@@ -287,9 +290,7 @@ namespace TPSDemo
         {
             // m_ReloadCoroutine修改起来太麻烦了，后续通过WeaponStateManager同步
             if (IsServer) {
-                if (m_CurrentFirearm != null) {
-                    m_CurrentFirearm.Attach(BackAttach);
-                }
+                m_CurrentFirearm?.Attach(BackAttach);
 
                 if (m_ReloadCoroutine != null) {
                     StopCoroutine(m_ReloadCoroutine);
@@ -302,6 +303,8 @@ namespace TPSDemo
                     if (IsOwner) {
                         m_CurrentFirearm.EndFire();
                         m_CurrentFirearm.OnUnequip();
+                        print("WeaponManager Exit");
+                        Exit();
                     }
                     m_CurrentFirearm = null;
                 } else {

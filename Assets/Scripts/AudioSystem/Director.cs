@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.Audio;
 
 namespace TPSDemo
@@ -9,6 +8,7 @@ namespace TPSDemo
         [SerializeField] AudioMixer m_Mixer;
         [SerializeField] Transform EffectPool;
         AudioSystem m_AudioSystem;
+        EffectPool m_EffectPool;
 
         bool m_SoundMuted = false;
         // Use this for initialization
@@ -18,6 +18,8 @@ namespace TPSDemo
             base.Awake();
             m_AudioSystem = new AudioSystem();
             m_AudioSystem.Initialize();
+            m_EffectPool = new EffectPool();
+            m_EffectPool.Initialize();
         }
 
         public AudioBuilder RequestAudio(AudioClip clip)
@@ -32,8 +34,7 @@ namespace TPSDemo
         }
         public EffectBuilder RequestEffect(GameObject effectPrefab)
         {
-            var effectBuilder = new EffectBuilder(effectPrefab);
-            return effectBuilder;
+            return m_EffectPool.GetEffectBuilder().SetEffect(effectPrefab);
         }
     }
 }

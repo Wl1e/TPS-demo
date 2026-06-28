@@ -24,16 +24,21 @@ namespace TPSDemo.UI
 
 
 
-        public void Initialize(string name, int price, float discount, int finalPrice, int amount, Sprite icon)
+        public void Initialize(string name, int price, float discount, int finalPrice, int amount, Sprite icon, bool soldout)
         {
             Price = price;
             FinalPrice = finalPrice;
             Amount = amount;
             Discount = discount;
+            m_SeldOut = soldout;
 
             Name.text = name;
             PriceText.text = FinalPrice.ToString();
             Icon.sprite = icon;
+
+            if(m_SeldOut) {
+                OnSeldOut();
+            }
         }
 
         public void OnSeldOut()

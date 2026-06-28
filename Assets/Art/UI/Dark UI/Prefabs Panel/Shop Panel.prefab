@@ -94,9 +94,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopUI
   m_CloseButton: {fileID: 834527284907451126}
-  m_ShopSlotPrefab: {fileID: 8003838528247579935, guid: 9b43fab64ae29514c804eec2e08cc6a9, type: 3}
+  m_ShopSlotPrefab: {fileID: 3953089236001006501, guid: 9b43fab64ae29514c804eec2e08cc6a9, type: 3}
   m_SlotRoot: {fileID: 4235630174119747287}
-  m_Money: {fileID: 0}
+  m_Money: {fileID: 5560502727167907649}
 --- !u!1 &1308622262089053437
 GameObject:
   m_ObjectHideFlags: 0
@@ -530,7 +530,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.9974991, g: 1, b: 0, a: 0.6666667}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

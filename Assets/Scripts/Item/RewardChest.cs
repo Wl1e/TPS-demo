@@ -26,6 +26,7 @@ namespace TPSDemo
         [SerializeField] private Transform m_LootSpawnPos;
         [Tooltip("抛出力度")]
         [SerializeField] private float m_ThrowForce = 1f;
+        public float WaitThrowTime = 1f;
         private Animator m_Animator;
         private readonly NetworkVariable<ChestState> m_StateNV = new(ChestState.Closed);
 
@@ -42,9 +43,6 @@ namespace TPSDemo
 
         private void OnChestStateChanged(ChestState previousValue, ChestState newValue)
         {
-            if (newValue == ChestState.Opened) {
-                m_Animator.SetTrigger(OpenHash);
-            }
         }
 
         // === IInteractive ===
@@ -69,7 +67,7 @@ namespace TPSDemo
                 return;
             }
             m_StateNV.Value = ChestState.Opened;
-            m_Animator.Play("Open");
+            m_Animator.Play(OpenHash);
             StartCoroutine(SpawnLoot());
         }
 
@@ -86,14 +84,16 @@ namespace TPSDemo
                 dir.y = Mathf.Abs(dir.y);
                 dir.z = Mathf.Abs(dir.z);
 
+                //Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Chest"), LayerMask.NameToLayer("Pickup"), true);
                 StartCoroutine(WorldItemManager.Instance.SpawnItem(
                     entry.Item, m_LootSpawnPos.position, obj => {
                         if(obj.TryGetComponent(out Rigidbody rb)) {
-                            rb.isKinematic = true;
-                            rb.AddForce(dir * m_ThrowForce);
+                            rb.AddForce(dir * m_ThrowForce, ForceMode.Impulse);
                         }
                     }
                 ));
+                //yield return new WaitForSeconds(WaitThrowTime);
+                //Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Chest"), LayerMask.NameToLayer("Pickup"), false);
             }
         }
     }

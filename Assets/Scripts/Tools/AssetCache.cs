@@ -9,6 +9,7 @@ namespace TPSDemo
 	{
         static private readonly Dictionary<string, GameObject> s_Cache = new();
         static private readonly Dictionary<string, AsyncOperationHandle<GameObject>> s_Handles = new();
+        //static private readonly Dictionary<string, CountDownLatch> m_Locks;
 
         static public System.Collections.IEnumerator GetOrLoad(AssetReference r, System.Action<GameObject> onLoaded)
         {

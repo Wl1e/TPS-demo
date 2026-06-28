@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.Rendering.STP;
 
 namespace TPSDemo
 {
@@ -14,13 +15,19 @@ namespace TPSDemo
         [Tooltip("所有地图")]
         [SerializeField] private List<MapConfig> m_MapConfigs;
 
+        [SerializeField] private Map m_DefaultMap;
+
         private Map m_CurrentMap;
         public Map CurrentMap => m_CurrentMap;
         private Scene m_CurrentScene;
         public MapState State => m_CurrentMap != null ? m_CurrentMap.State : MapState.Idle;
 
-        /// <summary>同步给客户端：当前地图状态</summary>
-        private NetworkVariable<int> m_SyncedState = new((int)MapState.Idle);
+        private bool m_SceneEventSubscribed = false;
+
+        /// <summary>
+        /// 同步给客户端：当前地图状态
+        /// </summary>
+        private readonly NetworkVariable<MapState> m_SyncedState = new(MapState.Idle);
 
         public override void OnNetworkSpawn()
         {
@@ -28,7 +35,15 @@ namespace TPSDemo
             if (IsClient) {
                 m_SyncedState.OnValueChanged += OnStateChanged;
             }
-            NetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
+
+            if (!m_SceneEventSubscribed) {
+                m_SceneEventSubscribed = true;
+                NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
+            }
+
+            if (IsServer) {
+                InitializeMap();
+            }
         }
 
         public override void OnNetworkDespawn()
@@ -36,17 +51,20 @@ namespace TPSDemo
             if (IsClient) {
                 m_SyncedState.OnValueChanged -= OnStateChanged;
             }
-            NetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
+            if (m_SceneEventSubscribed) {
+                m_SceneEventSubscribed = false;
+                NetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
+            }
             base.OnNetworkDespawn();
         }
 
         #region 客户端回调
 
-        private void OnStateChanged(int oldState, int newState)
+        private void OnStateChanged(MapState oldState, MapState newState)
         {
             EventManager.Broadcast(
                 new Event.MapStateChangedEvent {
-                    State = (MapState)newState,
+                    State = newState,
                 });
         }
 
@@ -59,6 +77,10 @@ namespace TPSDemo
             if (!IsServer) {
                 return;
             }
+            if(!CurrentMap.CanExit()) {
+                EventManager.Broadcast(new Event.MessageLogEvent { Message = "无法离开场景，目标尚未完成" });
+                return;
+            }
             print($"Enter Map {mapId}");
             foreach (var config in m_MapConfigs) {
                 if (config.MapId == mapId) {
@@ -66,18 +88,6 @@ namespace TPSDemo
                     return;
                 }
             }
-        }
-
-        /// <summary>
-        /// 注册Map
-        /// </summary>
-        public void RegisterMap(Map map)
-        {
-            if (map == null) {
-                return;
-            }
-            m_CurrentMap = map;
-            OnMapEntered();
         }
 
         /// <summary>
@@ -96,14 +106,7 @@ namespace TPSDemo
 
             LeaveMap();
 
-            print("Start Change Map");
-            //NetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
             NetworkManager.SceneManager.LoadScene(config.SceneName, LoadSceneMode.Single);
-        }
-
-        private void OnMapEntered()
-        {
-            m_CurrentMap.OnEnter();
         }
 
         private void OnSceneEvent(SceneEvent e)
@@ -114,7 +117,10 @@ namespace TPSDemo
             } else if (e.SceneEventType == SceneEventType.LoadComplete) {
                 m_CurrentScene = e.Scene;
                 if (IsServer) {
-                    m_SyncedState.Value = (int)MapState.Active;
+                    InitializeMap();
+                } else if(IsOwner) {
+                    var map = FindAnyObjectByType<Map>();
+                    EventManager.Broadcast(new Event.MessageLogEvent { Message = $"进入场景{map.Config.MapName}" });
                 }
                 //EventManager.Broadcast(new Event.MessageLogEvent { Message = $"进入: {config.MapName}" });
             } else if (e.SceneEventType == SceneEventType.Synchronize) {
@@ -127,7 +133,7 @@ namespace TPSDemo
             if (!IsServer || m_CurrentMap == null)
                 return;
             m_CurrentMap.OnComplete();
-            m_SyncedState.Value = (int)MapState.Completed;
+            m_SyncedState.Value = MapState.Completed;
             EventManager.Broadcast(new Event.MessageLogEvent { Message = $"完成: {m_CurrentMap.Config.MapName}" });
         }
 
@@ -138,10 +144,17 @@ namespace TPSDemo
                 return;
             }
             m_CurrentMap.OnExit();
-            if (m_SyncedState.Value == (int)MapState.Active) {
-                m_SyncedState.Value = (int)MapState.Idle;
+            if (m_SyncedState.Value == MapState.Active) {
+                m_SyncedState.Value = MapState.Idle;
             }
             m_CurrentMap = null;
+        }
+
+        private void InitializeMap()
+        {
+            m_CurrentMap = FindAnyObjectByType<Map>();
+            m_CurrentMap.OnEnter();
+            m_SyncedState.Value = m_CurrentMap.State;
         }
 
         #endregion 地图切换（仅服务器）

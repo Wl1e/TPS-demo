@@ -136,7 +136,6 @@ namespace TPSDemo
         [SerializeField] private GameEvent OnCrouchInput;
         [SerializeField] private Vector2Event OnLookInput;
         [SerializeField] private BoolEvent OnActiveCursorInput;
-        public Action<string, string> OnStateChanged;
 
         public int Id => m_Actor.Id;
 
@@ -193,7 +192,6 @@ namespace TPSDemo
             base.OnNetworkSpawn();
 
             if (IsOwner) {
-                m_FSM.OnStateChanged += (pre, cur) => OnStateChanged?.Invoke(pre, cur);
                 m_FSM.InitializeFSM();
                 RegisterEvents();
                 PlayerDataProxy.Instance.RegisterPlayer(this);
@@ -248,13 +246,12 @@ namespace TPSDemo
 
         private void OnActiveCursor(bool active)
         {
-            print("ActiveCursor: " + active);
             SetInputActive(active, active);
         }
 
         public void SetInputActive(bool active, bool activeCursor)
         {
-            print($"SetInputActive: {active} {activeCursor}");
+            //print($"SetInputActive: {active} {activeCursor}");
             if (!activeCursor) {
                 m_CursorBlock.Increase();
             } else {

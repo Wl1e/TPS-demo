@@ -43,7 +43,7 @@ namespace TPSDemo
             if (Physics.Raycast(ray, out RaycastHit hit, m_InteractRange, interactLayerMask)) {
                 if (hit.collider.TryGetComponent<IInteractive>(out var interactive)) {
                     // 显示交互 UI
-                    print("interactive: " + interactive);
+                    //print("interactive: " + interactive);
                     m_CurrentTarget = interactive;
                 } else {
                     m_CurrentTarget = null;

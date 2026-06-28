@@ -16,16 +16,16 @@ namespace TPSDemo
 
     public class Actor : NetworkBehaviour
     {
-        private int m_Id;
+        private NetworkVariable<int> m_Id = new(0);
 
         public Transform AimPoint;
-        public int Id => m_Id;
+        public int Id => m_Id.Value;
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
             if (IsServer) {
-                m_Id = NextId.GetNextId();
+                m_Id.Value = NextId.GetNextId();
                 ActorManager.Instance.AddActor(this);
             }
         }
@@ -33,7 +33,7 @@ namespace TPSDemo
         public override void OnNetworkDespawn()
         {
             if (IsServer) {
-                ActorManager.Instance.Actors.Remove(m_Id);
+                ActorManager.Instance.Actors.Remove(m_Id.Value);
             }
             base.OnNetworkDespawn();
         }

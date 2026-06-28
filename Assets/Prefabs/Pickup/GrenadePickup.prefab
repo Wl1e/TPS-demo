@@ -16,6 +16,18 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 1693281332858633527, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
+    - target: {fileID: 1693281332858633527, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
+      propertyPath: m_LinearDamping
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1693281332858633527, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
+      propertyPath: m_AngularDamping
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6251817291085405488, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
       propertyPath: m_Data
       value: 

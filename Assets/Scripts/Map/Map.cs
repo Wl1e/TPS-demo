@@ -32,26 +32,39 @@ namespace TPSDemo
 
         private void Awake()
         {
-            MapManager.Instance.RegisterMap(this);
+            if (m_Objectives != null) {
+                foreach (var obj in m_Objectives) {
+                    obj.OnCompleted += _ => CheckObjective();
+                }
+            }
         }
 
         #region 公共方法
 
-        /// <summary>玩家进入本地图</summary>
+        /// <summary>
+        /// 玩家进入本地图
+        /// </summary>
         public void OnEnter()
         {
             m_State = MapState.Active;
+            if(CheckObjective()) {
+                m_State = MapState.Completed;
+            }
             OnPlayerEnter?.Invoke();
         }
 
-        /// <summary>玩家离开本地图</summary>
+        /// <summary>
+        /// 玩家离开本地图
+        /// </summary>
         public void OnExit()
         {
             m_State = MapState.Idle;
             OnPlayerExit?.Invoke();
         }
 
-        /// <summary>本地图目标达成</summary>
+        /// <summary>
+        /// 本地图目标达成
+        /// </summary>
         public void OnComplete()
         {
             if (m_State == MapState.Completed) {
@@ -61,6 +74,30 @@ namespace TPSDemo
             OnMapComplete?.Invoke();
         }
 
+        /// <summary>
+        /// 玩家是否能离开场景
+        /// </summary>
+        public bool CanExit()
+        {
+            return (Config.Type == MapType.Hub) ||
+                (Config.Type == MapType.Combat) && m_State == MapState.Completed;
+        }
+
+        #endregion
+
+        #region 私有方法
+        private bool CheckObjective()
+        {
+            if (m_Objectives == null) {
+                return true;
+            }
+            foreach (var obj in m_Objectives) {
+                if(!obj.IsCompleted) {
+                    return false;
+                }
+            }
+            return true;
+        }
         #endregion
 
         #region 编辑器可视化

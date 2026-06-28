@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEngine.EventSystems.PointerEventData;
 
 namespace TPSDemo.UI
 {
@@ -57,6 +58,9 @@ namespace TPSDemo.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            if(eventData.button == InputButton.Right) {
+                EventManager.Broadcast(new Event.TryUseActiveItemEvent { InventorySlotId = SlotIdx });
+            }
         }
     }
 }

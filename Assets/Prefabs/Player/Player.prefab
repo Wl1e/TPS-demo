@@ -106,9 +106,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6594114352117876478}
-  - component: {fileID: 3497973971843323960}
-  - component: {fileID: 1875908129075464264}
-  - component: {fileID: 5388686210507783607}
   m_Layer: 0
   m_Name: Aim
   m_TagString: Untagged
@@ -131,86 +128,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6091626507694201701}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3497973971843323960
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 710135754225530890}
-  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &1875908129075464264
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 710135754225530890}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_MaskInteraction: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &5388686210507783607
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 710135754225530890}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1275462419474677425
 GameObject:
   m_ObjectHideFlags: 0
@@ -310,11 +227,11 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   m_Slots:
   - Key: 1
-    Value: {fileID: 2759598056937869321}
-  - Key: 2
-    Value: {fileID: 7691995253254054613}
-  - Key: 0
     Value: {fileID: 502528820035278656}
+  - Key: 2
+    Value: {fileID: 2759598056937869321}
+  - Key: 3
+    Value: {fileID: 7691995253254054613}
   EquipTime: 0.3
   SwitchTime: 0.3
   EndTime: 0
@@ -336,11 +253,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThrowController
   ShowTopMostFoldoutHeaderGroup: 1
-  m_Slot: 2
+  m_Slot: 3
   TrajectoryLine: {fileID: 7258002727430490377}
   HorizonalAngle: 30
   m_Owner: {fileID: 5758035524814191548}
-  GrenadeRoot: {fileID: 1136555938073773694}
+  m_GrenadeRoot: {fileID: 1136555938073773616}
   m_GrenadeRootOffset: {x: 0, y: 0.12, z: 0.07}
   m_GrenadeRootRotate: {x: 180, y: 90, z: 90}
   m_ThrowPosOffset: 0.6
@@ -358,7 +275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponManager
   ShowTopMostFoldoutHeaderGroup: 1
-  m_Slot: 1
+  m_Slot: 2
   m_ReloadTime: 1
   AimTarget: {fileID: 1607248410051887178}
   RightHandAttach: {fileID: 8723894199958014274}
@@ -396,7 +313,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnarmedController
   ShowTopMostFoldoutHeaderGroup: 1
-  m_Slot: 0
+  m_Slot: 1
 --- !u!1 &2081892483045426009
 GameObject:
   m_ObjectHideFlags: 0
@@ -882,7 +799,7 @@ Transform:
   m_GameObject: {fileID: 7697645733594970520}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.22651, y: 1.03218, z: -0.1646}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -913,6 +830,7 @@ GameObject:
   - component: {fileID: -4901112080724874790}
   - component: {fileID: 6486263949556210085}
   - component: {fileID: 8674277532388271026}
+  - component: {fileID: 3466044232605965439}
   m_Layer: 12
   m_Name: Player
   m_TagString: Player
@@ -998,7 +916,7 @@ CharacterController:
   m_Height: 1.8
   m_Radius: 0.35
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0.05
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.9, z: 0}
@@ -1185,7 +1103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   m_HealthValue:
-    value: 100
+    value: 40
     lo: 0
     hi: 100
 --- !u!81 &3543983999482970046
@@ -1275,6 +1193,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.QuestController
   ShowTopMostFoldoutHeaderGroup: 1
   m_OpenQuestPanelInput: {fileID: 11400000, guid: 8b538f1636886ce49b064d3eb5c2fd9d, type: 2}
+--- !u!114 &3466044232605965439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8301697018837147508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0478d70d51ddc9f4d8475c7858c6ab8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  RightHand: {fileID: 1136555938073773616}
 --- !u!1 &8439695403502581523
 GameObject:
   m_ObjectHideFlags: 0
@@ -2769,7 +2700,7 @@ MonoBehaviour:
     DestinationState: 173371648
     TransitionDuration: 0.25
     TriggerNameHash: -1525363869
-    TransitionIndex: 2
+    TransitionIndex: 1
   AnimatorParameterEntries:
     ParameterEntries:
     - name: VerticalSpeed
@@ -2840,6 +2771,18 @@ MonoBehaviour:
       NameHash: -624486612
       Synchronize: 1
       ParameterType: 9
+    - name: Stair
+      NameHash: 518853668
+      Synchronize: 1
+      ParameterType: 3
+    - name: UseItem
+      NameHash: -1366766848
+      Synchronize: 1
+      ParameterType: 9
+    - name: UseItemSpeed
+      NameHash: -1341561942
+      Synchronize: 1
+      ParameterType: 1
   AnimatorParametersExpanded: 0
 --- !u!4 &1136555938073773616 stripped
 Transform:
@@ -2849,11 +2792,6 @@ Transform:
 --- !u!4 &1136555938073773652 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400008, guid: dab9cd6b3aa068b4385111bc9af85bd7, type: 3}
-  m_PrefabInstance: {fileID: 1136555938073386204}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1136555938073773694 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 400034, guid: dab9cd6b3aa068b4385111bc9af85bd7, type: 3}
   m_PrefabInstance: {fileID: 1136555938073386204}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1136555938073774070 stripped

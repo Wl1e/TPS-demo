@@ -10,9 +10,10 @@ namespace TPSDemo.Combat
 {
     public enum Slot
     {
-        Unarmed = 0,
-        Firearm = 1,
-        Throwable = 2,
+        None = 0,
+        Unarmed = 1,
+        Firearm = 2,
+        Throwable = 3,
     }
 
     public enum EquipState
@@ -74,6 +75,14 @@ namespace TPSDemo
             }
             //m_Lookup[Slot.None] = null;
         }
+
+        private void Update()
+        {
+            if(m_PlayerRuntimeData.DisableCombat && CurrentActiveSlot != Slot.Unarmed) {
+                m_Lookup[CurrentActiveSlot].Exit();
+            }
+        }
+
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
@@ -101,12 +110,6 @@ namespace TPSDemo
             base.OnNetworkDespawn();
         }
 
-        private IEnumerator ActiveUnarm()
-        {
-            yield return null;
-            ActiveSlotServerRpc(Slot.Unarmed);
-        }
-
         private void RegisterEvents()
         {
             TryFireEvent.RegisterListener(HandleTryAttack);
@@ -130,10 +133,8 @@ namespace TPSDemo
         }
 
         ICombatSlot GetActiveSlot() => m_Lookup[CurrentActiveSlot];
-        bool ValidSlotIndex(int index)
-        {
-            return index >= 0 && index < m_Slots.Count;
-        }
+        bool ValidSlotIndex(int index) => index >= 0 && index < m_Slots.Count;
+
         [ServerRpc]
         void ActiveSlotServerRpc(Slot slot)
         {
@@ -155,12 +156,13 @@ namespace TPSDemo
         public void ExitCurrentSlot()
         {
             if (CurrentActiveSlot != Slot.Unarmed) {
-                SlotExited(CurrentActiveSlot);
+                m_Lookup[CurrentActiveSlot].Exit();
             }
         }
 
         void SlotExited(Slot slot)
         {
+            print($"SlotExited CurrentActiveSlot: {CurrentActiveSlot}, slot: {slot}");
             if (IsOwner && CurrentActiveSlot == slot) {
                 ActiveSlotServerRpc(Slot.Unarmed);
             }
@@ -179,7 +181,6 @@ namespace TPSDemo
 
         void TryEquipFirearm(int index)
         {
-            print("TryEquipFirearm");
             if(m_ActiveSlot.Value == Slot.Firearm) {
                 if (m_Lookup[Slot.Firearm] is IFirearmSlot firearmSlot) {
                     firearmSlot.TrySwitchFirearm(index);
@@ -237,6 +238,7 @@ namespace TPSDemo
                 }
                 EndTime = Time.time + EquipTime;
                 m_PlayerRuntimeData.ActiveSlot = CurrentActiveSlot;
+                print($"CombatSlot: {(int)CurrentActiveSlot}");
                 m_PlayerRuntimeData.AniParameter.CombatSlot = (int)CurrentActiveSlot;
                 OnSlotChange?.Invoke(CurrentActiveSlot);
 

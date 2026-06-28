@@ -17,6 +17,7 @@ using Combat;
         public void OnAim(bool isAiming);
         public bool ValidAim();
         public void SetExitFunc(Action<Slot> func);
+        public void Exit();
     }
 
     public abstract class CombatSlot : NetworkBehaviour, ICombatSlot
@@ -43,7 +44,7 @@ using Combat;
         {
             m_ExitFunc = func;
         }
-        protected void Exit()
+        public void Exit()
         {
             m_ExitFunc?.Invoke(m_Slot);
         }

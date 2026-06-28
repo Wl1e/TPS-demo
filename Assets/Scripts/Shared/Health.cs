@@ -30,6 +30,15 @@ namespace TPSDemo
             HandleDeath(attacker);
         }
 
+        public void Heal(float value)
+        {
+            var trueHealValue = m_HealthValue.Add(value);
+            OnHealed?.Invoke(trueHealValue);
+            if (gameObject.CompareTag("Player")) {
+                EventManager.Broadcast(new Event.HealthChangedEvent { value = trueHealValue });
+            }
+        }
+
         void HandleDeath(GameObject attacker)
         {
             if (m_IsDied) {

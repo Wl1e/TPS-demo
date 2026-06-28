@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
-using System;
 
 namespace TPSDemo
 {
@@ -20,6 +18,8 @@ using FSM;
         [HideInInspector] public bool WantSprint = false;
         [HideInInspector] public bool WantCrouch = false;
 
+        public event System.Action<PlayerMovementState> OnStateChanged;
+
         // 暂时给Mantle调试使用
         public Vector3 StartPos = Vector3.zero;
         public Vector3 MidPos = new Vector3(0, 1.8f, 0);
@@ -38,18 +38,18 @@ using FSM;
         {
             m_State = state;
             RuntimeData.State = m_State;
-            RuntimeData.OnStateChanged?.Invoke(m_State);
+            OnStateChanged?.Invoke(m_State);
         }
 
         public override void InitializeFSM()
         {
-            IdleState idleState = new IdleState(this);
-            WalkState walkState = new WalkState(this);
-            JumpState jumpState = new JumpState(this);
-            CrouchState crouchState = new CrouchState(this);
-            SprintState sprintState = new SprintState(this);
-            ClimbState climbState = new ClimbState(this);
-            LedgeState ledgeState = new LedgeState(this);
+            IdleState idleState = new(this);
+            WalkState walkState = new(this);
+            JumpState jumpState = new(this);
+            CrouchState crouchState = new(this);
+            SprintState sprintState = new(this);
+            ClimbState climbState = new(this);
+            LedgeState ledgeState = new(this);
 
             idleState.OnStateEntered += () => UpdatePlayerState(PlayerMovementState.Idle);
             walkState.OnStateEntered += () => UpdatePlayerState(PlayerMovementState.Walk);

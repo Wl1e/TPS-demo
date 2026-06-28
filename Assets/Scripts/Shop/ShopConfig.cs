@@ -4,6 +4,15 @@ using UnityEngine;
 namespace TPSDemo
 {
 
+    [System.Serializable]
+    public struct GoodConfig
+    {
+        public ItemData Good;
+        public int Amount;
+        public int Price;
+        public float Discount;
+    }
+
     [CreateAssetMenu(fileName = "ShopConfig", menuName = "Shop/ShopConfig")]
     public class ShopConfig : ScriptableObject
     {
@@ -13,6 +22,6 @@ namespace TPSDemo
         public bool Restock = false;
         public float RestockTime = 0f;
         public bool RandomGoods = false;
-        public List<ShopEntry> Goods = new List<ShopEntry>();
+        public List<GoodConfig> Goods;
     }
 }

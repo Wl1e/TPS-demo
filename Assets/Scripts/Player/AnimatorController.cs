@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Linq;
+using Unity.AppUI.UI;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
@@ -27,6 +29,9 @@ namespace TPSDemo
         public Vector3 SmoothVelocity;
         public int CombatSlot;
         public bool Throw;
+
+        public bool UseActiveItem;
+        public float UseTime;
         public AnimatorParameter(int i = 0)
         {
             Velocity = Vector3.zero;
@@ -46,6 +51,8 @@ namespace TPSDemo
             CombatSlot = 0;
             Throw = false;
             DisableAimLayer = false;
+            UseActiveItem = false;
+            UseTime = 1f;
         }
 
         public void Copy(AnimatorParameter other)
@@ -66,6 +73,7 @@ namespace TPSDemo
             IsMantle = other.IsMantle;
             CombatSlot = other.CombatSlot;
             DisableAimLayer = other.DisableAimLayer;
+            UseActiveItem = other.UseActiveItem;
         }
     }
 
@@ -87,16 +95,20 @@ namespace TPSDemo
         public float RigLerpDuration = 0.15f;
         // 平滑修改weight，实现动画平滑移动
         Coroutine m_RiggingCoroutine;
-        [SerializeField] Vector3 m_CrouchOffset = new Vector3(20, -10, 0);
-        [SerializeField] Vector3 m_CrouchMoveOffset = new Vector3(35, -10, 0);
+        [SerializeField] Vector3 m_CrouchOffset = new(20, -10, 0);
+        [SerializeField] Vector3 m_CrouchMoveOffset = new(35, -10, 0);
 
-        AnimatorParameter m_LastParameter = new AnimatorParameter();
+        AnimatorParameter m_LastParameter = new();
 
-        private void Start()
+        // 使用道具的动画需要根据道具的使用时间来加减速
+        private float m_UseItemTime = 0f;
+
+        private void Awake()
         {
             m_PlayerController = GetComponent<PlayerController>();
             m_PlayerRuntimeData = m_PlayerController.RuntimeData;
             m_Rig.weight = 0f;
+            m_UseItemTime = m_Animator.runtimeAnimatorController.animationClips.First(clip => clip.name == "Drinking").length;
         }
 
         private void LateUpdate()
@@ -178,6 +190,12 @@ namespace TPSDemo
             if (m_LastParameter.IsAim != curData.IsAim) {
                 SetBool("Aim", curData.IsAim);
                 //SetAimWeight(curData.IsAim);
+            }
+
+            // other
+            if(m_LastParameter.UseActiveItem != curData.UseActiveItem) {
+                SetFloat("UseItemSpeed", m_UseItemTime / curData.UseTime);
+                UpdateTrigger("UseItem", curData.UseActiveItem);
             }
 
             m_LastParameter.Copy(curData);

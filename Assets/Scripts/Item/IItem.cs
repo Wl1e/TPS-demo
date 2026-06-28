@@ -12,6 +12,7 @@ namespace TPSDemo
         Ammo,
         Grenade,
         Attachment,
+        ActiveItem
     }
 
     public interface IItem

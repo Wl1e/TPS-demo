@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Pool;
 
 namespace TPSDemo
@@ -24,7 +21,7 @@ namespace TPSDemo
 
         GameObject CreateAudioGO()
         {
-            GameObject audioSource = new GameObject("AGO", typeof(AudioSource));
+            GameObject audioSource = new("AGO", typeof(AudioSource));
             var player = audioSource.AddComponent<AudioPlayer>();
             player.OnRelease += (AudioPlayer player) => m_AudioPlayerPool?.Release(player);
             return audioSource;
@@ -33,19 +30,19 @@ namespace TPSDemo
         public void Initialize()
         {
             m_AudioHolder = new GameObject("AudioHolder");
-            Object.DontDestroyOnLoad(m_AudioHolder);
+            GameFlowManager.Instance.SetDDOL(m_AudioHolder);
             m_AudioPlayerPool = new ObjectPool<AudioPlayer>(
                 createFunc: () => {
                     var audioSource = CreateAudioGO();
                     return audioSource.GetComponent<AudioPlayer>();
                 },
-                actionOnDestroy: (AudioPlayer player) => {
+                actionOnDestroy: player => {
                     Object.Destroy(player.gameObject);
                 },
-                actionOnGet: (AudioPlayer player) => {
+                actionOnGet: player => {
                     player.gameObject.SetActive(true);
                 },
-                actionOnRelease: (AudioPlayer player) => {
+                actionOnRelease: player => {
                     player.transform.SetParent(m_AudioHolder.transform);
                     player.transform.localPosition = Vector3.zero;
                     player.gameObject.SetActive(false);

@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-
+﻿
 namespace TPSDemo.FSM
 {
 	public class ClimbState: StateBase<PlayerStateMachine>
@@ -14,18 +13,24 @@ namespace TPSDemo.FSM
             m_StateMachine.WantJump = false;
             m_StateMachine.RuntimeData.AniParameter.IsClimb = true;
             m_StateMachine.RuntimeData.AniParameter.DisableAimLayer = true;
-            m_StateMachine.Controller.CombatController.ExitCurrentSlot();
+
+            m_StateMachine.RuntimeData.DisableCombat = true;
+            m_StateMachine.RuntimeData.CanUseActiveItem = false;
         }
 
         public override void OnExit()
         {
             m_StateMachine.RuntimeData.AniParameter.IsClimb = false;
             m_StateMachine.RuntimeData.AniParameter.DisableAimLayer = false;
+
+            m_StateMachine.RuntimeData.DisableCombat = false;
+            m_StateMachine.RuntimeData.CanUseActiveItem = true;
         }
 
         public override void Update()
         {
             // Handle jump logic here
+            // maybe?
         }
     }
 }

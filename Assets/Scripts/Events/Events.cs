@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using TPSDemo;
+using Unity.Netcode;
 using UnityEngine;
 
 // 事件越来越多，后续考虑换成SO Event
@@ -53,6 +54,17 @@ namespace TPSDemo.Event
     {
         public int MoneyId;
         public int Amount;
+    }
+
+    // ui -> logic
+    public class TryUseActiveItemEvent : InternalEvent
+    {
+        public int InventorySlotId;
+    }
+
+    // logic -> ui
+    public class EndUseActiveItemEvent : InternalEvent
+    {
     }
 
     #endregion
@@ -180,17 +192,19 @@ namespace TPSDemo.Event
     public class CloseShopEvent : InternalEvent
     {
     }
+
     public class TryBuyEvent : InternalEvent
     {
+        public int ShopId;
         public int Slot;
     }
 
     // logic -> ui
     public class ShopOpenEvent : InternalEvent
     {
+        public int PlayerId;
         public int ShopId;
         public string ShopName;
-        public List<ShopEntry> Goods;
     }
 
     public class ShopCloseEvent : InternalEvent
@@ -198,14 +212,30 @@ namespace TPSDemo.Event
         public int ShopId;
     }
 
-    public class ShopBuyEvent : InternalEvent
+    // 为了方便
+    public class ShopBuyEvent : InternalEvent, INetworkSerializable
     {
         public int ShopId;
         public int Slot;
         public int Price;
         public bool IsSuccess;
         public string FailInfo;
+
+        void INetworkSerializable.NetworkSerialize<T>(BufferSerializer<T> serializer)
+        {
+            serializer.SerializeValue(ref ShopId);
+            serializer.SerializeValue(ref Slot);
+            serializer.SerializeValue(ref Price);
+            serializer.SerializeValue(ref IsSuccess);
+            serializer.SerializeValue(ref FailInfo);
+        }
     }
+
+    public class ShopUpdateEvent: InternalEvent
+    {
+        public int ShopId;
+    }
+
     #endregion
 
     #region Quest

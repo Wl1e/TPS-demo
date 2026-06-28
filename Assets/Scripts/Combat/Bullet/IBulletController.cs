@@ -64,9 +64,8 @@ namespace TPSDemo
                 .LookAt(hitInfo.normal)
                 .WithDuration(1)
                 .Create();
-            
-            Director.Instance.RequestAudio(HitSfx).WithPosition(hitInfo.point).Play();
-            
+
+            Director.Instance.RequestAudio(HitSfx).WithPosition(hitInfo.point).Play();            
         }
 
     }

@@ -74,7 +74,6 @@ using Event;
             } else {
                 m_CrosshairData = DefaultCrosshair;
             }
-            print("m_CrosshairData: " + m_CrosshairData.Sprite);
             CrosshairImage.sprite = m_CrosshairData.Sprite;
             CrosshairImage.color = m_CrosshairData.Color;
             CrosshairImage.rectTransform.sizeDelta = m_CrosshairData.Sprite.rect.size * m_CrosshairData.Scale;

@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Hub.unity
     guid: 5f1f328f994ac9e449d10a8e1ac5b754
+  - enabled: 1
+    path: Assets/Scenes/Combat1.unity
+    guid: 867b9d2f4385d194bbff9a30febed68a
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 6ea0505456d3efc44888a4f2d8013d2a, type: 2}
     com.unity.dt.app-ui: {fileID: 11400000, guid: 99f9c9493070a9d4c979a8fec7c5a8d3, type: 2}

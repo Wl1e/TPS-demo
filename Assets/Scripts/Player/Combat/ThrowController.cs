@@ -10,9 +10,11 @@ namespace TPSDemo
         public override bool IsActive => m_IsActive;
 
         // TrajectoryLine
+        [Tooltip("抛物线")]
         public LineRenderer TrajectoryLine;
         TrajectoryLine m_TrajectoryLine = new();
         bool m_ShowTrajectoryLine = false;
+        [Tooltip("抛物线向上偏移角度")]
         public float HorizonalAngle = 30f;
 
         [SerializeField] PlayerController m_Owner;
@@ -24,9 +26,13 @@ namespace TPSDemo
 
         bool ValidAttack = false;
 
-        [SerializeField] Transform GrenadeRoot;
-        [SerializeField] Vector3 m_GrenadeRootOffset = new Vector3(0, 0.12f, 0.07f);
-        [SerializeField] Vector3 m_GrenadeRootRotate = new Vector3(180f, 90f, 90f);
+        [Tooltip("手雷根节点")]
+        [SerializeField] Transform m_GrenadeRoot;
+        [Tooltip("手雷位置偏移")]
+        [SerializeField] Vector3 m_GrenadeRootOffset = new(0, 0.12f, 0.07f);
+        [Tooltip("手雷旋转")]
+        [SerializeField] Vector3 m_GrenadeRootRotate = new(180f, 90f, 90f);
+        [Tooltip("手雷向前偏移，防止和player卡模型")]
         [SerializeField] float m_ThrowPosOffset = 0.6f;
 
         [Tooltip("投掷延迟（为了和动画同步）")]
@@ -94,7 +100,8 @@ namespace TPSDemo
                 ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(m_CurrentGrenadeId),
                 obj => {
                     m_CurrentGrenadeObj = obj;
-                    if(m_CurrentGrenadeObj == null) {
+                    m_CurrentGrenadeObj.transform.SetParent(m_GrenadeRoot);
+                    if (m_CurrentGrenadeObj == null) {
                         return;
                     }
 
@@ -107,11 +114,12 @@ namespace TPSDemo
                     CurrentGrenade.Rigidbody.isKinematic = true;
 
                     CurrentGrenade.OnHold();
+
+                    m_TrajectoryLine.CollisionMask = m_CurrentGrenadeObj.layer;
                 }
             ));
 
             
-            m_TrajectoryLine.CollisionMask = m_CurrentGrenadeObj.layer;
         }
 
         Vector3 GetTrajectoryStartDir(Quaternion dir)

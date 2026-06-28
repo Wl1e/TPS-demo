@@ -13,7 +13,7 @@ namespace TPSDemo.UI
         int m_CurrentShopId = -1;
         [SerializeField] Button m_CloseButton;
 
-        [SerializeField] GameObject m_ShopSlotPrefab;
+        [SerializeField] ShopSlotUI m_ShopSlotPrefab;
         [SerializeField] RectTransform m_SlotRoot;
 
         [SerializeField] TextMeshProUGUI m_Money;
@@ -25,17 +25,20 @@ namespace TPSDemo.UI
             EventManager.AddListener<ShopCloseEvent>(OnShopClose);
             EventManager.AddListener<ShopBuyEvent>(OnShopBuy);
             EventManager.AddListener<PlayerEconomyChangedEvent>(OnEconomyChanged);
+            EventManager.AddListener<ShopUpdateEvent>(OnShopUpdated);
             if (m_CloseButton) {
                 m_CloseButton.onClick.AddListener(HandleCloseButtonClick);
             }
             gameObject.SetActive(false);
         }
+
         private void OnDestroy()
         {
             EventManager.RemoveListener<ShopOpenEvent>(OnShopOpen);
             EventManager.RemoveListener<ShopCloseEvent>(OnShopClose);
             EventManager.RemoveListener<ShopBuyEvent>(OnShopBuy);
             EventManager.RemoveListener<PlayerEconomyChangedEvent>(OnEconomyChanged);
+            EventManager.RemoveListener<ShopUpdateEvent>(OnShopUpdated);
             if (m_CloseButton) {
                 m_CloseButton.onClick.RemoveListener(HandleCloseButtonClick);
             }
@@ -47,36 +50,44 @@ namespace TPSDemo.UI
             gameObject.SetActive(true);
             m_CurrentShopId = evt.ShopId;
             m_Money.text = PlayerDataProxy.Instance.GetMoney(m_CurrentShopId).ToString();
-            SetShopGoods(m_CurrentShopId);
+            SetShopGoods(evt.ShopId);
         }
 
         void SetShopGoods(int shopId)
         {
-            var goodsList = PlayerDataProxy.Instance.GetShopGoods(m_CurrentShopId);
-            foreach (var entry in goodsList) {
-                AddSlot(entry);
+            var goods = PlayerDataProxy.Instance.GetShopGoods(shopId);
+            for(int i = 0; i < goods.Count; i++) {
+                SetSlot(i, goods[i]);
             }
         }
 
-        void AddSlot(ShopEntry entry)
+        void SetSlot(int slotIdx, ShopEntry entry)
         {
-            var slotObj = Instantiate(m_ShopSlotPrefab, m_SlotRoot);
-            var slot = slotObj.GetComponent<ShopSlotUI>();
+            print($"entry name: {entry.GoodName}, soldout: {entry.Soldout}");
+            ShopSlotUI slot = null;
+            while (m_Slots.Count <= slotIdx) {
+                slot = Instantiate(m_ShopSlotPrefab, m_SlotRoot);
+                slot.OnClick += self => {
+                    if (self.SeldOut) {
+                        EventManager.Broadcast(new MessageLogEvent { Message = $"商品{self.Name.text}已售空" });
+                        return;
+                    }
+                    EventManager.Broadcast(new TryBuyEvent { ShopId = m_CurrentShopId, Slot = m_Slots.IndexOf(self) });
+                };
+
+                m_Slots.Add(slot);
+            }
+            slot = m_Slots[slotIdx];
+
             slot.Initialize(
                 entry.GoodName,
                 entry.Price,
                 entry.Discount,
                 entry.FinalPrice,
                 entry.Amount,
-                ItemUIUtils.GetItemIcon(entry.GoodId)
+                ItemUIUtils.GetItemIcon(entry.GoodId),
+                entry.Soldout
             );
-            m_Slots.Add(slot);
-            slot.OnClick += (ShopSlotUI slot) => {
-                if(slot.SeldOut) {
-                    return;
-                }
-                EventManager.Broadcast(new TryBuyEvent { Slot = m_Slots.IndexOf(slot) });
-            };
         }
 
         void OnShopClose(ShopCloseEvent evt)
@@ -88,6 +99,7 @@ namespace TPSDemo.UI
             m_CurrentShopId = -1;
             gameObject.SetActive(false);
         }
+
         void OnShopBuy(ShopBuyEvent evt)
         {
             if(evt.ShopId != m_CurrentShopId) {
@@ -102,6 +114,14 @@ namespace TPSDemo.UI
             if(m_CurrentShopId != -1 && evt.MoneyId == ResourceManager.Instance.GetResource<ShopList>("Shop").GetConfig(m_CurrentShopId).MoneyId) {
                 m_Money.text = evt.Amount.ToString();
             }
+        }
+
+        private void OnShopUpdated(ShopUpdateEvent evt)
+        {
+            if (evt.ShopId != m_CurrentShopId) {
+                return;
+            }
+            SetShopGoods(m_CurrentShopId);
         }
 
         void HandleCloseButtonClick()

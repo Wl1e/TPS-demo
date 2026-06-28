@@ -29,10 +29,11 @@ namespace TPSDemo
         /// <summary>
         /// 移动锁
         /// </summary>
-        public CountDownLatch MovementLock = new CountDownLatch();
+        public CountDownLatch MovementLock = new();
 
         CharacterController m_CharacterController;
         PlayerRuntimeData m_PlayerRuntimeData;
+        PlayerStateMachine m_PlayerStateMachine;
 
         /// <summary>
         /// 移动能力
@@ -103,8 +104,11 @@ namespace TPSDemo
         {
             base.Awake();
 
-            m_CharacterController = GetComponent<CharacterController>();
-            m_PlayerRuntimeData = GetComponent<PlayerController>().RuntimeData;
+            var player = GetComponent<PlayerController>();
+            m_CharacterController = player.CharacterController;
+            m_PlayerRuntimeData = player.RuntimeData;
+            m_PlayerStateMachine = player.StateMachine;
+
 
             m_AbilitiesLookup = new Dictionary<PlayerMovementState, IMovementAbility>();
             foreach (var ability in GetComponentsInChildren<IMovementAbility>()) {
@@ -112,14 +116,14 @@ namespace TPSDemo
                 m_AbilitiesLookup.Add(ability.State, ability);
             }
 
-            m_PlayerRuntimeData.OnStateChanged += OnStateChanged;
+            m_PlayerStateMachine.OnStateChanged += OnStateChanged;
             OnMoveInput.RegisterListener(OnMove);
             EventManager.AddListener<Event.AimEvent>(OnAim);
         }
 
         public override void OnDestroy()
         {
-            m_PlayerRuntimeData.OnStateChanged -= OnStateChanged;
+            m_PlayerStateMachine.OnStateChanged -= OnStateChanged;
             OnMoveInput.UnregisterListener(OnMove);
             EventManager.RemoveListener<Event.AimEvent>(OnAim);
 

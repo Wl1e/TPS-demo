@@ -46,7 +46,6 @@ namespace TPSDemo.UI
                 print($"attachment{attachmentId} dont have Icon");
                 return;
             }
-            print($"Set {slot} is {sprite}");
             switch (slot) {
                 case IAttachment.AttachmentSlot.Scope:
                     Scope.sprite = sprite;

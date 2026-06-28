@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1254d2464a4fd5c42a0f3640fed92f68, type: 3}
   m_Name: GrenadeData
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  Id: 100
+  Id: 101
   Name: Grenade
   Type: 3
   Description: Grenade

@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using NUnit.Framework.Internal;
+using UnityEngine;
 
 namespace TPSDemo
 {
-    public class EffectBuilder
+    public class EffectBuilder: MonoBehaviour
     {
-        GameObject m_EffectPrefab;
+        GameObject m_EffectPrefab = null;
         string m_EffectName = "Effect";
         Transform m_Parent = null;
         Vector3 m_Position = Vector3.zero;
@@ -14,10 +14,34 @@ namespace TPSDemo
         float m_Duration = 1f;
         //Material m_Material = null;
         //Color m_Color;
+        private bool m_IsRunning = false;
 
-        public EffectBuilder(GameObject effectPrefab)
+        private GameObject m_Effect = null;
+
+        public event System.Action<EffectBuilder> OnCompleted;
+
+        private void Update()
         {
-            m_EffectPrefab = effectPrefab;
+            if (m_IsRunning && m_Effect) {
+                if (m_Duration > 0f) {
+                    m_Duration -= Time.deltaTime;
+                } else {
+                    m_IsRunning = false;
+                    Destroy(m_Effect);
+                    m_Effect = null;
+                    OnCompleted?.Invoke(this);
+                }
+            }
+        }
+
+        private void OnDisable() => print("Effect Disable");
+
+        private void OnEnable() => print("Effect Enable");
+
+        public EffectBuilder SetEffect(GameObject effect)
+        {
+            m_EffectPrefab = effect;
+            return this;
         }
 
         public EffectBuilder WithParent(Transform parent)
@@ -75,25 +99,26 @@ namespace TPSDemo
         public GameObject Create()
         {
             if(!m_EffectPrefab) {
+                OnCompleted?.Invoke(this);
                 return null;
             }
-            var effect = Object.Instantiate(m_EffectPrefab);
-            effect.name = m_EffectName;
-            effect.transform.localScale = Vector3.one * m_Scale;
-            effect.transform.rotation = m_Rotation;
+            m_Effect = Instantiate(m_EffectPrefab, transform);
+            m_Effect.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+
+            gameObject.name = m_EffectName;
+            gameObject.transform.localScale = Vector3.one * m_Scale;
+            gameObject.transform.rotation = m_Rotation;
 
             if(m_Parent != null) {
-                effect.transform.SetParent(m_Parent);
-                effect.transform.localPosition = m_Position;
+                gameObject.transform.SetParent(m_Parent);
+                gameObject.transform.localPosition = m_Position;
             } else {
-                effect.transform.position = m_Position;
+                gameObject.transform.position = m_Position;
             }
 
-            if (m_Duration > 0) {
-                Object.Destroy(effect, m_Duration);
-            }
+            m_IsRunning = true;
 
-            return effect;
+            return gameObject;
         }
     }
 }
