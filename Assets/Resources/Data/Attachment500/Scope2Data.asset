@@ -10,25 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aa296b2a93b78404196aae366124c1f4, type: 3}
-  m_Name: GripData
+  m_Name: Scope2Data
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.AttachmentItemData
-  Id: 531
-  Name: Grip
+  Id: 512
+  Name: Scope2
   Type: 4
-  Description: 
-  Icon: {fileID: 21300000, guid: 8b42b44d48199fb4c8094eae182ce063, type: 3}
+  Description: This is a scope2
+  Icon: {fileID: 21300000, guid: f78e14d2d8f31934aa30b4126180f1e3, type: 3}
   MaxStack: 1
   Prefab:
-    m_AssetGUID: feb52bdc2e7ce3a479ceb7b58e1db393
+    m_AssetGUID: 2691831eea41ac84883a2ec99dc067cb
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  PickupPrefab:
-    m_AssetGUID: ae31c45a949833b429cce2a2ab309055
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_SubObjectGUID: 
-    m_EditorAssetChanged: 0
+  PickupPrefab: {fileID: 9160226425256245136, guid: f67bc51d573b938489e71f5f4b2bd3bd, type: 3}
   DragType: -1
-  Slot: 2
+  Slot: 0

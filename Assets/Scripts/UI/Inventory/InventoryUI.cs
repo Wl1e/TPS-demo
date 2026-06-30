@@ -43,14 +43,14 @@ using InventoryStateChangeEvent = Event.InventoryStateChangeEvent;
             UpdateUI(PlayerDataProxy.Instance.GetInventoryData());
         }
 
-        void UpdateUI(List<(int, int)> data)
+        void UpdateUI(List<(int ItemId, int Amount)> data)
         {
             for (int i = 0; i < m_Slots.Count; i++) {
-                if (data[i].Item1 > 0) {
+                if (data[i].ItemId > 0) {
                     if (!m_Slots[i].Item) {
                         m_Slots[i].InitializeItem();
                     }
-                    m_Slots[i].Item.UpdateIconAndAmount(data[i].Item1, data[i].Item2);
+                    m_Slots[i].Item.UpdateIconAndAmount(data[i].ItemId, data[i].Amount);
                 } else {
                     m_Slots[i].DestroyItem();
                 }

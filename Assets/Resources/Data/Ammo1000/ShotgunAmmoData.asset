@@ -10,24 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1254d2464a4fd5c42a0f3640fed92f68, type: 3}
-  m_Name: AmmoData
-  m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  Id: 1
-  Name: Ammo
+  m_Name: ShotgunAmmoData
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ItemData
+  Id: 1002
+  Name: ShotgunAmmo
   Type: 2
-  Description: Weapon Ammo
-  Icon: {fileID: -285958244, guid: c1ab505d8cd97f742b55987f50f6cdab, type: 3}
-  MaxStack: 60
+  Description: Shotgun Ammo
+  Icon: {fileID: 695905874, guid: c1ab505d8cd97f742b55987f50f6cdab, type: 3}
+  MaxStack: 16
+  IsNetCodePrefab: 1
   Prefab:
-    m_AssetGUID: 8409e2dcc23d54643b69db518e4d9821
+    m_AssetGUID: 
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  PickupPrefab:
-    m_AssetGUID: dd4b64566d2874240abe1df8c2f35a77
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_SubObjectGUID: 
-    m_EditorAssetChanged: 0
+  NOPrefab: {fileID: 5432221565070328372, guid: 8409e2dcc23d54643b69db518e4d9821, type: 3}
+  PickupPrefab: {fileID: 3804280116683418236, guid: 068a651c634cd0f4f9518df8aed575db, type: 3}
   DragType: -1

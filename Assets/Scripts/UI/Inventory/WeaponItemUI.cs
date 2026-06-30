@@ -34,7 +34,6 @@ namespace TPSDemo.UI
             SetAttachmentEnable(false);
 
             foreach (var attachment in attachmentList) {
-                print($"{attachment.Item1} is {attachment.Item2}");
                 SetAttachmentSprite(attachment.Item1, attachment.Item2);
             }
         }
@@ -43,7 +42,7 @@ namespace TPSDemo.UI
         {
             var sprite = ItemUIUtils.GetAttachmentSprite(WeaponId, attachmentId);
             if (sprite == null) {
-                print($"attachment{attachmentId} dont have Icon");
+                //print($"attachment{attachmentId} dont have Icon");
                 return;
             }
             switch (slot) {

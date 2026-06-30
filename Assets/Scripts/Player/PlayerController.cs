@@ -1,4 +1,3 @@
-using System;
 using TPSDemo.Event;
 using Unity.Netcode;
 using UnityEngine;
@@ -31,7 +30,7 @@ namespace TPSDemo
         private Inventory m_Inventory;
         private readonly PlayerEconomy m_Economy = new();
         private Actor m_Actor;
-        private PlayerInputHandler m_InputHandle;
+        private PlayerInputHandler m_InputHandler;
         private Loadout m_Loadout;
         private ClimbContoller m_ClimbContoller;
         private CombatController m_CombatController;
@@ -148,7 +147,7 @@ namespace TPSDemo
             m_Health = GetComponent<Health>();
             m_Inventory = GetComponent<Inventory>();
             m_Actor = GetComponent<Actor>();
-            m_InputHandle = GetComponent<PlayerInputHandler>();
+            m_InputHandler = GetComponent<PlayerInputHandler>();
             m_ClimbContoller = GetComponentInChildren<ClimbContoller>();
             m_AnimatorController = GetComponent<AnimatorController>();
             m_QuestController = GetComponent<QuestController>();
@@ -185,6 +184,12 @@ namespace TPSDemo
             if (m_CameraController != null) {
                 m_CameraController.enabled = false;
             }
+            if (m_InteractionController != null) {
+                m_InteractionController.enabled = false;
+            }
+            if (m_InputHandler) {
+                m_InputHandler.enabled = false;
+            }
         }
 
         public override void OnNetworkSpawn()
@@ -197,6 +202,11 @@ namespace TPSDemo
                 PlayerDataProxy.Instance.RegisterPlayer(this);
                 // 通知UI和DebugLayer
                 EventManager.Broadcast(new PlayerFinishedInitialzeEvent());
+
+                foreach (var prefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs) {
+                    var no = prefab.Prefab.GetComponent<NetworkObject>();
+                }
+
             } else {
                 DisableClientComponents();
             }

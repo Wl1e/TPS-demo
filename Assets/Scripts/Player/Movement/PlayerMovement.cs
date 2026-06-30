@@ -66,9 +66,23 @@ namespace TPSDemo
         float m_RotationVelocity;
         public CouplingMode RotationType;
 
+        [Tooltip("移动音效")]
+        [SerializeField] AudioClip m_MovementAudio;
+
+        [Tooltip("移动音效播放时间")]
+        [SerializeField] float m_AudioTime;
+
+        private AudioPlayer m_AudioPlayer;
+
         Vector2 m_RawInput;
         Vector3 m_Input;
         Vector3 m_InputGlobal;
+        Vector3 m_Velocity;
+
+        bool m_IsGrounded;
+        bool m_JumpThisFrame;
+
+        #region Property
         /// <summary>
         /// 原始输入Vector2
         /// </summary>
@@ -88,14 +102,12 @@ namespace TPSDemo
         /// </summary>
         public Vector3 Velocity => m_Velocity;
 
-        Vector3 m_Velocity;
-
         /// <summary>
         /// 是否在地面
         /// </summary>
         public bool IsGrounded => m_IsGrounded;
-        bool m_IsGrounded;
-        bool m_JumpThisFrame;
+
+        #endregion
 
         // Event
         [SerializeField] Vector2Event OnMoveInput;
@@ -152,6 +164,21 @@ namespace TPSDemo
             m_PlayerRuntimeData.AniParameter.IsMove = (m_Input != Vector3.zero);
             m_PlayerRuntimeData.AniParameter.Velocity = transform.InverseTransformDirection(m_Velocity);
             m_PlayerRuntimeData.AniParameter.IsGrounded = m_IsGrounded;
+
+            if(m_Velocity != Vector3.zero) {
+                if (m_AudioPlayer == null) {
+                    m_AudioPlayer = Director.Instance.Borrow();
+                    m_AudioPlayer.transform.position = transform.position;
+                    m_AudioPlayer.AudioSource.loop = true;
+                    m_AudioPlayer.Play(m_MovementAudio, float.PositiveInfinity);
+                }
+            } else {
+                if (m_AudioPlayer != null) {
+                    m_AudioPlayer.AudioSource.loop = false;
+                    m_AudioPlayer.Release();
+                    m_AudioPlayer = null;
+                }
+            }
 
             //print($"InputVector: {m_InputGlobal}, Velocity: {m_Velocity}, selfVelocity: {transform.InverseTransformDirection(m_Velocity)}");
         }

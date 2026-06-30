@@ -52,6 +52,9 @@ MonoBehaviour:
   MuzzleSocket: {fileID: 8396503596780362891}
   DefaultScope: {fileID: 6694416444990849741}
   DefaultMagazine: {fileID: 8430641275972523123}
+  DefaultGrip: {fileID: 0}
+  DefaultMuzzle: {fileID: 0}
+  DefaultLaser: {fileID: 0}
 --- !u!1 &1924837714357348085
 GameObject:
   m_ObjectHideFlags: 0
@@ -179,6 +182,7 @@ MonoBehaviour:
     Color: {r: 0, g: 0, b: 0, a: 1}
     Scale: 1
   MuzzleFlashPrefab: {fileID: 100006, guid: 7e9c50938e32351438a7df9ccad2f2a5, type: 3}
+  MuzzleFlashTime: 0.09
   ShootSfx: {fileID: 8300000, guid: 6739c01659ad96d47987f4ddee226b36, type: 3}
   ReloadingSfx: {fileID: 8300000, guid: 93331a7c9fe98494a84f18effb358899, type: 3}
 --- !u!114 &1613367872274662961
@@ -206,7 +210,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7231336d990b55145ba287e05e03d24d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ProjectileShooting
-  Muzzle: {fileID: 7285302219024661440}
   BulletPrefab: {fileID: 6601797778091609916, guid: 8409e2dcc23d54643b69db518e4d9821, type: 3}
   BulletSpeed: 10
   HitLayerMask:
@@ -228,7 +231,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   DefaultClipSize: 30
   m_ReloadTime: 1.5
-  m_AmmoId: 1
+  m_AmmoId: 1001
 --- !u!1 &6034612427865499935
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,7 +308,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2093240604
+  GlobalObjectIdHash: 3403889932
   InScenePlacedSourceGlobalObjectIdHash: 3403889932
   DeferredDespawnTick: 0
   Ownership: 1

@@ -1033,6 +1033,8 @@ MonoBehaviour:
   JumpForce: 5
   RotationSmoothTime: 0.1
   RotationType: 0
+  m_MovementAudio: {fileID: 8300000, guid: d0f1afed8fa916244af6ca73579ded67, type: 3}
+  m_AudioTime: 0.2
   CurState: 0
   OnMoveInput: {fileID: 11400000, guid: c63537fb732dfc14ab0549dca672a5c0, type: 2}
 --- !u!114 &3840005440361714004
@@ -1140,10 +1142,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionController
   m_InteractRange: 10
-  interactLayerMask:
+  m_InteractLayerMask:
     serializedVersion: 2
     m_Bits: 9453568
-  onInteractInput: {fileID: 11400000, guid: 7b2741fb305a5a04ab4080d93e7937f8, type: 2}
+  m_OnInteractInput: {fileID: 11400000, guid: 7b2741fb305a5a04ab4080d93e7937f8, type: 2}
+  m_PickupAudio: {fileID: 8300000, guid: 7b83d61917ac1224f942a0609b1221f2, type: 3}
 --- !u!114 &-4901112080724874790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1156,6 +1159,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c96e8964a126f3f49b031499464a01eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Inventory
+  ShowTopMostFoldoutHeaderGroup: 1
   DefaultSize: 12
   m_InventoryEvent: {fileID: 11400000, guid: b29e36c1338dbad48b0d534ed72a6bbd, type: 2}
 --- !u!114 &6486263949556210085

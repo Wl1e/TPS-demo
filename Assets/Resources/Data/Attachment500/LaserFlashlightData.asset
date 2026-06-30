@@ -24,11 +24,6 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  PickupPrefab:
-    m_AssetGUID: ee11d367253cdbb4a8f81fcdd6bac4ec
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_SubObjectGUID: 
-    m_EditorAssetChanged: 0
+  PickupPrefab: {fileID: 3733130033111337828, guid: ee11d367253cdbb4a8f81fcdd6bac4ec, type: 3}
   DragType: -1
   Slot: 3

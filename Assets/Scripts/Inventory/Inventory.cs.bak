@@ -1,16 +1,17 @@
 ﻿
-using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+// 有InventorySlotInfo的额外版本
 namespace TPSDemo
 {
 
     public class Inventory : NetworkBehaviour
     {
+        private readonly NetworkList<InventorySlotInfo> m_SyncedSlots = new(readPerm: NetworkVariableReadPermission.Everyone, writePerm: NetworkVariableWritePermission.Owner);
         private readonly List<InventorySlot> m_Items = new();
         private int m_Size;
         public int DefaultSize = 12;
@@ -23,11 +24,8 @@ namespace TPSDemo
 
         public event Action OnInventoryUpdate;
 
-        private Vector3 DropPos() => transform.position + Vector3.up * 0.1f;
-
         private void Awake()
         {
-            m_Owner = GetComponent<PlayerController>();
             Resize(DefaultSize);
         }
 
@@ -39,6 +37,12 @@ namespace TPSDemo
                 EventManager.AddListener<Event.InventoryDropItemEvent>(DropItem);
                 m_InventoryEvent.RegisterListener(OnInventoryInput);
             }
+            m_SyncedSlots.OnListChanged += SyncedSlotListChanged;
+        }
+
+        private void SyncedSlotListChanged(NetworkListEvent<InventorySlotInfo> changeEvent)
+        {
+            
         }
 
         public override void OnNetworkDespawn()
@@ -48,7 +52,12 @@ namespace TPSDemo
                 EventManager.RemoveListener<Event.InventoryDropItemEvent>(DropItem);
                 m_InventoryEvent.UnregisterListener(OnInventoryInput);
             }
-            base.OnNetworkDespawn();
+
+        }
+
+        private void Start()
+        {
+            m_Owner = GetComponent<PlayerController>();
         }
 
         public InventorySlot GetItem(int slotIdx) => m_Items[slotIdx];
@@ -57,34 +66,29 @@ namespace TPSDemo
         {
             return m_Items.FindIndex(0, item => item == null);
         }
-
         public int GetAmount(int itemId)
         {
             int amount = 0;
             m_Items.ForEach(item => amount += item?.Id == itemId ? item.Amount : 0);
             return amount;
         }
-        public List<(int itemId, int amount)> GetItems(ItemType type)
+        public List<InventorySlotInfo> GetItems(ItemType type)
         {
-            List<(int, int)> result = new List<(int, int)>();
-            foreach (var item in m_Items) {
-                if (item != null && item.Type == type) {
-                    result.Add((item.Id, item.Amount));
+            List<InventorySlotInfo> result = new();
+            for(int i = 0; i < m_Size; i++) {
+                if(GetItem(i).Type == type) {
+                    result.Add(m_SyncedSlots[i]);
                 }
             }
 
             return result;
         }
 
-        public List<(int itemId, int amount)> GetAllItem()
+        public List<InventorySlotInfo> GetAllItem()
         {
-            List<(int, int)> result = new List<(int, int)>();
-            foreach (var item in m_Items) {
-                if (item == null) {
-                    result.Add((0, 0));
-                } else {
-                    result.Add((item.Id, item.Amount));
-                }
+            List<InventorySlotInfo> result = new();
+            foreach (var item in m_SyncedSlots) {
+                result.Add(item);
             }
 
             return result;
@@ -98,7 +102,7 @@ namespace TPSDemo
         {
             if (m_Items[idx] == null) {
                 int amount = item is IStackable stackable ? stackable.Amount : 1;
-                m_Items[idx] = new InventorySlot(item.Data, ref amount);
+                SetSlot(idx, item.Data, amount);
                 UpdateInventory();
                 return true;
             }
@@ -113,17 +117,14 @@ namespace TPSDemo
                 }
                 var item = m_Items[i];
                 if (item != null && item.Id == itemId) {
-                    amount -= item.Increase(amount);
+                    amount -= SlotIncrease(i, amount);
                 }
                 if (item == null) {
-                    m_Items[i] = new InventorySlot(
-                        ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(itemId),
-                        ref amount
-                    );
+                    SetSlot(i, ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(itemId), amount);
                 }
             }
             if (amount > 0) {
-                DropItemServerRpc(itemId, amount, DropPos());
+                //DropItem(ItemDataList.GetItemData(itemId), amount);
             }
             UpdateInventory();
             return true;
@@ -139,20 +140,49 @@ namespace TPSDemo
                     break;
                 }
                 if (m_Items[i] != null && m_Items[i].Id == item.Id) {
-                    amount -= m_Items[i].Increase(amount);
+                    amount -= SlotIncrease(i, amount);
                 }
             }
             if (amount > 0) {
                 int idx = FindFirstEmptySlot();
                 if (idx != -1) {
-                    m_Items[idx] = new InventorySlot(item.Data, ref amount);
+                    SetSlot(idx, item.Data, amount);
                 }
             }
             UpdateInventory();
             return amount < tmp;
         }
 
-        public void Sort() => UpdateInventory();
+        // update slots and syncedslots
+
+        private void SetSlot(int idx, ItemData data, int amount)
+        {
+            m_Items[idx] = new InventorySlot(data, ref amount);
+            m_SyncedSlots[idx] = new InventorySlotInfo(idx, data.Id, amount);
+        }
+
+        private int SlotIncrease(int idx, int amount)
+        {
+            int result = GetItem(idx).Increase(amount);
+            var data = m_SyncedSlots[idx];
+            data.Amount = m_Items[idx].Amount;
+            m_SyncedSlots[idx] = data;
+            return result;
+        }
+
+        private int SlotDecrease(int idx, int amount)
+        {
+            int result = GetItem(idx).Decrease(amount);
+            var data = m_SyncedSlots[idx];
+            data.Amount = m_Items[idx].Amount;
+            m_SyncedSlots[idx] = data;
+            return result;
+        }
+
+        public void Sort()
+        {
+            UpdateInventory();
+        }
 
         public void SwapItem(Event.InventoryTrySwapItemEvent evt)
         {
@@ -208,6 +238,7 @@ namespace TPSDemo
             }
             while (m_Items.Count < m_Size) {
                 m_Items.Add(null);
+                m_SyncedSlots.Add(default);
 
             }
             if (needUpdate) {
@@ -218,10 +249,9 @@ namespace TPSDemo
         private void Drop(int idx)
         {
             //DropItem(m_Items[idx].ItemData, m_Items[idx].Amount);
-            var itemData = GetItem(idx).ItemData;
-            int amount = GetItem(idx).Amount;
+            var itemData = m_Items[idx].ItemData;
             m_Items[idx] = null;
-            DropItemServerRpc(itemData.Id, amount, DropPos());
+            StartCoroutine(WorldItemManager.Instance.SpawnItem(itemData, transform.position));
             UpdateInventory();
         }
 
@@ -244,34 +274,5 @@ namespace TPSDemo
             }
             EventManager.Broadcast(new Event.InventoryStateChangeEvent { IsOpened = m_IsOpened });
         }
-
-        #region Server
-
-        [ClientRpc]
-        public void AddItemClientRpc(int playerId, int itemId, int amount)
-        {
-            if(!IsOwner) {
-                return;
-            }
-            AddItem(itemId, amount);
-        }
-
-        [ClientRpc]
-        public void RemoveItemClientRpc(int playerId, int slot)
-        {
-            if (IsOwner) {
-                return;
-            }
-            RemoveItem(slot);
-        }
-
-        [ServerRpc]
-        public void DropItemServerRpc(int itemId, int amount, Vector3 playerPos)
-        {
-            var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(itemId);
-            StartCoroutine(WorldItemManager.Instance.SpawnItem(itemData, playerPos, amount));
-        }
-
-        #endregion
     }
 }

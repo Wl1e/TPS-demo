@@ -18,42 +18,54 @@ MonoBehaviour:
   - m_GUID: 34ba763acd6793347b8e0d6e55581c2d
     m_Address: Assets/Prefabs/Item/GrenadePickup.prefab
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - NetCodePrefab
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4f0a3f8e087a96840a9c0434c831340c
     m_Address: Assets/Prefabs/Pickup/LaserSightPickup.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NetCodePrefab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 624752c6e887207489ddd227c5842d5d
+    m_Address: Assets/Prefabs/Pickup/MedicalKitPickup.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 67c0db72dce41b440a5f5a7e2fb53cec
     m_Address: Assets/Prefabs/Item/ARPickup.prefab
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - NetCodePrefab
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 80ff2057fb443bc45b6e09292b17b726
     m_Address: Assets/Prefabs/Pickup/ShotgunPickup.prefab
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - NetCodePrefab
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ae31c45a949833b429cce2a2ab309055
     m_Address: Assets/Prefabs/Pickup/GripPickup.prefab
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - NetCodePrefab
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dd4b64566d2874240abe1df8c2f35a77
-    m_Address: Assets/Prefabs/Item/AmmoPickup.prefab
+    m_Address: Assets/Prefabs/Pickup/AmmoPickup.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ee11d367253cdbb4a8f81fcdd6bac4ec
     m_Address: Assets/Prefabs/Pickup/LaserFlashlightPickup.prefab
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - NetCodePrefab
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f67bc51d573b938489e71f5f4b2bd3bd
     m_Address: Assets/Prefabs/Item/Scope2Pickup.prefab
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - NetCodePrefab
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 894afe9e368169540bd214d4811b6138, type: 2}

@@ -1,8 +1,8 @@
-﻿using System.Timers;
-using TPSDemo;
+﻿using TPSDemo;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Grenade: MonoBehaviour, IGrenade
+public class Grenade: NetworkBehaviour, IGrenade
 {
     [Tooltip("投掷速度")]
     [SerializeField] float m_Speed;
@@ -95,6 +95,6 @@ public class Grenade: MonoBehaviour, IGrenade
             .WithPosition(transform.position)
             .Create();
 
-        Destroy(gameObject);
+        NetworkObject.Despawn();
     }
 }

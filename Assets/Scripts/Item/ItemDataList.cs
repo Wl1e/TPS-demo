@@ -7,16 +7,22 @@ namespace TPSDemo
     public class ItemDataList: GameResource
     {
         [SerializeField] List<ItemData> m_DataList;
-
-        public List<ItemData> GetItemDatas(ItemType type)
-        {
-            return m_DataList.FindAll(data => data.Type == type);
-        }
+        private Dictionary<int, ItemData> m_Lookup = new();
 
         public ItemData GetItemData(int id)
         {
-            int idx = m_DataList.FindIndex(data => data.Id == id);
-            return idx != -1 ? m_DataList[idx] : null;
+            return m_Lookup.GetValueOrDefault(id, null);
+        }
+
+        private void OnValidate()
+        {
+            foreach (var data in m_DataList) {
+                if (m_Lookup.ContainsKey(data.Id)) {
+                    Debug.LogError($"Item {m_Lookup[data.Id].Name} and item {data.Name} has same Id");
+                    continue;
+                }
+                m_Lookup[data.Id] = data;
+            }
         }
     }
 }

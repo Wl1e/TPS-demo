@@ -19,6 +19,7 @@ namespace TPSDemo
         private IWeapon m_WeaponSlot1 = null;
         private IWeapon m_WeaponSlot2 = null;
 
+
         public ItemData DefaultWeapon;
         public AttachableNode WeaponPlaceRoot;
 
@@ -81,15 +82,9 @@ namespace TPSDemo
 
         #region Client
 
-        public void EquipWeapon(ItemData WeaponData)
-        {
-            EquipWeaponServerRpc(WeaponData.Id);
-        }
+        public void EquipWeapon(ItemData WeaponData) => EquipWeaponServerRpc(WeaponData.Id);
 
-        public void UnequipWeapon(Event.TryUnequipWeaponEvent evt)
-        {
-            UnequipWeaponServerRpc(evt.WeaponIdx);
-        }
+        public void UnequipWeapon(Event.TryUnequipWeaponEvent evt) => UnequipWeaponServerRpc(evt.WeaponIdx);
 
         #endregion
 
@@ -109,12 +104,12 @@ namespace TPSDemo
             if (weapon == null) {
                 Debug.LogError("err weapon");
             }
-            if (!m_WeaponRef1.Value.TryGet(out var no1)) {
-                print("EquipWeapon1");
+            if (!m_WeaponRef1.Value.TryGet(out var _)) {
+                print($"设置m_WeaponRef1: {m_WeaponRef1.Value.NetworkObjectId} to {weaponNO.NetworkObjectId}");
                 m_WeaponRef1.Value = weaponNO;
                 return 1;
-            } else if (!m_WeaponRef2.Value.TryGet(out var no2)) {
-                print("EquipWeapon2");
+            } else if (!m_WeaponRef2.Value.TryGet(out var _)) {
+                print($"设置m_WeaponRef2: {m_WeaponRef2.Value.NetworkObjectId} to {weaponNO.NetworkObjectId}");
                 m_WeaponRef2.Value = weaponNO;
                 return 2;
             }
@@ -135,6 +130,7 @@ namespace TPSDemo
         private void EquipWeaponServerRpc(int weaponId)
         {
             if (!CanAddWeapon()) {
+                print($"Cant Add Weapon weapon1: {m_WeaponSlot1}, weapon2: {m_WeaponSlot2}");
                 return;
             }
             var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(weaponId);
@@ -152,28 +148,29 @@ namespace TPSDemo
             NetworkObject instance = null;
             yield return WorldItemManager.CreateItemGO<NetworkObject>(
                 itemData,
-                obj => instance = obj
+                Vector3.zero,
+                Quaternion.identity,
+                null,
+                obj => {
+                    if(!obj) {
+                        return;
+                    }
+                    instance = obj;
+
+                    var attachable = instance.GetComponentInChildren<AttachableBehaviour>();
+                    if (attachable == null) {
+                        Destroy(instance);
+                        return;
+                    }
+
+                    if (!attachable.TryGetComponent<IWeapon>(out var weapon)) {
+                        Destroy(instance);
+                        return;
+                    }
+                    EquipWeapon(instance);
+                },
+                OwnerClientId
             );
-
-            if(!instance) {
-                yield break;
-            }
-
-            var attachable = instance.GetComponentInChildren<AttachableBehaviour>();
-            if (attachable == null) {
-                Destroy(instance);
-                yield break;
-            }
-
-            if (!attachable.TryGetComponent<IWeapon>(out var weapon)) {
-                Destroy(instance);
-                yield break;
-            }
-
-            instance.SpawnWithOwnership(OwnerClientId);
-            yield return new WaitUntil(() => instance.IsSpawned);
-
-            EquipWeapon(instance);
         }
 
         [ServerRpc]
@@ -184,16 +181,18 @@ namespace TPSDemo
                 return;
             }
 
-            if (weapon == m_WeaponSlot1) {
+            if (weaponIdx == 1) {
+                print($"清空m_WeaponRef1: {m_WeaponRef1.Value.NetworkObjectId} to default");
                 m_WeaponRef1.Value = default;
-            } else if (weapon == m_WeaponSlot2) {
+            } else if (weaponIdx == 2) {
+                print($"清空m_WeaponRef2: {m_WeaponRef2.Value.NetworkObjectId} to default");
                 m_WeaponRef2.Value = default;
             } else {
                 return;
             }
 
             var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(weapon.WeaponId);
-            StartCoroutine(WorldItemManager.Instance.SpawnItem(itemData, transform.position));
+            StartCoroutine(WorldItemManager.Instance.SpawnItem(itemData, transform.position, 1));
         }
 
         [ServerRpc]
@@ -213,9 +212,6 @@ namespace TPSDemo
 
         public IWeapon GetWeapon(int index)
         {
-            if (!ValidSlotIdx(index)) {
-                return null;
-            }
             if (index == 1) {
                 return m_WeaponSlot1;
             } else if (index == 2) {
@@ -271,6 +267,7 @@ namespace TPSDemo
         /// </summary>
         private void OnWeaponChanged(NetworkObjectReference pre, NetworkObjectReference cur, int idx)
         {
+            print("OnWeaponChanged");
             IWeapon weapon = GetWeapon(idx);
 
             // 删除旧武器
@@ -278,9 +275,20 @@ namespace TPSDemo
                 if (IsServer) {
                     weapon.Detach();
                     pre.TryGet(out var no);
+                    print("Server销毁武器 " + idx);
                     if (no != null) {
                         no.Despawn();
                     }
+                }
+                if(IsOwner) {
+                    print("Client卸下武器 " + idx);
+                    weapon.OnAttachmentChanged -= OnWeaponAttachmentChanged;
+                    OnRemoveWeapon?.Invoke(weapon);
+                    //if (idx == 1) {
+                    //    m_WeaponSlot1 = null;
+                    //} else if (idx == 2) {
+                    //    m_WeaponSlot2 = null;
+                    //}
                 }
             }
 
@@ -296,12 +304,16 @@ namespace TPSDemo
                     weapon.OnAttachmentChanged += OnWeaponAttachmentChanged;
                     OnAddWeapon?.Invoke(weapon, idx);
                 }
+            } else {
+                print("没有新武器");
             }
 
             // 设置WeaponSlot
             if (idx == 1) {
+                print($"设置新武器 {idx} 为 {weapon}");
                 m_WeaponSlot1 = weapon;
             } else if (idx == 2) {
+                print($"设置新武器 {idx} 为 {weapon}");
                 m_WeaponSlot2 = weapon;
             }
 

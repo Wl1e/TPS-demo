@@ -10,24 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1254d2464a4fd5c42a0f3640fed92f68, type: 3}
-  m_Name: GrenadeData
-  m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  Id: 101
-  Name: Grenade
-  Type: 3
-  Description: Grenade
-  Icon: {fileID: 3286163911610860551, guid: e53f2e86e048bb94b81ebe147cce14b6, type: 3}
-  MaxStack: 1
+  m_Name: MedicalKitData
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ItemData
+  Id: 601
+  Name: MedicalKit
+  Type: 5
+  Description: 
+  Icon: {fileID: 21300000, guid: 7d03dd3f645aa6f408a5ede41524af84, type: 3}
+  MaxStack: 2
   Prefab:
-    m_AssetGUID: 430e2aa2f8ddaa542844b1b3bf051bc6
+    m_AssetGUID: 9224ffc235a4fe44fa5c74971e9c49ba
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  PickupPrefab:
-    m_AssetGUID: 34ba763acd6793347b8e0d6e55581c2d
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_SubObjectGUID: 
-    m_EditorAssetChanged: 0
+  PickupPrefab: {fileID: 3773495797497117104, guid: 624752c6e887207489ddd227c5842d5d, type: 3}
   DragType: 1

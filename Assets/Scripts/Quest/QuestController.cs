@@ -150,11 +150,6 @@ namespace TPSDemo
             quest.Destroy();
         }
 
-        private void OnQuestCompleted(Quest quest)
-        {
-            TryReward(quest);
-        }
-
         private void OnQuestUpdate(Quest quest)
         {
             var processIdx = GetProcessIdx(quest.QuestId);
@@ -164,10 +159,6 @@ namespace TPSDemo
                 m_Processes[processIdx] = process;
             }
         }
-
-        // 改成玩家点击领取?
-        private void TryReward(Quest quest)
-        { }
 
         [ServerRpc]
         private void TryRewardServerRpc(int questId)

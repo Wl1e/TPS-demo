@@ -27,6 +27,9 @@ namespace TPSDemo
             return new AudioBuilder(m_AudioSystem, clip);
         }
 
+        // 用完记得Release
+        public AudioPlayer Borrow() => m_AudioSystem.Borrow();
+
         public void MuteSound(bool mute)
         {
             m_SoundMuted = mute;

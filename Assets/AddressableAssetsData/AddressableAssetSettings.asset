@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 7aa7ef13d9d69e645b5dbe9c3eefc841
   m_currentHash:
     serializedVersion: 2
-    Hash: 1b14009784f9d0cfe570651c4e5638f9
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_CatalogRequestsTimeout: 0
@@ -103,6 +103,7 @@ MonoBehaviour:
   m_LabelTable:
     m_LabelNames:
     - default
+    - NetCodePrefab
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 951fdbf437c449543907786cdc3055ba, type: 2}

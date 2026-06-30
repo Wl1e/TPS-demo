@@ -10,7 +10,7 @@ namespace TPSDemo
 
         private void OnTriggerEnter(Collider other)
         {
-            print("OnTriggerEnter: " + other.gameObject.name);
+            //print("OnTriggerEnter: " + other.gameObject.name);
             if (TargetMapId != -1 && other.gameObject.CompareTag("Player")) {
                 MapManager.Instance.EnterMap(TargetMapId);
             }

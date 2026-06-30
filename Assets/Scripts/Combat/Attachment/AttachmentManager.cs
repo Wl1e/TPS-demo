@@ -47,6 +47,8 @@ namespace TPSDemo
 
         public event Action OnAttachmentChanged;
 
+        public IWeapon Weapon { get; set; }
+
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
@@ -181,7 +183,9 @@ namespace TPSDemo
                         m_Attachments[slot] = attachment;
                         attachment.SetParent(GetTargetSocket(slot));
                         // 生成变异步了，所以放在这
-                        OnAttachmentChanged?.Invoke();
+                        if (IsOwner) {
+                            OnAttachmentChanged?.Invoke();
+                        }
                     }
                 )
             );
@@ -193,10 +197,14 @@ namespace TPSDemo
             m_Attachments[slot] = null;
             if (attachment != null) {
                 attachment.Destroy();
-                // FIXME: 不要往地上扔，往背包扔
-                var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(attachmentId);
-                WorldItemManager.Instance.SpawnItem(itemData, transform.position);
-                OnAttachmentChanged?.Invoke();
+                if (IsOwner) {
+                    // FIXME: 不要往地上扔，往背包扔
+                    // var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(attachmentId);
+                    // WorldItemManager.Instance.SpawnItem(itemData, transform.position, 1);
+                    var player = Weapon.Owner.GetComponent<PlayerController>();
+                    player.Inventory.AddItem(attachmentId, 1);
+                    OnAttachmentChanged?.Invoke();
+                }
             }
 
             if (enableDefault) {

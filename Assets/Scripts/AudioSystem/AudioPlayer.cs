@@ -10,8 +10,13 @@ namespace TPSDemo
 	{
         AudioSource m_AudioSource;
         bool m_IsPlaying;
+        float m_Duration;
 
         public Action<AudioPlayer> OnRelease;
+
+        public AudioSource AudioSource => GetComponent<AudioSource>();
+
+        public bool IsPlaying => m_IsPlaying;
         private void Awake()
         {
             m_AudioSource = GetComponent<AudioSource>();
@@ -20,16 +25,26 @@ namespace TPSDemo
 
         private void Update()
         {
-            if (m_IsPlaying && !m_AudioSource.isPlaying) {
-                m_IsPlaying = m_AudioSource.isPlaying;
-                Release();
+            if (m_IsPlaying) {
+                m_Duration -= Time.deltaTime;
+                if(m_Duration <= 0f) {
+                    m_IsPlaying = false;
+                    Release();
+                    return;
+                }
+                if (!m_AudioSource.isPlaying) {
+                    m_IsPlaying = m_AudioSource.isPlaying;
+                    Release();
+                    return;
+                }
             }
         }
-        public void Play(AudioClip clip)
+        public void Play(AudioClip clip, float duration)
         {
             m_IsPlaying = true;
             m_AudioSource.clip = clip;
             m_AudioSource.Play();
+            m_Duration = duration;
         }
 
         public void Stop()

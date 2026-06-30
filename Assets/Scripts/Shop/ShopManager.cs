@@ -59,6 +59,7 @@ namespace TPSDemo
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         public void TryBuyServerRpc(int playerId, int shopId, int slot)
         {
+            print($"actorId: {playerId}");
             var player = ActorManager.Instance.GetActor(playerId).GetComponent<PlayerController>();
             var shop = m_Shops[shopId];
             var evt = shop.Buy(player, slot);
@@ -100,6 +101,7 @@ namespace TPSDemo
         void OnOpenShop(Event.OpenShopEvent evt)
         {
             m_CurrentPlayerId = evt.playerId;
+            print("Enter Shop, Player " + m_CurrentPlayerId);
             m_CurrentShopId = evt.ShopId;
             OpenShopServerRpc(m_CurrentPlayerId, m_CurrentShopId);
         }

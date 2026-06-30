@@ -118,6 +118,7 @@ namespace TPSDemo
             if(IsOwner) {
                 m_FireMechanism.OnShouldFire += TryFire;
                 m_AttachmentManager.OnAttachmentChanged += AttachmentChanged;
+                m_AttachmentManager.Weapon = this;
             }
         }
 

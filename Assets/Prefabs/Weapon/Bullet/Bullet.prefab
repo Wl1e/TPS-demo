@@ -156,11 +156,11 @@ MonoBehaviour:
   Speed: 20
   HitLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 12585984
   MaxLifeTime: 5
   DestroyOnHit: 1
-  HitFlashPrefab: {fileID: 0}
-  HitSfx: {fileID: 0}
+  HitFlashPrefab: {fileID: 100002, guid: 99c73c92ac40473459640b165473206f, type: 3}
+  HitSfx: {fileID: 8300000, guid: 75adfe9a619833445a701305b983e548, type: 3}
   Root: {fileID: 3775475086701282175}
   Tip: {fileID: 2454428672126804440}
 --- !u!1001 &5329583651862067170

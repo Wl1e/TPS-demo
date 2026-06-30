@@ -5,7 +5,7 @@ using Unity.Netcode;
 
 public class PlayerInputHandler : NetworkBehaviour
 {
-    CountDownLatch m_InputBlock = new CountDownLatch();
+    private CountDownLatch m_InputBlock = new();
     bool m_OpenInventory = false;
     [SerializeField] private Vector2Event m_MoveInput;
     [SerializeField] private GameEvent m_JumpInput;

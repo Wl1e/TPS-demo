@@ -86,7 +86,7 @@ namespace TPSDemo
 
                 //Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Chest"), LayerMask.NameToLayer("Pickup"), true);
                 StartCoroutine(WorldItemManager.Instance.SpawnItem(
-                    entry.Item, m_LootSpawnPos.position, obj => {
+                    entry.Item, m_LootSpawnPos.position, amount, obj => {
                         if(obj.TryGetComponent(out Rigidbody rb)) {
                             rb.AddForce(dir * m_ThrowForce, ForceMode.Impulse);
                         }

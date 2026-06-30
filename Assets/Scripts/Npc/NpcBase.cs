@@ -55,6 +55,7 @@ namespace TPSDemo
         /// 当前交互玩家(Server)
         /// </summary>
         private readonly NetworkVariable<int> m_ChattingPlayer = new(-1);
+        public int PlayerId => m_ChattingPlayer.Value;
         public bool Chatting => m_Chatting.Value;
         [Tooltip("是否可交谈")]
         [SerializeField] bool m_CanChat;
@@ -111,6 +112,7 @@ namespace TPSDemo
             }
         }
         public void StopChat() => StopChatServerRpc();
+
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         private void StopChatServerRpc()
         {
@@ -148,6 +150,7 @@ namespace TPSDemo
                 return;
             }
             m_Player = player.GetComponent<PlayerController>();
+            print($"player {m_Player.Id} interact npc");
             bool needWait = FaceTarget(player.transform.position);
             if (needWait) {
                 if (m_WaitAnimatorCoroutine != null) {
@@ -155,7 +158,6 @@ namespace TPSDemo
                 }
                 m_WaitAnimatorCoroutine = StartCoroutine(Turn());
             } else {
-                print($"Client {OwnerClientId} Start Dialog");
                 Dialog();
             }
         }

@@ -184,14 +184,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b42aaf6eb6da77c4aa623973b535dfd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ShotgunShooting
-  BulletPrefab: {fileID: 6601797778091609916, guid: 8409e2dcc23d54643b69db518e4d9821, type: 3}
+  BulletPrefab: {fileID: 8312534977164171955, guid: 42660413f61826b4a949539017633d0e, type: 3}
   BulletSpeed: 10
   HitLayerMask:
     serializedVersion: 2
     m_Bits: 4205568
   Damage: 10
   M_BulletOneShoot: 8
-  m_SpreadAngle: 15
+  m_SpreadScale: 0.8
 --- !u!114 &2210149559537593544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,7 +207,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   DefaultClipSize: 8
   m_ReloadTime: 1.5
-  m_AmmoId: 1
+  m_AmmoId: 1002
 --- !u!114 &301767398327022844
 MonoBehaviour:
   m_ObjectHideFlags: 0

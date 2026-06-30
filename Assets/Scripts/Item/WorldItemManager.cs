@@ -9,6 +9,7 @@ namespace TPSDemo
     // 改类的所有方法必须由Server调用
     public class WorldItemManager : Singleton<WorldItemManager>
     {
+        private const ulong m_InvalidOwnerId = ulong.MaxValue;
         public Transform ItemRoot;
 
         // 没找到使用场景暂时就这样
@@ -20,17 +21,18 @@ namespace TPSDemo
             ItemRoot = new GameObject("ItemRoot").transform;
         }
 
-        public IEnumerator SpawnItem(ItemData data, Vector3 pos, System.Action<GameObject> cb = null, bool destroyWithScene = true)
+        private void CreateNO(GameObject prefab)
         {
-            GameObject pickupObj = null;
-            yield return AssetCache.GetOrLoad(
-                data.PickupPrefab,
-                obj => pickupObj = obj
-            );
 
-            if(!pickupObj.TryGetComponent<NetworkObject>(out var no)) {
-                yield break;
-            }
+        }
+
+        public IEnumerator SpawnItem(ItemData data, Vector3 pos, int amount, System.Action<GameObject> cb = null, bool destroyWithScene = true)
+        {
+            var pickupObj = Instantiate(data.PickupPrefab, pos, Quaternion.identity, ItemRoot);
+            var pickup = pickupObj.GetComponent<ItemPickup>();
+            pickup.Amount = amount;
+
+            var no = pickupObj.GetComponent<NetworkObject>();
 
             no.SetSceneObjectStatus(true);
             no.DestroyWithScene = destroyWithScene;
@@ -39,58 +41,106 @@ namespace TPSDemo
                 yield return new WaitUntil(() => no.IsSpawned);
             }
 
-            no.TrySetParent(ItemRoot);
-            pickupObj.transform.SetPositionAndRotation(pos, Quaternion.Euler(0, 0, 0));
-            var pickup = pickupObj.GetComponent<ItemPickup>();
+            //no.TrySetParent(ItemRoot);
+            //pickupObj.transform.SetPositionAndRotation(pos, Quaternion.Euler(0, 0, 0));
             m_WorldItems.Add(pickup);
 
             cb?.Invoke(pickupObj);
         }
+
+        // pickup全是NO，不需要AA管理，直接Instantiate
+        //public IEnumerator SpawnItem(ItemData data, Vector3 pos, System.Action<GameObject> cb = null, bool destroyWithScene = true)
+        //{
+        //    GameObject pickupObj = null;
+        //    yield return AssetCache.GetOrLoad(
+        //        data.PickupPrefab,
+        //        obj => pickupObj = obj
+        //    );
+
+        //    if (!pickupObj.TryGetComponent<NetworkObject>(out var no)) {
+        //        yield break;
+        //    }
+
+        //    no.SetSceneObjectStatus(true);
+        //    no.DestroyWithScene = destroyWithScene;
+        //    if (!no.IsSpawned) {
+        //        no.Spawn();
+        //        yield return new WaitUntil(() => no.IsSpawned);
+        //    }
+
+        //    no.TrySetParent(ItemRoot);
+        //    pickupObj.transform.SetPositionAndRotation(pos, Quaternion.Euler(0, 0, 0));
+        //    var pickup = pickupObj.GetComponent<ItemPickup>();
+        //    m_WorldItems.Add(pickup);
+
+        //    cb?.Invoke(pickupObj);
+        //}
 
         public void EraseItem(ItemPickup item)
         {
             m_WorldItems.Remove(item);
         }
 
-        static public IEnumerator CreateItemGO(ItemData data, System.Action<GameObject> Completed)
-        {
-            yield return AssetCache.GetOrLoad(data.Prefab, Completed);
-        }
-
+        // 有很多ItemData内的Prefab也是网络同步的，所以
         static public IEnumerator CreateItemGO(
             ItemData data,
-            System.Action<GameObject> Completed,
-            Vector3 pos,
+            Vector3 position,
             Quaternion rotation,
-            Transform parent = null)
+            Transform parent,
+            System.Action<GameObject> completed,
+            ulong ownerId
+        )
         {
-            yield return CreateItemGO(data, obj => {
-                obj.transform.SetParent(parent);
-                obj.transform.SetPositionAndRotation(pos, rotation);
-                Completed(obj);
-            });
+            if (data.IsNetCodePrefab) {
+                var go = Instantiate(data.NOPrefab, position, rotation, parent);
+                if (!go.TryGetComponent<NetworkObject>(out var no)) {
+                    Debug.LogError($"Item {data.Name} is NetCodeItem, but NOPrefab dont have NetworkObject");
+                    yield break;
+                }
+
+                if (!no.IsSpawned) {
+                    if (ownerId == m_InvalidOwnerId) {
+                        no.Spawn();
+                    } else {
+                        no.SpawnWithOwnership(ownerId);
+                    }
+                    yield return new WaitUntil(() => no.IsSpawned);
+                }
+                completed?.Invoke(go);
+
+            } else {
+                yield return AssetCache.GetOrLoad(data.Prefab, position, rotation, parent, completed);
+            }
         }
 
-        static public IEnumerator CreateItemGO<T>(ItemData data, System.Action<T> Completed) where T: class
-        {
-            yield return CreateItemGO(data, obj => {
-                Completed(obj.GetComponent<T>());
-            });
-        }
+        static public IEnumerator CreateItemGO(ItemData data, System.Action<GameObject> completed = null, ulong ownerId = m_InvalidOwnerId)
+            => CreateItemGO(data, Vector3.zero, Quaternion.identity, null, completed, ownerId);
+
+
+
+        static public IEnumerator CreateItemGO<T>(ItemData data, System.Action<T> completed = null, ulong ownerId = m_InvalidOwnerId) where T : class
+            => CreateItemGO<T>(data, Vector3.zero, Quaternion.identity, null, completed, ownerId);
 
         static public IEnumerator CreateItemGO<T>(
             ItemData data,
-            System.Action<T> Completed,
             Vector3 pos,
             Quaternion rotation,
-            Transform parent = null
+            Transform parent = null,
+            System.Action<T> completed = null,
+            ulong ownerId = m_InvalidOwnerId
         ) where T : class
         {
-            yield return CreateItemGO(data, obj => {
-                obj.transform.SetParent(parent);
-                obj.transform.SetPositionAndRotation(pos, rotation);
-                Completed(obj.GetComponent<T>());
-            });
+            yield return CreateItemGO(data,
+                pos,
+                rotation,
+                parent,
+                obj => {
+                    if (obj.TryGetComponent<T>(out var component)) {
+                        completed?.Invoke(component);
+                    } },
+                ownerId
+            );
         }
+
     }
 }

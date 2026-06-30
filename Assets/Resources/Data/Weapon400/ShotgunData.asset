@@ -10,24 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1254d2464a4fd5c42a0f3640fed92f68, type: 3}
-  m_Name: ARData
-  m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  Id: 401
-  Name: AR
+  m_Name: ShotgunData
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ItemData
+  Id: 402
+  Name: Shotgun
   Type: 1
-  Description: This is AR
-  Icon: {fileID: 21300000, guid: bcc477d9e47ffcf41acc147a6fc51cf9, type: 3}
+  Description: 
+  Icon: {fileID: 21300000, guid: d046e191cca72234f808841e75fb8720, type: 3}
   MaxStack: 1
+  IsNetCodePrefab: 1
   Prefab:
-    m_AssetGUID: 599b94dcaec819e49815631b7eb37f07
+    m_AssetGUID: 
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  PickupPrefab:
-    m_AssetGUID: 67c0db72dce41b440a5f5a7e2fb53cec
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_SubObjectGUID: 
-    m_EditorAssetChanged: 0
+  NOPrefab: {fileID: 997179514618639081, guid: 9fb6b724080d60742802d70f1a0a0d6c, type: 3}
+  PickupPrefab: {fileID: 545875904831996198, guid: 80ff2057fb443bc45b6e09292b17b726, type: 3}
   DragType: 2

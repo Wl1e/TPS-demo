@@ -49,7 +49,7 @@ namespace TPSDemo
         public bool Restock => GetConfig().Restock;
         public float RestockTime => GetConfig().RestockTime;
         public bool RandomGoods => GetConfig().RandomGoods;
-        private int m_MoneyId => GetConfig().MoneyId;
+        public int MoneyId => GetConfig().MoneyId;
 
         List<ShopEntry> m_Goods = new();
         public List<ShopEntry> Goods => m_Goods;
@@ -67,6 +67,8 @@ namespace TPSDemo
                 AddGood(goodConfig.Good, goodConfig.Price, goodConfig.Amount, goodConfig.Discount);
             }
         }
+
+        private ShopConfig GetConfig() => ResourceManager.Instance.GetResource<ShopList>("Shop").GetConfig(ShopId);
 
         public void SetGoods(List<ShopEntry> newGoods) => m_Goods = newGoods;
         public void SetGoods(ShopEntry[] newGoods) => m_Goods = new(newGoods);
@@ -103,6 +105,17 @@ namespace TPSDemo
             EventManager.Broadcast(new Event.ShopOpenEvent { ShopId = ShopId, ShopName = ShopName });
         }
 
+        public void Exit(PlayerController player)
+        {
+            player.SetInputActive(true, true);
+            //EventManager.RemoveListener<Event.TryBuyEvent>(TryBuy);
+            EventManager.Broadcast(new Event.ShopCloseEvent { ShopId = ShopId });
+        }
+
+        #region Server
+        /// <summary>
+        /// Only call by server
+        /// </summary>
         public Event.ShopBuyEvent Buy(PlayerController player, int slot)
         {
             var evt = new Event.ShopBuyEvent {
@@ -128,11 +141,10 @@ namespace TPSDemo
             var goodEntry = m_Goods[slot];
             int finalPrice = goodEntry.FinalPrice;
 
-            if (player.Economy.CanAfford(m_MoneyId, finalPrice)) {
-                player.Economy.SpendMoney(m_MoneyId, finalPrice);
+            if (player.Economy.CanAfford(MoneyId, finalPrice)) {
+                player.Economy.SpendMoney(MoneyId, finalPrice);
                 GoodSoldout(slot);
-                // inventory没有网络同步，所以client本地看不到道具
-                player.Inventory.AddItem(itemData.Id, goodEntry.Amount);
+                player.Inventory.AddItemClientRpc(player.Id, itemData.Id, goodEntry.Amount);
                 evt.IsSuccess = true;
             } else {
                 evt.IsSuccess = false;
@@ -144,13 +156,7 @@ namespace TPSDemo
             return evt;
         }
 
-        public void Exit(PlayerController player)
-        {
-            player.SetInputActive(true, true);
-            //EventManager.RemoveListener<Event.TryBuyEvent>(TryBuy);
-            EventManager.Broadcast(new Event.ShopCloseEvent { ShopId = ShopId });
-        }
+        #endregion
 
-        private ShopConfig GetConfig() => ResourceManager.Instance.GetResource<ShopList>("Shop").GetConfig(ShopId);
     }
 }

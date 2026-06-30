@@ -1,9 +1,27 @@
 ﻿
+using System;
+using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace TPSDemo
 {
+    public struct InventorySlotSync: INetworkSerializeByMemcpy, IEquatable<InventorySlotSync>
+    {
+        public int Slot;
+        public int ItemId;
+        public int Amount;
+        public InventorySlotSync(int slot, int itemId, int amount)
+        {
+            Slot = slot;
+            ItemId = itemId;
+            Amount = amount;
+        }
+        bool IEquatable<InventorySlotSync>.Equals(InventorySlotSync other)
+        {
+            return Slot == other.Slot && ItemId == other.ItemId && Amount == other.Amount;
+        }
+    }
+
     public class InventorySlot
     {
         public ItemData ItemData;
@@ -13,9 +31,8 @@ namespace TPSDemo
         public int MaxStack => ItemData.MaxStack;
         public int Amount = 0;
 
-        public bool Draging = false;
-
-        public InventorySlot(IItem item, ref int amount) : this(item?.Data, ref amount)
+        public InventorySlot(InventorySlotSync data) :
+            this(ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(data.ItemId), ref data.Amount)
         {
         }
         public InventorySlot(ItemData data, ref int amount)

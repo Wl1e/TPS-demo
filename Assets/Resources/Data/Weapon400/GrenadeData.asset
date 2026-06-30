@@ -10,24 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1254d2464a4fd5c42a0f3640fed92f68, type: 3}
-  m_Name: ShotgunData
-  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ItemData
-  Id: 402
-  Name: Shotgun
-  Type: 1
-  Description: 
-  Icon: {fileID: 21300000, guid: d046e191cca72234f808841e75fb8720, type: 3}
+  m_Name: GrenadeData
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  Id: 411
+  Name: Grenade
+  Type: 3
+  Description: Grenade
+  Icon: {fileID: 3286163911610860551, guid: e53f2e86e048bb94b81ebe147cce14b6, type: 3}
   MaxStack: 1
+  IsNetCodePrefab: 1
   Prefab:
-    m_AssetGUID: 9fb6b724080d60742802d70f1a0a0d6c
+    m_AssetGUID: 
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  PickupPrefab:
-    m_AssetGUID: 80ff2057fb443bc45b6e09292b17b726
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_SubObjectGUID: 
-    m_EditorAssetChanged: 0
-  DragType: 2
+  NOPrefab: {fileID: 6315118017112773608, guid: 430e2aa2f8ddaa542844b1b3bf051bc6, type: 3}
+  PickupPrefab: {fileID: 111832366897504550, guid: 34ba763acd6793347b8e0d6e55581c2d, type: 3}
+  DragType: 1

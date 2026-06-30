@@ -39,10 +39,9 @@ namespace TPSDemo
         }
 
         // inventory
-        public List<(int, int)> GetInventoryData()
-        {
-            return m_Player.Inventory.GetAllItem();
-        }
+        public List<(int ItemId, int Amount)> GetInventoryData() => m_Player.Inventory.GetAllItem();
+
+        // 错了
         public int GetInventoryAmountByType(ItemType type)
         {
             var currentFirearm = m_Player.WeaponManager.CurrentFirearm;
@@ -51,6 +50,8 @@ namespace TPSDemo
             }
             return m_Player.Inventory.GetAmount(currentFirearm.AmmoId);
         }
+
+        public int GetInventoryAmount(int itemId) => m_Player.Inventory.GetAmount(itemId);
 
         // quest
         public NetworkList<QuestProcess> GetQuestProcesses() => m_Player.QuestController.QuestProcesses;

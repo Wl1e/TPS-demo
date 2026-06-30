@@ -1,7 +1,6 @@
 ﻿using System;
 using Unity.Netcode.Editor;
 using UnityEditor;
-using UnityEngine;
 
 #if UNITY_EDITOR
 
@@ -19,6 +18,8 @@ namespace TPSDemo.Editor
         private SerializedProperty m_RotationSmoothTime;
         private SerializedProperty m_OnMoveInput;
         private SerializedProperty m_GroundLayer;
+        private SerializedProperty m_MoveAudio;
+        private SerializedProperty m_AudioTime;
 
         public override void OnEnable()
         {
@@ -30,6 +31,8 @@ namespace TPSDemo.Editor
             m_RotationSmoothTime = serializedObject.FindProperty(nameof(PlayerMovement.RotationLerpSmoothing));
             m_OnMoveInput = serializedObject.FindProperty("OnMoveInput");
             m_GroundLayer = serializedObject.FindProperty(nameof(PlayerMovement.GroundLayer));
+            m_MoveAudio = serializedObject.FindProperty("m_MovementAudio");
+            m_AudioTime = serializedObject.FindProperty("m_AudioTime");
             base.OnEnable();
         }
 
@@ -50,6 +53,8 @@ namespace TPSDemo.Editor
             EditorGUILayout.PropertyField(m_RotationSmoothTime);
             EditorGUILayout.PropertyField(m_OnMoveInput);
             EditorGUILayout.PropertyField(m_GroundLayer);
+            EditorGUILayout.PropertyField(m_MoveAudio);
+            EditorGUILayout.PropertyField(m_AudioTime);
         }
 	}
 }

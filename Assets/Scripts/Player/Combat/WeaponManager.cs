@@ -92,7 +92,7 @@ namespace TPSDemo
         /// <param name="idx"> 射击武器的下标 </param>
         private void OnWeaponAdded(IWeapon weapon, int idx)
         {
-            weapon.OnFire += () => OnWeaponFire(idx);
+            weapon.OnFire += OnWeaponFire;
         }
 
         /// <summary>
@@ -100,17 +100,19 @@ namespace TPSDemo
         /// 其实可以让武器自己广播
         /// </summary>
         /// <param name="idx"></param>
-        private void OnWeaponFire(int idx)
+        private void OnWeaponFire()
         {
-            if (idx != CurrentFirearmIndex) {
-                return;
-            }
             EventManager.Broadcast(new WeaponFiredEvent());
         }
 
         private void OnWeaponRemoved(IWeapon weapon)
         {
-            // FIXME 这里应该删掉武器OnFire的回调
+            weapon.OnFire -= OnWeaponFire;
+            if(weapon == m_CurrentFirearm) {
+                if (IsServer) {
+                    m_CurrentFirearmIndex.Value = -1;
+                }
+            }
         }
 
         public override bool ValidActive() {
@@ -199,9 +201,11 @@ namespace TPSDemo
         [ServerRpc]
         private void TryReloadServerRpc()
         {
+            print("TryReloadServerRpc");
             if (!ValidReload()) {
                 return;
             }
+            print("true reload");
             int amount = m_CurrentFirearm.CurrentAmmo;
             int ammoId = m_CurrentFirearm.AmmoId;
             m_CurrentFirearm.StartReload();
@@ -213,12 +217,15 @@ namespace TPSDemo
         private bool ValidReload()
         {
             if(m_Reloading.Value) {
+                print("正在换弹中");
                 return false;
             }
             if (CurrentFirearmIndex == -1) {
+                print("当前未装备武器");
                 return false;
             }
             if (!m_CurrentFirearm.ValidReload() || m_Inventory.GetAmount(m_CurrentFirearm.AmmoId) <= 0) {
+                print("武器无需换弹或没有对应子弹");
                 return false;
             }
             return true;
@@ -275,12 +282,13 @@ namespace TPSDemo
                 EventManager.Broadcast(new WeaponStartReloadEvent {
                     WeaponIdx = CurrentFirearmIndex
                 });
-                m_RuntimeData.AniParameter.Reload = true;
             } else {
                 EventManager.Broadcast(new WeaponEndReloadEvent {
                     WeaponIdx = CurrentFirearmIndex
                 });
             }
+            print("Set Reload " + newValue);
+            m_RuntimeData.AniParameter.Reload = newValue;
         }
 
         #endregion Reload
@@ -290,7 +298,10 @@ namespace TPSDemo
         {
             // m_ReloadCoroutine修改起来太麻烦了，后续通过WeaponStateManager同步
             if (IsServer) {
-                m_CurrentFirearm?.Attach(BackAttach);
+                // m_CurrentFirearm当是卸下weapon时，不需要触发，不然将武器背到背上
+                if (m_CurrentFirearm != null) {
+                    m_CurrentFirearm?.Attach(BackAttach);
+                }
 
                 if (m_ReloadCoroutine != null) {
                     StopCoroutine(m_ReloadCoroutine);

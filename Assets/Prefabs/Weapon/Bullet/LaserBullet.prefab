@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0.5}
-  m_LocalScale: {x: 0.1, y: 0.5, z: 0.1}
+  m_LocalScale: {x: 0.05, y: 0.5, z: 0.05}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7763194973799543073}
@@ -246,11 +246,11 @@ MonoBehaviour:
   Speed: 0
   HitLayerMask:
     serializedVersion: 2
-    m_Bits: 3072
+    m_Bits: 12585984
   MaxLifeTime: 3
   DestroyOnHit: 0
   HitFlashPrefab: {fileID: 0}
-  HitSfx: {fileID: 0}
+  HitSfx: {fileID: 8300000, guid: e11a5a019377fbd4c81caa0adcb4c236, type: 3}
   MaxDistance: 100
   LaserColor: {r: 0, g: 5.3403134, b: 3.0760844, a: 1}
   LaserOrigin: {fileID: 7443320598877827934}

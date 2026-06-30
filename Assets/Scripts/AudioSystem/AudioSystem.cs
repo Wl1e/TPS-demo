@@ -11,6 +11,7 @@ namespace TPSDemo
             public AudioClip AudioClip;
             public Transform AttachTransform;
             public Vector3 Position;
+            public float Duration;
         }
         #endregion
 
@@ -58,10 +59,10 @@ namespace TPSDemo
             if (!info.AudioClip) {
                 return;
             }
-            Play(info.AudioClip, info.Position, info.AttachTransform);
+            Play(info.AudioClip, info.Position, info.Duration, info.AttachTransform);
         }
 
-        void Play(AudioClip audioClip, Vector3 Position, Transform attach = null)
+        void Play(AudioClip audioClip, Vector3 Position, float duration, Transform attach = null)
         {
             var audioPlayer = m_AudioPlayerPool.Get();
             if (attach != null) {
@@ -70,7 +71,10 @@ namespace TPSDemo
             } else {
                 audioPlayer.transform.position = Position;
             }
-            audioPlayer.Play(audioClip);
+            audioPlayer.Play(audioClip, duration);
         }
+
+        // Play只针对触发型音效，持续型音效会反复调用造成性能浪费和预料之外的效果
+        public AudioPlayer Borrow() => m_AudioPlayerPool.Get();
     }
 }

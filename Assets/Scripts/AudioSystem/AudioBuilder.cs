@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace TPSDemo
 {
@@ -9,6 +8,7 @@ namespace TPSDemo
         AudioClip m_AudioClip;
         Transform m_AttachTransform;
         Vector3 m_Position;
+        float m_Duration = float.PositiveInfinity;
 
         public AudioBuilder(AudioSystem audioSystem, AudioClip clip)
         {
@@ -19,6 +19,12 @@ namespace TPSDemo
         public AudioBuilder AttachTo(Transform attach)
         {
             m_AttachTransform = attach;
+            return this;
+        }
+
+        public AudioBuilder WithDuration(float time)
+        {
+            m_Duration = time;
             return this;
         }
 
@@ -36,7 +42,8 @@ namespace TPSDemo
             m_AudioSystem.Play(new AudioSystem.AudioInfo {
                 AudioClip = m_AudioClip,
                 AttachTransform = m_AttachTransform,
-                Position = m_Position
+                Position = m_Position,
+                Duration = m_Duration
             });
         }
     }

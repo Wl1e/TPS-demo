@@ -11,10 +11,12 @@ namespace TPSDemo
         Vector3 m_Position = Vector3.zero;
         float m_Scale = 1f;
         Quaternion m_Rotation = Quaternion.identity;
-        float m_Duration = 1f;
+        float m_Duration = float.NegativeInfinity;
         //Material m_Material = null;
         //Color m_Color;
         private bool m_IsRunning = false;
+
+        private ParticleSystem m_ParticleSystem = null;
 
         private GameObject m_Effect = null;
 
@@ -34,12 +36,20 @@ namespace TPSDemo
             }
         }
 
-        private void OnDisable() => print("Effect Disable");
-
-        private void OnEnable() => print("Effect Enable");
+        private void Initialze()
+        {
+            m_EffectName = "Effect";
+            m_Position = Vector3.zero;
+            m_Scale = 1f;
+            m_Duration = float.NegativeInfinity;
+            m_Rotation = Quaternion.identity;
+            m_EffectPrefab = null;
+            m_ParticleSystem = null;
+        }
 
         public EffectBuilder SetEffect(GameObject effect)
         {
+            Initialze();
             m_EffectPrefab = effect;
             return this;
         }
@@ -104,6 +114,7 @@ namespace TPSDemo
             }
             m_Effect = Instantiate(m_EffectPrefab, transform);
             m_Effect.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            m_ParticleSystem = m_Effect.GetComponent<ParticleSystem>();
 
             gameObject.name = m_EffectName;
             gameObject.transform.localScale = Vector3.one * m_Scale;
@@ -114,6 +125,10 @@ namespace TPSDemo
                 gameObject.transform.localPosition = m_Position;
             } else {
                 gameObject.transform.position = m_Position;
+            }
+
+            if(m_Duration == float.NegativeInfinity) {
+                m_Duration = m_ParticleSystem.main.duration;
             }
 
             m_IsRunning = true;

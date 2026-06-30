@@ -20,10 +20,14 @@ namespace TPSDemo
         public Sprite Icon;
         [Tooltip("最大堆叠数量")]
         public int MaxStack;
+        [Tooltip("是否为网络同步对象")]
+        public bool IsNetCodePrefab;
         [Tooltip("预制体")]
         public UnityEngine.AddressableAssets.AssetReference Prefab;
+        [Tooltip("网络预制体")]
+        public GameObject NOPrefab;
         [Tooltip("Pikcup预制体")]
-        public UnityEngine.AddressableAssets.AssetReference PickupPrefab;
+        public GameObject PickupPrefab;
 
         [Tooltip("放置类型（UI）")]
         public UI.DragType DragType;

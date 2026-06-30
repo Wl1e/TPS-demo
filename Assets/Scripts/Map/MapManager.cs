@@ -111,7 +111,7 @@ namespace TPSDemo
 
         private void OnSceneEvent(SceneEvent e)
         {
-            print($"SceneEventType: {e.SceneEventType} + SceneName: {e.SceneName} + ClientId: {e.ClientId}");
+            //print($"SceneEventType: {e.SceneEventType} + SceneName: {e.SceneName} + ClientId: {e.ClientId}");
             if (e.SceneEventType == SceneEventType.UnloadComplete) {
                 //NetworkManager.SceneManager.LoadScene(SceneName, LoadSceneMode.Single);
             } else if (e.SceneEventType == SceneEventType.LoadComplete) {

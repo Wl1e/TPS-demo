@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 
 // 后续可能需要子类型，直接在这加就行了 xxxAmmo xxxWeapon
 
@@ -25,7 +26,7 @@ namespace TPSDemo
         public ItemData Data { get; }
     }
 
-    public abstract class ItemBase : MonoBehaviour, IItem, IStackable
+    public abstract class ItemBase : NetworkBehaviour, IItem, IStackable
     {
         [SerializeField] protected ItemData m_Data;
         [SerializeField] protected int m_Amount;
@@ -36,6 +37,16 @@ namespace TPSDemo
         public Sprite Icon => m_Data.Icon;
         public ItemData Data => m_Data;
         public int MaxStack => m_Data.MaxStack;
-        public int Amount => m_Amount;
+        public int Amount
+        {
+            get
+            {
+                return m_Amount;
+            }
+            set
+            {
+                m_Amount = value;
+            }
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ namespace TPSDemo
 
     static class NextId
     {
-        static int s_NextId = 0;
+        static int s_NextId = 1;
         static public int GetNextId()
         {
             return s_NextId++;
@@ -14,19 +15,24 @@ namespace TPSDemo
 
     }
 
+    // Server所有的ActorId，Client只存储自己的ActorId，所以在ClientRpc中，可以用playerId来分辨Client
     public class Actor : NetworkBehaviour
     {
-        private NetworkVariable<int> m_Id = new(0);
+        private readonly NetworkVariable<int> m_Id = new(0);
 
         public Transform AimPoint;
         public int Id => m_Id.Value;
+
+        private void Awake()
+        {
+            m_Id.OnValueChanged += OnIdChanged;
+        }
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
             if (IsServer) {
                 m_Id.Value = NextId.GetNextId();
-                ActorManager.Instance.AddActor(this);
             }
         }
 
@@ -37,6 +43,12 @@ namespace TPSDemo
             }
             base.OnNetworkDespawn();
         }
+
+        private void OnIdChanged(int previousValue, int newValue)
+        {
+            ActorManager.Instance.AddActor(this);
+        }
+
     }
 
     //public class Actor : MonoBehaviour
