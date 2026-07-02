@@ -7,19 +7,40 @@ namespace TPSDemo
     /// <summary>
     /// 手动控制 Animator 播放动画，支持 CrossFade 过渡。
     /// 挂在带 Animator 的 GameObject 上即可。
+    /// 需要在Animator中加上所有你使用的Type类型的空动画片段，方便替换。
     /// </summary>
     public class ManualAnimatorController : MonoBehaviour
     {
-        [Header("References")]
+        #region
+        public enum AnimationType
+        {
+            Idle,
+            Walk,
+            Run,
+            Attack,
+            Hit
+        }
+
+        [System.Serializable]
+        public struct AnimatorEntry
+        {
+            public AnimationType Type;
+            public AnimationClip Clip;
+        }
+        #endregion
+
+        [Header("引用")]
         [SerializeField] private Animator m_Animator = null;
 
-        [SerializeField] AnimationClip IdleClip, WalkClip, AttackClip, HitClip;
+        [SerializeField] private List<AnimatorEntry> m_Clips;
 
         private AnimatorOverrideController m_Override;
 
-        [Header("Settings")]
+        [Header("设置")]
         [SerializeField] private float m_DefaultBlendDuration = 0.2f;
-        [SerializeField] private string mIdleStateName = "Idle";
+        [SerializeField] private AnimationType m_DefaultAnimationType = AnimationType.Idle;
+
+        private AnimationType m_CurrentType = AnimationType.Idle;
 
         private void Awake()
         {
@@ -34,21 +55,29 @@ namespace TPSDemo
         /// <summary>
         /// 播放指定名称的动画状态，自动 CrossFade 过渡
         /// </summary>
-        /// <param name="stateName">Animator Controller 中的状态名</param>
+        /// <param name="type">Animator状态</param>
         /// <param name="blendDuration">过渡时间。-1 则使用默认值</param>
-        public void Play(string stateName, float blendDuration = -1f)
+        public void Play(AnimationType type, float blendDuration = -1f)
         {
             if(!Valid()) {
                 return;
             }
+            if(type == m_CurrentType) {
+                return;
+            }
+
+            m_CurrentType = type;
+
+            m_Animator.speed = 1f;
             float duration = blendDuration >= 0 ? blendDuration : m_DefaultBlendDuration;
             m_Animator.speed = 1f;
 
+
             if (duration > 0) {
-                int hash = Animator.StringToHash(stateName);
+                int hash = Animator.StringToHash(m_CurrentType.ToString());
                 m_Animator.CrossFadeInFixedTime(hash, duration, 0);
             } else {
-                m_Animator.Play(stateName, 0, 0f);
+                m_Animator.Play(m_CurrentType.ToString(), 0, 0f);
             }
         }
 
@@ -57,7 +86,8 @@ namespace TPSDemo
         /// </summary>
         public void Stop()
         {
-            Play(mIdleStateName, m_DefaultBlendDuration);
+            m_CurrentType = m_DefaultAnimationType;
+            Play(m_DefaultAnimationType, m_DefaultBlendDuration);
         }
 
         /// <summary>
@@ -114,16 +144,16 @@ namespace TPSDemo
             if (!Valid()) {
                 return "";
             }
-            var clipInfo = m_Animator.GetCurrentAnimatorClipInfo(0);
-            return clipInfo.Length > 0 ? clipInfo[0].clip.name : "None";
+            return m_CurrentType.ToString();
         }
 
         private void InitializeOverride()
         {
-            m_Override["Idle"] = IdleClip;
-            m_Override["Walk"] = WalkClip;
-            m_Override["Attack"] = AttackClip;
-            m_Override["Hit"] = HitClip;
+            foreach(var entry in m_Clips) {
+                if (entry.Clip != null) {
+                    m_Override[entry.Type.ToString()] = entry.Clip;
+                }
+            }
         }
     }
 }

@@ -39,6 +39,7 @@ namespace TPSDemo
         private void Initialze()
         {
             m_EffectName = "Effect";
+            m_Parent = null;
             m_Position = Vector3.zero;
             m_Scale = 1f;
             m_Duration = float.NegativeInfinity;

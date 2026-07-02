@@ -31,6 +31,7 @@ namespace TPSDemo
         /// </summary>
         public CountDownLatch MovementLock = new();
 
+        PlayerController m_Player;
         CharacterController m_CharacterController;
         PlayerRuntimeData m_PlayerRuntimeData;
         PlayerStateMachine m_PlayerStateMachine;
@@ -74,10 +75,11 @@ namespace TPSDemo
 
         private AudioPlayer m_AudioPlayer;
 
-        Vector2 m_RawInput;
-        Vector3 m_Input;
-        Vector3 m_InputGlobal;
-        Vector3 m_Velocity;
+        private Vector2 m_RawInput = Vector2.zero;
+        private Vector3 m_Input = Vector3.zero;
+        private Vector3 m_InputGlobal = Vector3.zero;
+        private Vector3 m_LastVelocity = Vector3.zero;
+        private Vector3 m_Velocity = Vector3.zero;
 
         bool m_IsGrounded;
         bool m_JumpThisFrame;
@@ -116,30 +118,37 @@ namespace TPSDemo
         {
             base.Awake();
 
-            var player = GetComponent<PlayerController>();
-            m_CharacterController = player.CharacterController;
-            m_PlayerRuntimeData = player.RuntimeData;
-            m_PlayerStateMachine = player.StateMachine;
-
-
-            m_AbilitiesLookup = new Dictionary<PlayerMovementState, IMovementAbility>();
-            foreach (var ability in GetComponentsInChildren<IMovementAbility>()) {
-                ability.Initialize(this);
-                m_AbilitiesLookup.Add(ability.State, ability);
-            }
-
-            m_PlayerStateMachine.OnStateChanged += OnStateChanged;
-            OnMoveInput.RegisterListener(OnMove);
-            EventManager.AddListener<Event.AimEvent>(OnAim);
+            m_Player = GetComponent<PlayerController>();
+            m_CharacterController = m_Player.CharacterController;
+            m_PlayerRuntimeData = m_Player.RuntimeData;
+            m_PlayerStateMachine = m_Player.StateMachine;
         }
 
-        public override void OnDestroy()
+        public override void OnNetworkSpawn()
         {
-            m_PlayerStateMachine.OnStateChanged -= OnStateChanged;
-            OnMoveInput.UnregisterListener(OnMove);
-            EventManager.RemoveListener<Event.AimEvent>(OnAim);
+            base.OnNetworkSpawn();
+            if(IsOwner) {
+                m_AbilitiesLookup = new Dictionary<PlayerMovementState, IMovementAbility>();
+                foreach (var ability in GetComponentsInChildren<IMovementAbility>()) {
+                    ability.Initialize(this);
+                    m_AbilitiesLookup.Add(ability.State, ability);
+                }
 
-            base.OnDestroy();
+                m_PlayerStateMachine.OnStateChanged += OnStateChanged;
+                OnMoveInput.RegisterListener(OnMove);
+                EventManager.AddListener<Event.AimEvent>(OnAim);
+            }
+            m_Player.AudioEffectPlayer.LoopAudio("Movement", m_MovementAudio);
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            if (IsOwner) {
+                m_PlayerStateMachine.OnStateChanged -= OnStateChanged;
+                OnMoveInput.UnregisterListener(OnMove);
+                EventManager.RemoveListener<Event.AimEvent>(OnAim);
+            }
+            base.OnNetworkDespawn();
         }
 
         void Update()
@@ -148,7 +157,9 @@ namespace TPSDemo
                 return;
             }
 
-            if(!m_CharacterController.enabled) {
+            m_LastVelocity = m_Velocity;
+
+            if (!m_CharacterController.enabled) {
                 m_Velocity = Vector3.zero;
                 return;
             }
@@ -165,24 +176,18 @@ namespace TPSDemo
             m_PlayerRuntimeData.AniParameter.Velocity = transform.InverseTransformDirection(m_Velocity);
             m_PlayerRuntimeData.AniParameter.IsGrounded = m_IsGrounded;
 
-            if(m_Velocity != Vector3.zero) {
-                if (m_AudioPlayer == null) {
-                    m_AudioPlayer = Director.Instance.Borrow();
-                    m_AudioPlayer.transform.position = transform.position;
-                    m_AudioPlayer.AudioSource.loop = true;
-                    m_AudioPlayer.Play(m_MovementAudio, float.PositiveInfinity);
-                }
-            } else {
-                if (m_AudioPlayer != null) {
-                    m_AudioPlayer.AudioSource.loop = false;
-                    m_AudioPlayer.Release();
-                    m_AudioPlayer = null;
-                }
+            if(MoveStart()) {
+                m_Player.AudioEffectPlayer.Play("Movement", float.PositiveInfinity, Vector3.zero, Quaternion.identity, true);
+            } else if(MoveStop()) {
+                m_Player.AudioEffectPlayer.StopLoopAudio("Movement");
             }
+            //PlayAudioServerRpc(m_Velocity.x != 0 || m_Velocity.z != 0);
 
             //print($"InputVector: {m_InputGlobal}, Velocity: {m_Velocity}, selfVelocity: {transform.InverseTransformDirection(m_Velocity)}");
         }
 
+        private bool MoveStart() => IsGrounded && (m_Velocity.x != 0 || m_Velocity.z != 0) && (m_LastVelocity.x == 0 && m_LastVelocity.z == 0);
+        private bool MoveStop() => IsGrounded && (m_LastVelocity.x != 0 || m_LastVelocity.z != 0) && (m_Velocity.x == 0 && m_Velocity.z == 0);
         void UpdateMovement()
         {
             var velocityXZ = Vector3.ProjectOnPlane(m_Velocity, Vector3.up);
@@ -288,6 +293,7 @@ namespace TPSDemo
             ) {
                 if (hitInfo.collider.gameObject != gameObject) {
                     m_IsGrounded = true;
+                    transform.position.Set(transform.position.x, hitInfo.point.y + m_CharacterController.skinWidth, transform.position.z);
                 }
             }
         }
@@ -329,5 +335,31 @@ namespace TPSDemo
         {
             transform.position = position;
         }
+
+        // movement需要播放循环音效，和Sfx不一样
+        //[ServerRpc]
+        //public void PlayAudioServerRpc(bool play)
+        //{
+        //    PlayAudioClientRpc(play);
+        //}
+
+        //[ClientRpc]
+        //public void PlayAudioClientRpc(bool play)
+        //{
+        //    if (play) {
+        //        if (m_AudioPlayer == null) {
+        //            m_AudioPlayer = Director.Instance.Borrow();
+        //            m_AudioPlayer.transform.SetParent(transform, false);
+        //            m_AudioPlayer.AudioSource.loop = true;
+        //            m_AudioPlayer.Play(m_MovementAudio, float.PositiveInfinity);
+        //        }
+        //    } else {
+        //        if (m_AudioPlayer != null) {
+        //            m_AudioPlayer.AudioSource.loop = false;
+        //            m_AudioPlayer.Release();
+        //            m_AudioPlayer = null;
+        //        }
+        //    }
+        //}
     }
 }

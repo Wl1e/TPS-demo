@@ -146,7 +146,7 @@ namespace TPSDemo
             yield return null;
 
             NetworkObject instance = null;
-            yield return WorldItemManager.CreateItemGO<NetworkObject>(
+            yield return WorldItemManager.Instance.CreateItemGO<NetworkObject>(
                 itemData,
                 Vector3.zero,
                 Quaternion.identity,

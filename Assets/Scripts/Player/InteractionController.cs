@@ -27,6 +27,11 @@ namespace TPSDemo
             m_PlayerController = GetComponent<PlayerController>();
         }
 
+        private void Start()
+        {
+            m_PlayerController.AudioEffectPlayer.AddAudio("Interact", m_PickupAudio);
+        }
+
         private void OnEnable()
         {
             m_OnInteractInput.RegisterListener(OnInteract);
@@ -57,7 +62,7 @@ namespace TPSDemo
         public void OnPickupItem(ItemPickup item)
         {
             OnPickup?.Invoke(item.Id, item.Amount);
-            Director.Instance.RequestAudio(m_PickupAudio).WithPosition(transform.position).Play();
+            m_PlayerController.AudioEffectPlayer.Play("Interact", float.PositiveInfinity, transform.position, Quaternion.identity);
             EventManager.Broadcast(new Event.PickupItemEvent {
                 ActorId = m_PlayerController.Id,
                 ItemId = item.Id,

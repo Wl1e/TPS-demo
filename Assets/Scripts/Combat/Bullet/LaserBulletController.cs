@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System;
 
 namespace TPSDemo
 {
     public class LaserBulletController : BulletController
     {
+        [Header("激光子弹属性")]
         [Tooltip("最远距离")]
         public float MaxDistance = 100f;
         [Tooltip("激光颜色")]
@@ -17,14 +16,10 @@ namespace TPSDemo
         public Transform LaserOrigin;
         public Transform Laser;
 
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             Laser.GetComponent<Renderer>().material.SetColor("_EmissionColor", LaserColor);
-        }
-
-        public override void OnNetworkSpawn()
-        {
-            base.OnNetworkSpawn();
         }
 
         public override void OnShoot()
@@ -34,12 +29,10 @@ namespace TPSDemo
             }
             var forward = transform.forward;
             var distance = MaxDistance;
-            var end = forward * MaxDistance + transform.position;
             if (
                 Physics.Raycast(transform.position, forward, out m_Info,
                 MaxDistance, HitLayerMask, QueryTriggerInteraction.Ignore)
             ) {
-                end = m_Info.point;
                 distance = m_Info.distance;
                 OnHit(m_Info);
             }

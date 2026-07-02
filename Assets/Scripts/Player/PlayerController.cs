@@ -37,6 +37,7 @@ namespace TPSDemo
         private AnimatorController m_AnimatorController;
         private QuestController m_QuestController;
         private InteractionController m_InteractionController;
+        private AudioAndEffectPlayGlobal m_AudioEffectPlayer;
 
         private CountDownLatch m_CursorBlock = new();
 
@@ -126,6 +127,11 @@ namespace TPSDemo
         /// </summary>
         public InteractionController InteractionController => m_InteractionController;
 
+        /// <summary>
+        /// 音效动画播放rpc
+        /// </summary>
+        public AudioAndEffectPlayGlobal AudioEffectPlayer => m_AudioEffectPlayer;
+
         #endregion Property
 
         public System.Collections.Generic.List<Vector2Int> Money;
@@ -152,6 +158,7 @@ namespace TPSDemo
             m_AnimatorController = GetComponent<AnimatorController>();
             m_QuestController = GetComponent<QuestController>();
             m_InteractionController = GetComponent<InteractionController>();
+            m_AudioEffectPlayer = GetComponent<AudioAndEffectPlayGlobal>();
 
             // Combat
             m_AimController = GetComponentInChildren<AimController>();
@@ -190,6 +197,10 @@ namespace TPSDemo
             if (m_InputHandler) {
                 m_InputHandler.enabled = false;
             }
+            if(TryGetComponent<AudioListener>(out var listener)) {
+                listener.enabled = false;
+            }
+
         }
 
         public override void OnNetworkSpawn()

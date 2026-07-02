@@ -19,28 +19,40 @@ namespace TPSDemo
 
     public abstract class ShootBehaviour : MonoBehaviour, IShootBehaviour
     {
+        /// <summary>
+        /// 所属武器
+        /// </summary>
         private IWeapon m_Weapon;
         public GameObject Owner => m_Weapon.Owner;
         private Transform Muzzle;
 
-        // Bullet
+        [Tooltip("子弹预制体")]
         public BulletController BulletPrefab;
 
+        [Tooltip("弹速")]
         public float BulletSpeed;
+        [Tooltip("子弹碰撞层")]
         public LayerMask HitLayerMask = -1;
+        [Tooltip("伤害")]
         public float Damage;
 
+        /// <summary>
+        /// 子弹碰撞目标时触发
+        /// </summary>
         public event Action<GameObject> OnTargetHit;
 
         public void SetMuzzle(Transform muzzle) => Muzzle = muzzle;
 
-        public void Initialize(IWeapon weapon)
-        {
-            m_Weapon = weapon;
-        }
+        public void Initialize(IWeapon weapon) => m_Weapon = weapon;
 
         public abstract void Shoot(Vector3 dir, ulong clientId);
 
+        /// <summary>
+        /// 创造子弹(Server调用)
+        /// </summary>
+        /// <param name="dir"> 朝向 </param>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         protected BulletController CreateBullet(Vector3 dir, ulong clientId)
         {
             var bullet = Instantiate(BulletPrefab, Muzzle.position, Quaternion.LookRotation(dir));
@@ -61,6 +73,7 @@ namespace TPSDemo
             if (!no.IsSpawned) {
                 no.SpawnWithOwnership(clientId);
             }
+
             return bullet;
         }
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using Unity.Netcode;
 using UnityEngine;
 
 namespace TPSDemo
@@ -65,9 +64,10 @@ namespace TPSDemo
 
         private void Update()
         {
-            if (m_ShowTrajectoryLine) {
+            if (m_ShowTrajectoryLine && m_CurrentGrenadeObj) {
                 UpdateTrajectory(m_CurrentGrenadeObj.transform.position, m_PlayerRuntimeData.CameraRoot.rotation);
             }
+            UpdateGrenadeTrans();
         }
 
         public override bool ValidActive()
@@ -96,30 +96,41 @@ namespace TPSDemo
             }
             m_CurrentGrenadeId = grenades[0].itemId;
 
-            StartCoroutine(WorldItemManager.CreateItemGO(
+            print("m_GrenadeRoot: " + m_GrenadeRoot);
+
+            StartCoroutine(WorldItemManager.Instance.CreateItemGO(
                 ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(m_CurrentGrenadeId),
+                Vector3.zero,
+                Quaternion.identity,
+                m_Owner.transform,
                 obj => {
                     m_CurrentGrenadeObj = obj;
-                    m_CurrentGrenadeObj.transform.SetParent(m_GrenadeRoot);
                     if (m_CurrentGrenadeObj == null) {
                         return;
                     }
-
-                    m_CurrentGrenadeObj.transform.localPosition = m_GrenadeRootOffset;
-                    m_CurrentGrenadeObj.transform.rotation = Quaternion.Euler(m_GrenadeRootRotate);
-
                     CurrentGrenade = m_CurrentGrenadeObj.GetComponent<IGrenade>();
 
-                    // Ignore Collsion
                     CurrentGrenade.Rigidbody.isKinematic = true;
+
+                    UpdateGrenadeTrans();
 
                     CurrentGrenade.OnHold();
 
                     m_TrajectoryLine.CollisionMask = m_CurrentGrenadeObj.layer;
-                }
+                },
+                OwnerClientId
             ));
+        }
 
-            
+        private void UpdateGrenadeTrans()
+        {
+            if(!m_CurrentGrenadeObj) {
+                return;
+            }
+            m_CurrentGrenadeObj.transform.position = m_GrenadeRoot.transform.position + m_GrenadeRootOffset;
+            m_CurrentGrenadeObj.transform.rotation = m_GrenadeRoot.transform.rotation * Quaternion.Euler(m_GrenadeRootRotate);
+            //m_CurrentGrenadeObj.transform.localPosition = ;
+            //m_CurrentGrenadeObj.transform.localRotation = ;
         }
 
         Vector3 GetTrajectoryStartDir(Quaternion dir)
@@ -147,7 +158,7 @@ namespace TPSDemo
         {
             if (m_CurrentGrenadeObj) {
                 CurrentGrenade.OnStore();
-                Destroy(m_CurrentGrenadeObj);
+                m_CurrentGrenadeObj.GetComponent<NetworkObject>().Despawn();
                 CurrentGrenade = null;
                 m_CurrentGrenadeObj = null;
             }
@@ -170,7 +181,7 @@ namespace TPSDemo
                 RaiseAttack(0, true);
                 m_PlayerRuntimeData.AniParameter.Throw = true;
 
-                Invoke("TrueAttack", ThrowDelay);
+                Invoke(methodName: "TrueAttack", ThrowDelay);
             }
         }
 
@@ -184,16 +195,13 @@ namespace TPSDemo
 
             m_CurrentGrenadeObj = null;
             CurrentGrenade = null;
-            //m_TrajectoryLine.Hide();
 
             ComsumeGrenade();
-            if (ValidActive()) {
-                EquipGrenade();
-            } else {
-                SetTrajectoryVisible(false);
-                //m_TrajectoryLine.Hide();
-                Exit();
-            }
+            SetTrajectoryVisible(false);
+            m_PlayerRuntimeData.AniParameter.Throw = false;
+
+            Exit();
+
         }
 
         public override bool ValidAim()

@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 1378439714896903789}
   - component: {fileID: 2275712694503643936}
   - component: {fileID: 8312534977164171955}
+  - component: {fileID: 9101161373555581637}
   m_Layer: 21
   m_Name: LaserBullet
   m_TagString: Untagged
@@ -247,11 +248,21 @@ MonoBehaviour:
   HitLayerMask:
     serializedVersion: 2
     m_Bits: 12585984
-  MaxLifeTime: 3
-  DestroyOnHit: 0
-  HitFlashPrefab: {fileID: 0}
-  HitSfx: {fileID: 8300000, guid: e11a5a019377fbd4c81caa0adcb4c236, type: 3}
+  m_Config: {fileID: 11400000, guid: 756a51193827fc142b2acd0b2cfa2790, type: 2}
   MaxDistance: 100
   LaserColor: {r: 0, g: 5.3403134, b: 3.0760844, a: 1}
   LaserOrigin: {fileID: 7443320598877827934}
   Laser: {fileID: 8042813861973404442}
+--- !u!114 &9101161373555581637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9106354779856956537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dac5056cb17513d479c4f2cb63f80367, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.AudioAndEffectPlayGlobal
+  ShowTopMostFoldoutHeaderGroup: 1

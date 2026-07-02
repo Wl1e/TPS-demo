@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 6779852500747613690}
   - component: {fileID: 4854998107338842126}
   - component: {fileID: 6601797778091609916}
+  - component: {fileID: 6620789254639068849}
   m_Layer: 21
   m_Name: Bullet
   m_TagString: Untagged
@@ -79,7 +80,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2830738309
+  GlobalObjectIdHash: 2557721948
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -157,12 +158,23 @@ MonoBehaviour:
   HitLayerMask:
     serializedVersion: 2
     m_Bits: 12585984
-  MaxLifeTime: 5
-  DestroyOnHit: 1
-  HitFlashPrefab: {fileID: 100002, guid: 99c73c92ac40473459640b165473206f, type: 3}
-  HitSfx: {fileID: 8300000, guid: 75adfe9a619833445a701305b983e548, type: 3}
+  m_Config: {fileID: 11400000, guid: 9cf8dbc9fe8008e4784e3b0583b77ca2, type: 2}
   Root: {fileID: 3775475086701282175}
   Tip: {fileID: 2454428672126804440}
+  DetecionRadius: 0.0019
+--- !u!114 &6620789254639068849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5432221565070328372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dac5056cb17513d479c4f2cb63f80367, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.AudioAndEffectPlayGlobal
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1001 &5329583651862067170
 PrefabInstance:
   m_ObjectHideFlags: 0

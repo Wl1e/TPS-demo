@@ -37,7 +37,7 @@ namespace TPSDemo
         {
             var itemData = m_Inventory.GetItem(evt.InventorySlotId).ItemData;
             m_ItemId = itemData.Id;
-            StartCoroutine(WorldItemManager.CreateItemGO(itemData, obj => {
+            StartCoroutine(WorldItemManager.Instance.CreateItemGO(itemData, obj => {
                 m_Item = obj;
                 m_Item.transform.SetParent(RightHand, false);
                 StartUse(obj.GetComponent<IActiveItem>());

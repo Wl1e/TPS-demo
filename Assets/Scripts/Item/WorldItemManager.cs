@@ -82,13 +82,13 @@ namespace TPSDemo
         }
 
         // 有很多ItemData内的Prefab也是网络同步的，所以
-        static public IEnumerator CreateItemGO(
+        public IEnumerator CreateItemGO(
             ItemData data,
             Vector3 position,
             Quaternion rotation,
             Transform parent,
             System.Action<GameObject> completed,
-            ulong ownerId
+            ulong ownerId = m_InvalidOwnerId
         )
         {
             if (data.IsNetCodePrefab) {
@@ -113,15 +113,15 @@ namespace TPSDemo
             }
         }
 
-        static public IEnumerator CreateItemGO(ItemData data, System.Action<GameObject> completed = null, ulong ownerId = m_InvalidOwnerId)
+        public IEnumerator CreateItemGO(ItemData data, System.Action<GameObject> completed = null, ulong ownerId = m_InvalidOwnerId)
             => CreateItemGO(data, Vector3.zero, Quaternion.identity, null, completed, ownerId);
 
 
 
-        static public IEnumerator CreateItemGO<T>(ItemData data, System.Action<T> completed = null, ulong ownerId = m_InvalidOwnerId) where T : class
+        public IEnumerator CreateItemGO<T>(ItemData data, System.Action<T> completed = null, ulong ownerId = m_InvalidOwnerId) where T : class
             => CreateItemGO<T>(data, Vector3.zero, Quaternion.identity, null, completed, ownerId);
 
-        static public IEnumerator CreateItemGO<T>(
+        public IEnumerator CreateItemGO<T>(
             ItemData data,
             Vector3 pos,
             Quaternion rotation,

@@ -22,11 +22,14 @@ namespace TPSDemo
         protected float m_TimeLastAttack = 0f;
 
         [Tooltip("伤害")]
-        public float Damage;
+        [SerializeField] protected float m_Damage;
 
         [Tooltip("攻击范围")]
         [SerializeField] protected float m_AttackRange = 0f;
+
         public float AttackRange => m_AttackRange;
+
+        public event Action OnAttack;
         public virtual bool CanAttack() => CheckCD();
 
         protected virtual bool CheckCD()
@@ -41,11 +44,13 @@ namespace TPSDemo
         }
         public virtual bool InAttackRange(Transform target) =>
             (transform.position - target.position).sqrMagnitude <= m_AttackRange * m_AttackRange;
+
         public virtual void Attack(Vector3 pos) { }
-        public event Action OnAttack;
+
         protected void WhenAttack()
         {
             m_TimeLastAttack = Time.time;
+            
             OnAttack?.Invoke();
         }
     }

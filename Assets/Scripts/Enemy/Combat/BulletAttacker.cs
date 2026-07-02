@@ -11,7 +11,7 @@ namespace TPSDemo
 
         [Header("子弹相关")]
         [Tooltip("子弹预制体")]
-        public NormalBulletController BulletPrefab;
+        public RifleBulletController BulletPrefab;
         [Tooltip("子弹速度")]
         public float BulletSpeed;
         [Tooltip("子弹碰撞层")]
@@ -21,9 +21,15 @@ namespace TPSDemo
 
         [Header("资源")]
         [Tooltip("攻击音效")]
-        public AudioClip ShootSfx;
+        [SerializeField] private AudioClip m_ShootSfx;
         [Tooltip("枪口闪光")]
-        public GameObject MuzzleFlashPrefab;
+        [SerializeField] private GameObject m_MuzzleFlashPrefab;
+
+        private void Awake()
+        {
+            Owner.AEPlayer.AddAudio("Attack", m_ShootSfx);
+            Owner.AEPlayer.AddEffect("Attack", m_MuzzleFlashPrefab);
+        }
 
         public override void Attack(Vector3 pos)
         {
@@ -31,9 +37,9 @@ namespace TPSDemo
                 return;
             }
 
-            NormalBulletController bullet = Instantiate(BulletPrefab, Muzzle.position, Quaternion.LookRotation(Vector3.Normalize(pos - Muzzle.position)));
+            RifleBulletController bullet = Instantiate(BulletPrefab, Muzzle.position, Quaternion.LookRotation(Vector3.Normalize(pos - Muzzle.position)));
             bullet.Owner = Owner.gameObject;
-            bullet.Damage = Damage;
+            bullet.Damage = m_Damage;
             bullet.Speed = BulletSpeed;
             bullet.HitLayerMask = HitLayerMask;
 
@@ -44,21 +50,21 @@ namespace TPSDemo
 
             bullet.OnShoot();
             WhenAttack();
-            HandleShootClientRpc();
+            Owner.AEPlayer.Play("Attack", 0.3f, transform.position, Quaternion.LookRotation(transform.forward));
+            //HandleShootClientRpc();
         }
 
-        [ClientRpc]
-        public void HandleShootClientRpc()
-        {
-            Director.Instance.RequestEffect(MuzzleFlashPrefab)
-                .WithPosition(transform.position)
-                .LookAt(transform.forward)
-                .WithDuration(0.3f)
-                .Create();
-            
-            Director.Instance.RequestAudio(ShootSfx)
-                .WithPosition(transform.position)
-                .Play();
-        }
+        //[ClientRpc]
+        //public void HandleShootClientRpc()
+        //{
+        //    Director.Instance.RequestEffect(m_MuzzleFlashPrefab)
+        //        .WithPosition(transform.position)
+        //        .LookAt(transform.forward)
+        //        .WithDuration(0.3f)
+        //        .Create();
+        //    Director.Instance.RequestAudio(m_ShootSfx)
+        //        .WithPosition(transform.position)
+        //        .Play();
+        //}
     }
 }

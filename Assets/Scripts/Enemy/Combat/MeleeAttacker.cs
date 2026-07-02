@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace TPSDemo
@@ -13,12 +14,17 @@ namespace TPSDemo
         [Tooltip("攻击盒")]
         [SerializeField] private Hitbox m_Hitbox;
 
+        [Header("资源")]
+        [Tooltip("攻击音效")]
+        [SerializeField] private AudioClip m_AttackSfx;
+
         private Coroutine m_Coroutine;
 
         protected void Awake()
         {
             m_Hitbox.OnCollision += OnCollisionPlayerHurtbox;
         }
+
         public override void Attack(Vector3 pos)
         {
             if (!IsServer) {
@@ -34,6 +40,7 @@ namespace TPSDemo
             }
 
             WhenAttack();
+            HandleShootClientRpc();
             m_Coroutine = StartCoroutine(CloseHitboxCoroutine());
         }
 
@@ -45,7 +52,15 @@ namespace TPSDemo
 
         private void OnCollisionPlayerHurtbox(Damageable damageable)
         {
-            damageable.InflictDamage(transform.parent.gameObject, Damage);
+            damageable.InflictDamage(transform.parent.gameObject, m_Damage);
+        }
+
+        [ClientRpc]
+        public void HandleShootClientRpc()
+        {
+            Director.Instance.RequestAudio(m_AttackSfx)
+                .WithPosition(transform.position)
+                .Play();
         }
     }
 }

@@ -191,7 +191,7 @@ MonoBehaviour:
     m_Bits: 4205568
   Damage: 10
   M_BulletOneShoot: 8
-  m_SpreadScale: 0.8
+  m_SpreadScale: 0.05
 --- !u!114 &2210149559537593544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -231,9 +231,9 @@ MonoBehaviour:
   m_BackOffset: {x: 0, y: 0, z: 0}
   m_WeaponId: 402
   m_Crosshair:
-    Sprite: {fileID: 0}
-    Color: {r: 0, g: 0, b: 0, a: 0}
-    Scale: 0
+    Sprite: {fileID: 21300000, guid: c894ef28e9e98774e939a3a7d1a1aa40, type: 3}
+    Color: {r: 0.31132078, g: 0.31132078, b: 0.31132078, a: 1}
+    Scale: 0.1
   MuzzleFlashPrefab: {fileID: 100006, guid: 7e9c50938e32351438a7df9ccad2f2a5, type: 3}
   MuzzleFlashTime: 0.15
   ShootSfx: {fileID: 8300000, guid: 6dd7024f00606b44eb5884197a66a893, type: 3}

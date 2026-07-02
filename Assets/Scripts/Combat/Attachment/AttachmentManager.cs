@@ -177,7 +177,7 @@ namespace TPSDemo
         {
             var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(attachmentId);
             StartCoroutine(
-                WorldItemManager.CreateItemGO<IAttachment>(
+                WorldItemManager.Instance.CreateItemGO<IAttachment>(
                     itemData,
                     attachment => {
                         m_Attachments[slot] = attachment;

@@ -7,7 +7,7 @@ namespace TPSDemo
         [Tooltip("每发子弹数")]
         [SerializeField] private int M_BulletOneShoot = 8;
         [Tooltip("扩散尺寸，以标准圆为1")]
-        [SerializeField] private float m_SpreadScale = 0.8f;
+        [SerializeField] private float m_SpreadScale = 0.1f;
 
         public override void Shoot(Vector3 dir, ulong clientId)
         {
@@ -24,7 +24,7 @@ namespace TPSDemo
 
                 //var rotation = Quaternion.AngleAxis(angle, dir);
                 //var tiltRotation = Quaternion.AngleAxis(radius, right);
-                var bullet = CreateBullet(dir + offset, clientId);
+                var bullet = CreateBullet(dir.normalized + offset, clientId);
                 //bullet.transform.Rotate(right, radius);
                 //bullet.transform.Rotate(dir, angle);
                 bullet.OnShoot();

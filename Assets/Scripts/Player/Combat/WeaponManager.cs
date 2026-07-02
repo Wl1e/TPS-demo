@@ -130,6 +130,7 @@ namespace TPSDemo
                 if (m_ReloadCoroutine != null) {
                     StopCoroutine(m_ReloadCoroutine);
                     m_ReloadCoroutine = null;
+                    m_Reloading.Value = false;
                 }
             }
         }
@@ -170,7 +171,6 @@ namespace TPSDemo
         [ServerRpc]
         private void TrySwitchFirearmServerRpc(int idx)
         {
-            print($"CurIdx: {CurrentFirearmIndex}, NewIdx: {idx}");
             // 按下当前武器对应数字键收回武器
             if (CurrentFirearmIndex == idx) {
                 m_CurrentFirearmIndex.Value = -1;
@@ -201,11 +201,9 @@ namespace TPSDemo
         [ServerRpc]
         private void TryReloadServerRpc()
         {
-            print("TryReloadServerRpc");
             if (!ValidReload()) {
                 return;
             }
-            print("true reload");
             int amount = m_CurrentFirearm.CurrentAmmo;
             int ammoId = m_CurrentFirearm.AmmoId;
             m_CurrentFirearm.StartReload();
@@ -267,8 +265,8 @@ namespace TPSDemo
             m_Reloading.Value = true;
             yield return new WaitForSeconds(time);
             m_CurrentFirearm.EndReload(GetLoadAmmo(m_CurrentFirearm));
-            m_Reloading.Value = false;
 
+            m_Reloading.Value = false;
             m_ReloadCoroutine = null;
             //EndReloadClientRpc();
         }
@@ -287,7 +285,6 @@ namespace TPSDemo
                     WeaponIdx = CurrentFirearmIndex
                 });
             }
-            print("Set Reload " + newValue);
             m_RuntimeData.AniParameter.Reload = newValue;
         }
 
@@ -306,6 +303,7 @@ namespace TPSDemo
                 if (m_ReloadCoroutine != null) {
                     StopCoroutine(m_ReloadCoroutine);
                     m_ReloadCoroutine = null;
+                    m_Reloading.Value = false;
                 }
             }
 

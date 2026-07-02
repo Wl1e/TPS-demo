@@ -9,18 +9,23 @@ namespace TPSDemo
 
     public class EnemyController : NetworkBehaviour
     {
-        // resource
+        [Header("资源")]
         [Tooltip("受伤音效")]
         public AudioClip DamageAudio;
         [Tooltip("死亡音效")]
         public AudioClip DeadAudio;
+        [Tooltip("移动音效")]
+        public AudioClip MovementAudio;
 
         Health m_Health;
         Actor m_Actor;
         NavMeshAgent m_Agent;
         Collider[] m_Colliders;
         HealthBar m_HealthBar;
-        
+        AudioAndEffectPlayGlobal m_AudioAndEffectPlayGlobal;
+
+        public AudioAndEffectPlayGlobal AEPlayer => m_AudioAndEffectPlayGlobal;
+
         [SerializeField] AttackerBase m_Attacker;
 
         [Tooltip("行为树")]
@@ -38,6 +43,7 @@ namespace TPSDemo
             m_Agent = GetComponent<NavMeshAgent>();
             m_HealthBar = GetComponentInChildren<HealthBar>();
             m_AnimatorController = GetComponentInChildren<ManualAnimatorController>();
+            m_AudioAndEffectPlayGlobal = GetComponent<AudioAndEffectPlayGlobal>();
             m_HealthBar.Initialize(m_Health.Ratio);
         }
 
@@ -75,7 +81,7 @@ namespace TPSDemo
         private void OnAttack()
         {
             if (m_AnimatorController) {
-                m_AnimatorController.Play("Attack");
+                m_AnimatorController.Play(ManualAnimatorController.AnimationType.Attack);
             }
         }
 
@@ -87,7 +93,7 @@ namespace TPSDemo
                 }
                 m_HealthBar.UpdateHealthProgress(m_Health.Ratio);
                 if (m_AnimatorController) {
-                    m_AnimatorController.Play("Hit");
+                    m_AnimatorController.Play(ManualAnimatorController.AnimationType.Hit);
                 }
                 Director.Instance.RequestAudio(DamageAudio).WithPosition(transform.position).Play();
             }
