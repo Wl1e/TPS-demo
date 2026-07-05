@@ -16,7 +16,7 @@ namespace TPSDemo
         {
             var health = GetComponent<Health>();
             if (health && OnHealthChanged != null) {
-                health.OnTakeDamaged += (GameObject obj, float value) => OnHealthChanged.Raise(health.Ratio);
+                health.OnTakeDamaged += info => OnHealthChanged.Raise(health.Ratio);
                 health.OnHealed += (float value) => OnHealthChanged.Raise(health.Ratio);
             }
 

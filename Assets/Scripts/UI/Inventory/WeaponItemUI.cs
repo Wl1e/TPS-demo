@@ -42,7 +42,7 @@ namespace TPSDemo.UI
         {
             var sprite = ItemUIUtils.GetAttachmentSprite(WeaponId, attachmentId);
             if (sprite == null) {
-                //print($"attachment{attachmentId} dont have Icon");
+                print($"attachment{attachmentId} dont have Icon");
                 return;
             }
             switch (slot) {

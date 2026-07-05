@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9578fcdb4d1052240bb95bc85b825667, type: 3}
+  m_Name: ProjectileConfig
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.BulletConfig
+  Speed: 2
+  HitLayerMask:
+    serializedVersion: 2
+    m_Bits: 12585984
+  MaxLifeTime: 5
+  DestroyOnHit: 1
+  HitImpactPrefab:
+  - Tag: Default
+    Effect: {fileID: 100006, guid: 93485fd5fc2ccf2439cb3239186f6382, type: 3}
+  HitImpactDuration: 0.2
+  BulletHolePrefab: {fileID: 0}
+  BulletHoleDuration: 2
+  HitSfx: {fileID: 8300000, guid: 986d6b30567e30e428f3f21373fe45ca, type: 3}
+  HitSfxDuration: 1

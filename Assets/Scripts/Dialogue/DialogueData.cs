@@ -39,7 +39,7 @@ public struct DialogueNode
 
 
 
-[CreateAssetMenu(menuName = "CreateDialogue", fileName = "DialogueSystem")]
+[CreateAssetMenu(menuName = "Config/DialogData", fileName = "DialogData")]
 public class DialogueData : ScriptableObject
 {
     public int InitializeIdx = 0;

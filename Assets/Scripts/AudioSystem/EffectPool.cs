@@ -7,23 +7,22 @@ namespace TPSDemo
 	{
         [SerializeField] private int DefaultSize = 8;
         [SerializeField] private int MaxSize = 128;
-        private Transform EffectPoolRoot;
+        private Transform m_EffectPoolRoot;
         private ObjectPool<EffectBuilder> m_Pool;
 
 		public void Initialize()
 		{
-            EffectPoolRoot = new GameObject("EffectPool").transform;
-            GameFlowManager.Instance.SetDDOL(EffectPoolRoot.gameObject);
+            m_EffectPoolRoot = new GameObject("EffectPool").transform;
+            GameFlowManager.Instance.SetDDOL(m_EffectPoolRoot.gameObject);
 
             m_Pool = new ObjectPool<EffectBuilder>(
                 createFunc: () => CreateEffectGO(),
                 actionOnDestroy: effect => Object.Destroy(effect.gameObject),
                 actionOnGet: effect => effect.gameObject.SetActive(true),
                 actionOnRelease: effect => {
-                    effect.transform.SetParent(EffectPoolRoot);
+                    effect.transform.SetParent(m_EffectPoolRoot);
                     effect.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
                     effect.gameObject.SetActive(false);
-                    Debug.Log("effect.gameObject: " + effect.gameObject.activeSelf);
                 },
                 defaultCapacity: DefaultSize,
                 maxSize: MaxSize
@@ -33,11 +32,10 @@ namespace TPSDemo
 		private EffectBuilder CreateEffectGO()
         {
             GameObject effectBuilder = new("Effect", typeof(EffectBuilder));
-            effectBuilder.transform.SetParent(EffectPoolRoot);
+            effectBuilder.transform.SetParent(m_EffectPoolRoot);
             var effect = effectBuilder.GetComponent<EffectBuilder>();
             effect.OnCompleted += effect => {
                 m_Pool.Release(effect);
-                Debug.Log("Release Effect");
             };
             return effect;
         }

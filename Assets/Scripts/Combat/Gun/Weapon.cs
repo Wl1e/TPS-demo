@@ -71,8 +71,17 @@ namespace TPSDemo
         /// </summary>
         IFireMechanism m_FireMechanism;
         Transform m_Target;
+        /// <summary>
+        /// 配件管理
+        /// </summary>
         AttachmentManager m_AttachmentManager;
+
         AttachableBehaviour m_Attachable;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private ManualAnimatorController m_Animator;
 
         [Tooltip("准星")]
         [SerializeField] CrosshairData m_Crosshair;
@@ -81,6 +90,13 @@ namespace TPSDemo
         // Action
         public event Action OnFire;
         public event Action OnAttachmentChanged;
+
+        [Tooltip("抛弹壳")]
+        public Transform ShellEjectPoint;
+        [Tooltip("抛弹力度")]
+        public float ShellEjectForce = 1f;
+        [Tooltip("抛壳特效预制体")]
+        public UnityEngine.AddressableAssets.AssetReference ShellPrefab;
 
         // Resrouce
         [Header("资源")]
@@ -101,6 +117,7 @@ namespace TPSDemo
             m_AttachmentManager = GetComponentInChildren<AttachmentManager>();
             m_Attachable = GetComponent<AttachableBehaviour>();
             m_Behaviour.SetMuzzle(Muzzle);
+            m_Animator = GetComponentInChildren<ManualAnimatorController>();
         }
 
         void Update()
@@ -162,19 +179,8 @@ namespace TPSDemo
                 OnFire?.Invoke();
                 return;
             }
-            PlayAudioAndMuzzleFlash();
-        }
 
-        void PlayAudioAndMuzzleFlash()
-        {
-            // 枪口焰方向朝向-z，所以取反
-            Director.Instance.RequestEffect(MuzzleFlashPrefab)
-                .WithParent(Muzzle)
-                .LookAt(-Muzzle.forward)
-                .WithDuration(MuzzleFlashTime)
-                .Create();
-            
-            Director.Instance.RequestAudio(ShootSfx).AttachTo(transform).Play();
+            PlayerClientEffects();
         }
 
         void TryFire()
@@ -184,8 +190,37 @@ namespace TPSDemo
             }
             FireServerRpc(m_Target.position - Muzzle.position);
 
-            PlayAudioAndMuzzleFlash();
+            PlayerClientEffects();
         }
+
+        // 在自身和各个客户端播放(动画、抛出弹壳、枪焰、枪声)
+        // 为什么不用AudioAndEffectPlayGlobal?
+        // 开火需要Server判断(FireServerRpc)，然后才能通过rpc返回到owner执行开火，那么
+        // 干脆让这个rpc直接让所有client播放效果，免得owner向其他client再发rpc
+        private void PlayerClientEffects()
+        {
+            if (m_Animator) {
+                m_Animator.Play("Fire");
+            }
+            if (ShellPrefab.RuntimeKeyIsValid() && ShellEjectPoint) {
+                StartCoroutine(AssetCache.GetOrLoad(ShellPrefab, ShellEjectPoint.position, ShellEjectPoint.rotation, null, obj => {
+                    if (obj.TryGetComponent<Rigidbody>(out var rb)) {
+                        rb.AddForce(ShellEjectPoint.forward * ShellEjectForce, ForceMode.Impulse);
+                        Destroy(obj, 3f);
+                    }
+                }));
+            }
+
+            // 枪口焰方向朝向-z，所以取反
+            Director.Instance.RequestEffect(MuzzleFlashPrefab)
+                .WithParent(Muzzle)
+                .LookAt(-Muzzle.forward)
+                .WithDuration(MuzzleFlashTime)
+                .Create();
+
+            Director.Instance.RequestAudio(ShootSfx).AttachTo(transform).Play();
+        }
+
         #endregion
 
         #region Ammo

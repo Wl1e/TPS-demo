@@ -3,7 +3,7 @@
 namespace TPSDemo
 {
     // 暂时用不上，后续有更复杂的需求时再考虑扩展
-    [CreateAssetMenu(fileName = "AudioDef", menuName = "Sound/AudioDef")]
+    [CreateAssetMenu(fileName = "AudioDef", menuName = "Other/Sound/AudioDef")]
 	public class AudioDef: ScriptableObject
     {
         // 如果需要顺序播放一组音频，再考虑使用AudioClip数组

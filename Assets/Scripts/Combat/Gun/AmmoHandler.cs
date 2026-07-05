@@ -38,6 +38,9 @@ namespace TPSDemo
             if (IsServer) {
                 m_CurrentAmmo.Value = m_ClipSize;
             }
+            if(IsOwner) {
+                m_CurrentAmmo.OnValueChanged += AmmoChanged;
+            }
         }
 
         public void Initialize(IWeapon weapon)
@@ -74,6 +77,11 @@ namespace TPSDemo
 
         public bool EnoughAmmo(int ammo = 1) {
             return m_CurrentAmmo.Value >= ammo;
+        }
+
+        private void AmmoChanged(int previousValue, int newValue)
+        {
+            EventManager.Broadcast(new Event.AmmoChangedEvent());
         }
     }
 }

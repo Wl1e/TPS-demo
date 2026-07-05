@@ -25,18 +25,19 @@ namespace TPSDemo
         [Tooltip("枪口闪光")]
         [SerializeField] private GameObject m_MuzzleFlashPrefab;
 
-        private void Awake()
+        public override void OnNetworkSpawn()
         {
             Owner.AEPlayer.AddAudio("Attack", m_ShootSfx);
             Owner.AEPlayer.AddEffect("Attack", m_MuzzleFlashPrefab);
         }
 
-        public override void Attack(Vector3 pos)
+        public override void Attack(Transform target)
         {
             if(!IsServer) {
                 return;
             }
 
+            Vector3 pos = target.position;
             RifleBulletController bullet = Instantiate(BulletPrefab, Muzzle.position, Quaternion.LookRotation(Vector3.Normalize(pos - Muzzle.position)));
             bullet.Owner = Owner.gameObject;
             bullet.Damage = m_Damage;

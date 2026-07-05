@@ -3,7 +3,7 @@
 namespace TPSDemo
 {
 
-    [CreateAssetMenu(menuName = "ItemData/ItemData", fileName = "ItemData")]
+    [CreateAssetMenu(menuName = "Config/ItemData/ItemData", fileName = "ItemData")]
     public class ItemData: ScriptableObject
     {
         [Header("基础数据")]

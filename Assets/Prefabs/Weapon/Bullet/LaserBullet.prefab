@@ -242,13 +242,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LaserBulletController
   ShowTopMostFoldoutHeaderGroup: 1
+  m_Config: {fileID: 11400000, guid: a7b8145d6aad9df44ac366907927a1dc, type: 2}
   Owner: {fileID: 0}
   Damage: 40
   Speed: 0
   HitLayerMask:
     serializedVersion: 2
     m_Bits: 12585984
-  m_Config: {fileID: 11400000, guid: 756a51193827fc142b2acd0b2cfa2790, type: 2}
   MaxDistance: 100
   LaserColor: {r: 0, g: 5.3403134, b: 3.0760844, a: 1}
   LaserOrigin: {fileID: 7443320598877827934}

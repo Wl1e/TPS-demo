@@ -19,7 +19,7 @@ namespace TPSDemo
     /// <summary>
     /// 地图配置 ScriptableObject — 定义地图元数据、场景引用和约束条件
     /// </summary>
-    [CreateAssetMenu(menuName = "Map/Map Config", fileName = "MapConfig")]
+    [CreateAssetMenu(menuName = "Config/Map/MapConfig", fileName = "MapConfig")]
     public class MapConfig : ScriptableObject
     {
         [Header("基本信息")]
@@ -39,6 +39,6 @@ namespace TPSDemo
 
         [Header("目标")]
         [Tooltip("完成地图需要的目标配置")]
-        public ObjectiveConfig[] Configs;
+        public ObjectiveConfig[] ObjConfigs;
     }
 }

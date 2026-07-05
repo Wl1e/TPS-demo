@@ -39,7 +39,7 @@ namespace TPSDemo
         )
         {
             if (s_Cache.TryGetValue(r.AssetGUID, out var cached)) {
-                var instance = Object.Instantiate(cached.Prefab);
+                var instance = Object.Instantiate(cached.Prefab, position, rotation, parent);
                 onLoaded?.Invoke(instance);           // 命中 → 同步回调
                 yield break;
             }

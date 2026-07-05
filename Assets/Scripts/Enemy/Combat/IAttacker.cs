@@ -7,13 +7,14 @@ namespace TPSDemo
     public interface IAttacker
     {
         public bool CanAttack();
-        public float AttackRange {  get; }
+
+        public Vector2 AttackRange { get; }
         public bool InAttackRange(Transform target);
-        public void Attack(Vector3 pos);
+        public void Attack(Transform target);
         public event Action OnAttack;
     }
 
-    public class AttackerBase : NetworkBehaviour, IAttacker
+    public abstract class AttackerBase : NetworkBehaviour, IAttacker
     {
         public EnemyController Owner;
 
@@ -25,11 +26,12 @@ namespace TPSDemo
         [SerializeField] protected float m_Damage;
 
         [Tooltip("攻击范围")]
-        [SerializeField] protected float m_AttackRange = 0f;
+        [SerializeField] protected Vector2 m_AttackRange = Vector2.zero;
 
-        public float AttackRange => m_AttackRange;
+        public Vector2 AttackRange => m_AttackRange;
 
         public event Action OnAttack;
+
         public virtual bool CanAttack() => CheckCD();
 
         protected virtual bool CheckCD()
@@ -42,15 +44,18 @@ namespace TPSDemo
             }
             return true;
         }
-        public virtual bool InAttackRange(Transform target) =>
-            (transform.position - target.position).sqrMagnitude <= m_AttackRange * m_AttackRange;
 
-        public virtual void Attack(Vector3 pos) { }
+        public virtual bool InAttackRange(Transform target)
+        {
+            float distSqr = (transform.position - target.position).sqrMagnitude;
+            return distSqr >= m_AttackRange.x * m_AttackRange.x && distSqr <= m_AttackRange.y * m_AttackRange.y;
+        }
+
+        public abstract void Attack(Transform target);
 
         protected void WhenAttack()
         {
             m_TimeLastAttack = Time.time;
-            
             OnAttack?.Invoke();
         }
     }

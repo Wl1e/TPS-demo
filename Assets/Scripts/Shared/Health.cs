@@ -9,25 +9,26 @@ namespace TPSDemo
         public float CurrentHealth => m_HealthValue.Value;
         public float Ratio => m_HealthValue.Ratio();
 
-        public Action<GameObject, float> OnTakeDamaged;
+        public event Action<DamageInfo> OnTakeDamaged;
         public Action<int> OnDied;
         public Action<float> OnHealed;
 
         bool m_IsDied = false;
 
-        public void TakeDamage(GameObject attacker, float damage)
+        public float TakeDamage(DamageInfo info)
         {
             if (m_IsDied) {
-                return;
+                return 0;
             }
-            float trueDamage = -m_HealthValue.Subtract(damage);
+            float trueDamage = -m_HealthValue.Subtract(info.Damage);
             if (trueDamage > 0) {
-                OnTakeDamaged?.Invoke(attacker, damage);
+                OnTakeDamaged?.Invoke(info);
                 if (gameObject.CompareTag("Player")) {
                     EventManager.Broadcast(new Event.HealthChangedEvent { value = trueDamage });
                 }
             }
-            HandleDeath(attacker);
+            HandleDeath(info.Attacker);
+            return trueDamage;
         }
 
         public void Heal(float value)

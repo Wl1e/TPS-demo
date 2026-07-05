@@ -32,12 +32,14 @@ namespace TPSDemo.UI
         private void ResizeSlotCount(int newSlotCount)
         {
             int slotCount = m_Slots.Count;
-            if (newSlotCount > slotCount) {
-                for (int i = slotCount; i < newSlotCount; i++) {
-                    var slot = Instantiate(QuestPrefab, QuestRoot);
-                    m_Slots.Add(slot);
+            for (int i = slotCount; i < newSlotCount; i++) {
+                var slot = Instantiate(QuestPrefab, QuestRoot);
+                m_Slots.Add(slot);
+            }
+            if (newSlotCount < slotCount) {
+                for (int i = newSlotCount; i < slotCount; i++) {
+                    Destroy(m_Slots[newSlotCount].gameObject);
                 }
-            } else if (newSlotCount < slotCount) {
                 m_Slots.RemoveRange(newSlotCount, slotCount - newSlotCount);
             }
         }

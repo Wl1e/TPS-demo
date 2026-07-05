@@ -4,14 +4,12 @@ namespace TPSDemo
 {
     public class RifleBulletController: BulletController
     {
-        [Header("步枪子弹属性")]
-        [Tooltip("子弹根部位置")]
-        public Transform Root;
+        [Header("子弹属性")]
         [Tooltip("子弹尖端位置")]
-        public Transform Tip;
+        [SerializeField] private Transform m_Tip;
 
         [Tooltip("碰撞检测半径")]
-        public float DetecionRadius = 0.0019f;
+        [SerializeField] private float m_DetecionRadius = 0.0019f;
 
         bool m_WillHit = false;
         RaycastHit m_HitInfo;
@@ -45,7 +43,7 @@ namespace TPSDemo
             m_Velocity = Speed * transform.forward;
         }
 
-        void UpdateMovement()
+        private void UpdateMovement()
         {
             if (m_WillHit) {
                 m_Velocity = Vector3.zero;
@@ -60,11 +58,11 @@ namespace TPSDemo
         /// <summary>
         /// 向前提前预测碰撞点
         /// </summary>
-        void CheckHit()
+        private void CheckHit()
         {
             float minDistance = float.PositiveInfinity;
             int count = Physics.SphereCastNonAlloc(
-                    Tip.position, DetecionRadius, transform.forward,
+                    m_Tip.position, m_DetecionRadius, transform.forward,
                     m_Results, Speed * Time.deltaTime,
                     HitLayerMask, QueryTriggerInteraction.Ignore);
             if (count != 0) {

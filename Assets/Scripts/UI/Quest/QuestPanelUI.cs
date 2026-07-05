@@ -84,6 +84,9 @@ namespace TPSDemo.UI
             m_QuestList.Refresh(list);
             if (m_QuestList.SelectedIndex != -1) {
                 UpdateQuestDetail(m_QuestList.SelectedIndex);
+            } else {
+                m_RewardButton.gameObject.SetActive(false);
+                m_CancelButton.gameObject.SetActive(false);
             }
         }
 

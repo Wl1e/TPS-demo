@@ -2,7 +2,7 @@
 
 namespace TPSDemo
 {
-    [CreateAssetMenu(menuName = "ItemData/AttachmentData", fileName = "AttachmentData")]
+    [CreateAssetMenu(menuName = "Config/ItemData/AttachmentData", fileName = "AttachmentData")]
     public class AttachmentItemData: ItemData
     {
         [Header("组件相关")]

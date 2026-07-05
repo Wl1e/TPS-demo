@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TPSDemo
 {
 
-    [CreateAssetMenu(menuName = "ObjectiveConfig/ObjectiveKillEnemiesConfig", fileName = "ObjectiveKillEnemiesConfig")]
+    [CreateAssetMenu(menuName = "Config/ObjectiveConfig/ObjectiveKillEnemiesConfig", fileName = "ObjectiveKillEnemiesConfig")]
     public class ObjectiveKillEnemiesConfig : ObjectiveConfig
     {
         // FIXME: 后续改为ID

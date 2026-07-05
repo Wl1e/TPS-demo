@@ -7,18 +7,19 @@ using static UnityEngine.UI.Image;
 using Action = Unity.Behavior.Action;
 
 [Serializable, GeneratePropertyBag]
-[NodeDescription(name: "Find Visible Closest With Tag", story: "Find [Target] closest and visible to [Agent] with tag: [Tag]", category: "Action", id: "eaac8f6d597438909a24060d1cd199da")]
-public partial class FindVisibleClosestWithTagAction : Action
+[NodeDescription(name: "Find Visible Closest With Tag in Range", story: "Find [m_Target] closest and visible to [Self] with [Tag] In [Range]", category: "Action", id: "eaac8f6d597438909a24060d1cd199da")]
+public partial class FindVisibleClosestWithTagInRangeAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Target;
-    [SerializeReference] public BlackboardVariable<GameObject> Agent;
+    [SerializeReference] public BlackboardVariable<GameObject> Self;
     [SerializeReference] public BlackboardVariable<string> Tag;
-
+    [SerializeReference] public BlackboardVariable<float> Range;
     Collider[] agentCollider;
 
     protected override Status OnStart()
     {
-        if (Agent.Value == null) {
+        var agent = Self.Value;
+        if (agent == null) {
             LogFailure("No agent provided.");
             return Status.Failure;
         }
@@ -27,8 +28,13 @@ public partial class FindVisibleClosestWithTagAction : Action
         //    agentCollider = Agent.Value.GetComponentsInChildren<Collider>();
         //}
 
-        Vector3 agentPosition = Agent.Value.transform.position;
-        var agentEyePos = Agent.Value.GetComponent<TPSDemo.Actor>()?.AimPoint.position ?? Agent.Value.transform.position;
+        Vector3 agentPosition = agent.transform.position;
+        Vector3 agentEyePos;
+        if (agent.TryGetComponent<TPSDemo.Actor>(out var actor)) {
+            agentEyePos = actor.AimPoint.position;
+        } else {
+            agentEyePos = agent.transform.position;
+        }
 
         GameObject[] gameObjects = GameObject.FindGameObjectsWithTag(Tag.Value);
         float closestDistanceSq = Mathf.Infinity;
@@ -36,8 +42,11 @@ public partial class FindVisibleClosestWithTagAction : Action
         foreach (GameObject gameObject in gameObjects) {
             float distanceSq = Vector3.SqrMagnitude(agentPosition - gameObject.transform.position);
             if (distanceSq < closestDistanceSq) {
+                if (!gameObject.TryGetComponent<TPSDemo.Actor>(out var actor1)) {
+                    continue;
+                }
+                Vector3 targetAimPos = actor1.AimPoint.position;
 
-                var targetAimPos = gameObject.GetComponent<TPSDemo.Actor>()?.AimPoint.position ?? gameObject.transform.position;
                 Debug.DrawLine(agentEyePos, targetAimPos, Color.yellow);
                 RaycastHit[] info = Physics.RaycastAll(agentEyePos, Vector3.Normalize(targetAimPos - agentEyePos),
                      Mathf.Sqrt(distanceSq) + 1f, -1, QueryTriggerInteraction.Ignore);
@@ -45,10 +54,10 @@ public partial class FindVisibleClosestWithTagAction : Action
                 bool found = false;
                 if (info.Length > 0) {
                     bool isAgent = true;
-                    agentCollider = Agent.Value.GetComponentsInChildren<Collider>();
+                    agentCollider = agent.GetComponentsInChildren<Collider>();
                     foreach (RaycastHit hit in info) {
-                        Debug.DrawLine(agentEyePos, hit.point, Color.green);       // ���ߵ����е�
-                        Debug.DrawLine(hit.point, hit.point + hit.normal * 0.5f, Color.blue);  // ����
+                        Debug.DrawLine(agentEyePos, hit.point, Color.green);
+                        Debug.DrawLine(hit.point, hit.point + hit.normal * 0.5f, Color.blue);
                         if (hit.collider.gameObject.GetEntityId() == gameObject.GetEntityId()) {
                             found = true;
                             break;

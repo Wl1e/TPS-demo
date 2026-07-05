@@ -44,11 +44,19 @@ namespace TPSDemo.Editor
         public override string Property2Name { get { return "Clip"; } }
     }
 
-    [CustomPropertyDrawer(typeof(BulletConfig.TagEffect))]
+    [CustomPropertyDrawer(typeof(BulletItemData.TagEffect))]
     public class TagEffectDrawer : TwoPropertyDrawer
     {
         public override float NameWidthRatio { get { return 0.3f; } }
         public override string Property1Name { get { return "Tag"; } }
         public override string Property2Name { get { return "Effect"; } }
+    }
+
+    [CustomPropertyDrawer(typeof(SkillArgs))]
+    public class SkillConfigDrawer : TwoPropertyDrawer
+    {
+        public override float NameWidthRatio { get { return 0.3f; } }
+        public override string Property1Name { get { return "Key"; } }
+        public override string Property2Name { get { return "Value"; } }
     }
 }

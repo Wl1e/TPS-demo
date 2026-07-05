@@ -4,8 +4,16 @@ using UnityEngine;
 namespace TPSDemo
 {
 
+    public struct DamageInfo
+    {
+        public GameObject Attacker;
+        public float Damage;
+        public Vector3 Point;
+    }
+
     public class Damageable : MonoBehaviour
     {
+        public GameObject Owner;
         public Health Health;
         public Action<GameObject, float> OnTakeDamaged;
         public void Start()
@@ -15,11 +23,17 @@ namespace TPSDemo
                 Health = GetComponentInParent<Health>();
             }
         }
-        public void InflictDamage(GameObject attacker, float damage)
+        public void InflictDamage(DamageInfo info)
         {
+            float showDamage = info.Damage;
             if (Health) {
-                Health.TakeDamage(attacker, damage);
+                showDamage = Health.TakeDamage(info);
             }
+            Director.Instance.RequestDamageValue(
+                info.Point + (info.Attacker.transform.position - info.Point).normalized * DamageValueUI.DamageValueOffset,
+                showDamage,
+                false
+            );
         }
     }
 }

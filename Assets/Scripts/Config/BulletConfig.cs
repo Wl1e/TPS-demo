@@ -14,11 +14,6 @@ namespace TPSDemo
             public GameObject Effect;
         }
 
-        [Tooltip("飞行速度")]
-        public float Speed;
-        [Tooltip("攻击的层")]
-        public LayerMask HitLayerMask = -1;
-
         [Tooltip("最大存活时间")]
         public float MaxLifeTime = 5f;
         [Tooltip("攻击后直接销毁")]

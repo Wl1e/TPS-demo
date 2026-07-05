@@ -218,6 +218,7 @@ namespace TPSDemo
                     var no = prefab.Prefab.GetComponent<NetworkObject>();
                 }
 
+                print($"Player {Id} Spawn");
             } else {
                 DisableClientComponents();
             }

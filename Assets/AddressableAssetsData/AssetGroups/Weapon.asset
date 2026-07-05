@@ -42,12 +42,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8409e2dcc23d54643b69db518e4d9821
-    m_Address: Assets/Prefabs/Weapon/Bullet.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - NetCodePrefab
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 970e272ced799d34cafe9bf1f7ee7f96
     m_Address: Assets/Prefabs/Weapon/Attachment/AR_Default_Magazine.prefab
     m_ReadOnly: 0

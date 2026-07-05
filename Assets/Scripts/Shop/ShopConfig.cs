@@ -13,7 +13,7 @@ namespace TPSDemo
         public float Discount;
     }
 
-    [CreateAssetMenu(fileName = "ShopConfig", menuName = "Shop/ShopConfig")]
+    [CreateAssetMenu(fileName = "ShopConfig", menuName = "Config/Shop/ShopConfig")]
     public class ShopConfig : ScriptableObject
     {
         public int ShopId;

@@ -160,7 +160,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6468821928995791948}
   - component: {fileID: 4019449383691798856}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Attacker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -198,7 +198,7 @@ MonoBehaviour:
   Owner: {fileID: 8316646840184788457}
   CD: 1
   m_Damage: 10
-  m_AttackRange: 0.5
+  m_AttackRange: {x: 0, y: 0}
   m_Time: 0.1
   m_Hitbox: {fileID: 3727475304114750458}
   m_AttackSfx: {fileID: 8300000, guid: 0d44f0cb2e91f5f4ca09aded9a1bd9ab, type: 3}
@@ -214,7 +214,7 @@ GameObject:
   - component: {fileID: 5209180150733286426}
   - component: {fileID: 7651954901498783763}
   - component: {fileID: 8123987168026282168}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: DebugInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -406,7 +406,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3156072960831982066}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: AimPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -514,7 +514,7 @@ GameObject:
   - component: {fileID: 8535367727855955399}
   - component: {fileID: 2017658479097229741}
   - component: {fileID: 3963321602352355597}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Health
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -652,9 +652,9 @@ GameObject:
   - component: {fileID: 5631330570665624336}
   - component: {fileID: 204845019768894471}
   - component: {fileID: 3727475304114750458}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: Hitbox
-  m_TagString: Untagged
+  m_TagString: Hitbox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -691,7 +691,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.5, y: 0.5, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -750,7 +750,7 @@ GameObject:
   - component: {fileID: 2230275476983141529}
   - component: {fileID: 8172620499991960899}
   - component: {fileID: 1440776899988939015}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Hurtbox
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -784,6 +784,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63ae980434afad345969753c3621104a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.Damageable
+  Owner: {fileID: 7945877638105405033}
   Health: {fileID: 860879368299254159}
 --- !u!65 &1440776899988939015
 BoxCollider:
@@ -877,7 +878,8 @@ GameObject:
   - component: {fileID: 860879368299254159}
   - component: {fileID: 8709390099203272961}
   - component: {fileID: 8316646840184788457}
-  m_Layer: 0
+  - component: {fileID: -1546642216274391276}
+  m_Layer: 13
   m_Name: QuadShell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -917,7 +919,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 355872182
+  GlobalObjectIdHash: 115982580
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1045,6 +1047,7 @@ MonoBehaviour:
   m_BlackboardVariableOverridesList:
   - rid: 2929608078622457856
   - rid: 2929608078622457857
+  - rid: 2929608122677854765
   m_OriginalGraph: {fileID: 1871619638529690935, guid: 06cbf8cf5e3437c4fb56e7c6b678b4ff, type: 2}
   m_IsInitialised: 0
   m_IsStarted: 0
@@ -1068,6 +1071,14 @@ MonoBehaviour:
           m_Value1: 120181264275773066
         Name: DetectionRange
         m_Value: 3
+    - rid: 2929608122677854765
+      type: {class: 'BlackboardVariable`1[[TPSDemo.AttackerBase, Assembly-CSharp]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 18289607330029817914
+          m_Value1: 14422387406989477360
+        Name: Attacker
+        m_Value: {fileID: 4019449383691798856}
 --- !u!114 &8316646840184788457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1081,11 +1092,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
   ShowTopMostFoldoutHeaderGroup: 1
-  DamageAudio: {fileID: 8300000, guid: 0d44f0cb2e91f5f4ca09aded9a1bd9ab, type: 3}
+  DamageAudio: {fileID: 8300000, guid: a7fae22399a6e1d448dc0dd2210f1dac, type: 3}
   DeadAudio: {fileID: 8300000, guid: 65b7d1df144c6944cab9d6686649df0b, type: 3}
   MovementAudio: {fileID: 8300000, guid: 44c5f76f80602024e82d3e5f3af4ee97, type: 3}
+  DiedTime: 0.3
+  EnemyId: 2
   m_Attacker: {fileID: 4019449383691798856}
   m_BehaviorTree: {fileID: 8709390099203272961}
+--- !u!114 &-1546642216274391276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7945877638105405033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dac5056cb17513d479c4f2cb63f80367, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.AudioAndEffectPlayGlobal
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1001 &3713491524174323544
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1094,6 +1120,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 430814634680441305}
     m_Modifications:
+    - target: {fileID: -9037040622772268544, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1134,9 +1164,133 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7843272924983270488, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -7598776357581671000, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -6898823661448883254, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -5838171738128883302, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -5739280889973791954, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -5284989906016119666, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -4745170854963877417, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -4359285075581954094, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -4274947694901106281, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -4198330426047071035, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -3807912023145541043, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -2920822307696078144, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -1252957664509743040, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -1013611186653188199, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -546535673210974230, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: -108333875111565830, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 76566150349443400, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 416477721364035941, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 741431567713149032, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
       propertyPath: m_Name
       value: Enemy_QuadShell
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199385944783395005, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992103300935301919, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 2267102174567918518, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 2668605608433959078, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 3075118662999287467, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 4024875916122872424, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 4461770732188840672, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 5531307907530639306, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 8198306373408087608, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 8295508168848136719, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 8772001632787760289, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1222,15 +1376,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ManualAnimatorController
   m_Animator: {fileID: 6376796248328854799}
   m_Clips:
-  - Type: 0
+  - Type: Idle
     Clip: {fileID: -429512112410174799, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
-  - Type: 1
+  - Type: Walk
     Clip: {fileID: -7264356326966739861, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
-  - Type: 2
+  - Type: Run
     Clip: {fileID: -5181486892397411127, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
-  - Type: 3
+  - Type: Attack
     Clip: {fileID: -3510217540682870009, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
-  - Type: 4
+  - Type: Hit
     Clip: {fileID: 3341008991451901215, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
   m_DefaultBlendDuration: 0.2
-  m_DefaultAnimationType: 0
+  m_DefaultAnimationName: Idle

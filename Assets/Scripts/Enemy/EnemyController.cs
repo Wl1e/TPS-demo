@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Behavior;
 using Unity.Netcode;
 using UnityEngine;
@@ -17,6 +18,10 @@ namespace TPSDemo
         [Tooltip("移动音效")]
         public AudioClip MovementAudio;
 
+        public float DiedTime = 0.3f;
+
+        public int EnemyId = 0;
+
         Health m_Health;
         Actor m_Actor;
         NavMeshAgent m_Agent;
@@ -25,7 +30,9 @@ namespace TPSDemo
         AudioAndEffectPlayGlobal m_AudioAndEffectPlayGlobal;
 
         public AudioAndEffectPlayGlobal AEPlayer => m_AudioAndEffectPlayGlobal;
+        public NavMeshAgent Agent => m_Agent;
 
+        [Tooltip("攻击者组件")]
         [SerializeField] AttackerBase m_Attacker;
 
         [Tooltip("行为树")]
@@ -44,7 +51,6 @@ namespace TPSDemo
             m_HealthBar = GetComponentInChildren<HealthBar>();
             m_AnimatorController = GetComponentInChildren<ManualAnimatorController>();
             m_AudioAndEffectPlayGlobal = GetComponent<AudioAndEffectPlayGlobal>();
-            m_HealthBar.Initialize(m_Health.Ratio);
         }
 
         public override void OnNetworkSpawn()
@@ -53,10 +59,6 @@ namespace TPSDemo
             if (IsServer) {
                 if (m_Attacker != null) {
                     m_Attacker.OnAttack += OnAttack;
-                    if (m_BehaviorTree.GetVariable("AttackRange", out BlackboardVariable<float> range)) {
-                        print("SetAttackRange " + m_Attacker.AttackRange);
-                        range.Value = m_Attacker.AttackRange;
-                    }
                 }
                 m_Health.OnTakeDamaged += OnTakeDamage;
                 m_Health.OnDied += OnDied;
@@ -64,6 +66,8 @@ namespace TPSDemo
                 m_Agent.enabled = false;
                 m_BehaviorTree.enabled = false;
             }
+            m_HealthBar.Initialize(m_Health.Ratio);
+            m_AudioAndEffectPlayGlobal.AddAudio("Dead", DeadAudio);
         }
 
         public override void OnNetworkDespawn()
@@ -78,22 +82,31 @@ namespace TPSDemo
             base.OnNetworkDespawn();
         }
 
-        private void OnAttack()
+        private void Update()
         {
-            if (m_AnimatorController) {
-                m_AnimatorController.Play(ManualAnimatorController.AnimationType.Attack);
+            if (m_Agent.velocity.magnitude > 0f) {
+                m_AnimatorController.Play(ManualAnimatorController.AnimationType.Walk.ToString());
+            } else {
+                m_AnimatorController.Play(ManualAnimatorController.AnimationType.Idle.ToString());
             }
         }
 
-        void OnTakeDamage(GameObject attacker, float damage)
+        private void OnAttack()
+        {
+            if (m_AnimatorController) {
+                m_AnimatorController.Play(ManualAnimatorController.AnimationType.Attack.ToString());
+            }
+        }
+
+        void OnTakeDamage(DamageInfo info)
         {
             if (IsServer) {
-                if (m_BehaviorTree.GetVariable("Target", out BlackboardVariable<GameObject> target)) {
-                    target.Value = attacker;
+                if (m_BehaviorTree.GetVariable("m_Target", out BlackboardVariable<GameObject> target)) {
+                    target.Value = info.Attacker;
                 }
                 m_HealthBar.UpdateHealthProgress(m_Health.Ratio);
                 if (m_AnimatorController) {
-                    m_AnimatorController.Play(ManualAnimatorController.AnimationType.Hit);
+                    m_AnimatorController.Play(ManualAnimatorController.AnimationType.Hit.ToString());
                 }
                 Director.Instance.RequestAudio(DamageAudio).WithPosition(transform.position).Play();
             }
@@ -101,15 +114,26 @@ namespace TPSDemo
 
         void OnDied(int attackerId)
         {
-            if (IsServer) {
-                Director.Instance.RequestAudio(DeadAudio).WithPosition(transform.position).Play();
-                EventManager.Broadcast(
-                    new Event.ActorDiedEvent {
-                        ActorId = m_Actor.Id,
-                        AttackerId = attackerId
-                    }
-                );
-                Destroy(gameObject);
+            if (!IsServer) {
+                return;
+            }
+            print($"{gameObject.name} IsDied");
+            m_AudioAndEffectPlayGlobal.Play("Dead", float.NegativeInfinity, transform.position, Quaternion.identity);
+            m_AnimatorController.Play(ManualAnimatorController.AnimationType.Died.ToString());
+            EventManager.Broadcast(
+                new Event.ActorDiedEvent {
+                    ActorId = m_Actor.Id,
+                    AttackerId = attackerId
+                }
+            );
+            StartCoroutine(DiedCoroutine());
+        }
+
+        IEnumerator DiedCoroutine()
+        {
+            yield return new WaitForSeconds(DiedTime);
+            if (TryGetComponent<NetworkObject>(out var no)) {
+                no.Despawn();
             }
         }
     }

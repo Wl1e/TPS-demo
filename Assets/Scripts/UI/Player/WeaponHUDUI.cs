@@ -20,20 +20,20 @@ using Event;
 
         void OnEnable()
         {
-            EventManager.AddListener<WeaponStartReloadEvent>(HandleStartReload);
-            EventManager.AddListener<WeaponEndReloadEvent>(HandleEndReload);
+            EventManager.AddListener<AmmoChangedEvent>(HandleAmmoChanged);
             EventManager.AddListener<WeaponChangedEvent>(HandleWeaponChanged);
-            EventManager.AddListener<WeaponFiredEvent>(HandleWeaponFire);
             EventManager.AddListener<InventoryUpdateEvent>(HandleInventoryUpdate);
+            //EventManager.AddListener<WeaponEndReloadEvent>(HandleEndReload);
+            //EventManager.AddListener<WeaponFiredEvent>(HandleWeaponFire);
         }
 
         void OnDisable()
         {
-            EventManager.RemoveListener<WeaponStartReloadEvent>(HandleStartReload);
-            EventManager.RemoveListener<WeaponEndReloadEvent>(HandleEndReload);
+            EventManager.RemoveListener<AmmoChangedEvent>(HandleAmmoChanged);
             EventManager.RemoveListener<WeaponChangedEvent>(HandleWeaponChanged);
-            EventManager.RemoveListener<WeaponFiredEvent>(HandleWeaponFire);
             EventManager.RemoveListener<InventoryUpdateEvent>(HandleInventoryUpdate);
+            //EventManager.RemoveListener<WeaponEndReloadEvent>(HandleEndReload);
+            //EventManager.RemoveListener<WeaponFiredEvent>(HandleWeaponFire);
         }
 
         public void Initialize()
@@ -53,18 +53,18 @@ using Event;
             UpdateAmmoDisplay();
         }
 
-        void HandleStartReload(WeaponStartReloadEvent evt)
+        void HandleAmmoChanged(AmmoChangedEvent evt)
         {
             UpdateAmmoDisplay();
         }
-        void HandleEndReload(WeaponEndReloadEvent evt)
-        {
-            UpdateAmmoDisplay();
-        }
-        void HandleWeaponFire(WeaponFiredEvent evt)
-        {
-            UpdateAmmoDisplay();
-        }
+        //void HandleEndReload(WeaponEndReloadEvent evt)
+        //{
+        //    UpdateAmmoDisplay();
+        //}
+        //void HandleWeaponFire(WeaponFiredEvent evt)
+        //{
+        //    UpdateAmmoDisplay();
+        //}
         void HandleInventoryUpdate(InventoryUpdateEvent evt)
         {
             UpdateAmmoDisplay();

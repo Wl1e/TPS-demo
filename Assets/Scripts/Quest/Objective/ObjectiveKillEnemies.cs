@@ -13,6 +13,8 @@ namespace TPSDemo
         public int Cur;
         public int Count;
 
+        private int m_EnemyId = -1;
+
         public override void Initialize(ObjectiveConfig config)
         {
             if(config is not ObjectiveKillEnemiesConfig trueConfig) {
@@ -22,6 +24,12 @@ namespace TPSDemo
             Count = trueConfig.Count;
             Cur = 0;
             EventManager.AddListener<ActorDiedEvent>(OnObjDied);
+
+            if (!Enemy.TryGetComponent<EnemyController>(out var enemy)) {
+                Debug.LogError("[ObjectiveKillEnemies] Enemy dont have EnemyController Component");
+            } else {
+                m_EnemyId = enemy.EnemyId;
+            }
         }
 
         public override void Destroy()
@@ -31,11 +39,12 @@ namespace TPSDemo
 
         void OnObjDied(ActorDiedEvent evt)
         {
-            if(!Enemy.TryGetComponent<Actor>(out var actor)) {
-                Debug.LogError("[ObjectiveKillEnemies] Enemy dont have Actor Component");
+            var enemy = ActorManager.Instance.GetActor(evt.ActorId).GetComponent<EnemyController>();
+            if (!enemy) {
                 return;
             }
-            if (evt.ActorId != actor.Id || evt.AttackerId != m_ActorId) {
+            Debug.Log($"Want kill {enemy.EnemyId} {m_EnemyId} {evt.AttackerId} {m_ActorId}");
+            if (enemy.EnemyId != m_EnemyId || evt.AttackerId != m_ActorId) {
                 return;
             }
             Cur++;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TPSDemo
 {
-    [CreateAssetMenu(menuName = "Quest/QuestDatabase", fileName = "QuestDatabase")]
+    [CreateAssetMenu(menuName = "Config/Quest/QuestDatabase", fileName = "QuestDatabase")]
     public class QuestDatabase: GameResource
     {
         public List<QuestConfig> QuestConfigs;

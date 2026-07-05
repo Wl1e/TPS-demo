@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,13 +19,14 @@ namespace TPSDemo
             Walk,
             Run,
             Attack,
-            Hit
+            Hit,
+            Died,
         }
 
         [System.Serializable]
         public struct AnimatorEntry
         {
-            public AnimationType Type;
+            public string Type;
             public AnimationClip Clip;
         }
         #endregion
@@ -38,16 +40,28 @@ namespace TPSDemo
 
         [Header("设置")]
         [SerializeField] private float m_DefaultBlendDuration = 0.2f;
-        [SerializeField] private AnimationType m_DefaultAnimationType = AnimationType.Idle;
+        [SerializeField] private string m_DefaultAnimationName = "Idle";
 
-        private AnimationType m_CurrentType = AnimationType.Idle;
+        private Coroutine m_StopCoroutine;
+
+        private string m_CurrentName;
 
         private void Awake()
         {
+            m_CurrentName = m_DefaultAnimationName;
             m_Animator = GetComponent<Animator>();
             m_Override = new AnimatorOverrideController(m_Animator.runtimeAnimatorController);
             m_Animator.runtimeAnimatorController = m_Override;
             InitializeOverride();
+        }
+
+        private AnimationClip GetAnimationClip(string name)
+        {
+            int idx = m_Clips.FindIndex(entry => entry.Type == name);
+            if (idx == -1) {
+                return null;
+            }
+            return m_Clips[idx].Clip;
         }
 
         private bool Valid() => m_Animator != null;
@@ -57,27 +71,38 @@ namespace TPSDemo
         /// </summary>
         /// <param name="type">Animator状态</param>
         /// <param name="blendDuration">过渡时间。-1 则使用默认值</param>
-        public void Play(AnimationType type, float blendDuration = -1f)
+        public void Play(string name, float blendDuration = -1f)
         {
             if(!Valid()) {
                 return;
             }
-            if(type == m_CurrentType) {
+            if(name == m_CurrentName) {
                 return;
             }
 
-            m_CurrentType = type;
+            var clip = GetAnimationClip(name);
+            if (!clip) {
+                return;
+            }
+
+            m_CurrentName = name;
 
             m_Animator.speed = 1f;
             float duration = blendDuration >= 0 ? blendDuration : m_DefaultBlendDuration;
             m_Animator.speed = 1f;
 
-
             if (duration > 0) {
-                int hash = Animator.StringToHash(m_CurrentType.ToString());
+                int hash = Animator.StringToHash(m_CurrentName);
                 m_Animator.CrossFadeInFixedTime(hash, duration, 0);
             } else {
-                m_Animator.Play(m_CurrentType.ToString(), 0, 0f);
+                m_Animator.Play(m_CurrentName, 0, 0f);
+            }
+
+            if(m_StopCoroutine != null) {
+                StopCoroutine(m_StopCoroutine);
+            }
+            if (!clip.isLooping) {
+                StartCoroutine(StopCoroutine(clip.length));
             }
         }
 
@@ -86,8 +111,8 @@ namespace TPSDemo
         /// </summary>
         public void Stop()
         {
-            m_CurrentType = m_DefaultAnimationType;
-            Play(m_DefaultAnimationType, m_DefaultBlendDuration);
+            m_CurrentName = m_DefaultAnimationName;
+            Play(m_DefaultAnimationName, m_DefaultBlendDuration);
         }
 
         /// <summary>
@@ -144,16 +169,23 @@ namespace TPSDemo
             if (!Valid()) {
                 return "";
             }
-            return m_CurrentType.ToString();
+            return m_CurrentName;
         }
 
         private void InitializeOverride()
         {
             foreach(var entry in m_Clips) {
                 if (entry.Clip != null) {
+                    //print("Add override: |" + entry.Type.ToString() + "| -> |" + entry.Clip.name + '|');
                     m_Override[entry.Type.ToString()] = entry.Clip;
                 }
             }
+        }
+
+        private IEnumerator StopCoroutine(float time)
+        {
+            yield return new WaitForSeconds(time);
+            Play(m_DefaultAnimationName);
         }
     }
 }

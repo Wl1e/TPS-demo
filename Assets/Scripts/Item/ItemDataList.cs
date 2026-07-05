@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TPSDemo
 {
-    [CreateAssetMenu(fileName = "ItemDataList", menuName = "ItemData/ItemDataList")]
+    [CreateAssetMenu(fileName = "ItemDataList", menuName = "Config/ItemData/ItemDataList")]
     public class ItemDataList: GameResource
     {
         [SerializeField] List<ItemData> m_DataList;

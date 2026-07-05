@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace TPSDemo
     {
         [Header("子弹基本属性")]
         [Tooltip("配置文件")]
-        [SerializeField] private BulletConfig m_Config;
+        [SerializeField] protected BulletItemData m_Config;
 
         #region 由武器设置
 
@@ -40,20 +41,19 @@ namespace TPSDemo
         /// <summary>
         /// 命中目标时回调
         /// </summary>
-        public event Action<GameObject> OnHitTarget;
+        public Action<GameObject> OnHitTarget;
 
 
         protected virtual void Awake()
         {
             m_AudioAndEffectPlayGlobal = GetComponent<AudioAndEffectPlayGlobal>();
-            HitLayerMask = m_Config.HitLayerMask;
         }
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
             if (IsServer) {
-                Destroy(gameObject, m_Config.MaxLifeTime);
+                StartCoroutine(DespawnCoroutine());
             }
             foreach(var effect in m_Config.HitImpactPrefab) {
                 m_AudioAndEffectPlayGlobal.AddEffect(effect.Tag, effect.Effect);
@@ -71,32 +71,17 @@ namespace TPSDemo
         /// 命中时调用，逻辑包括（计算伤害、销毁子弹、播放音/特效、广播）
         /// </summary>
         /// <param name="hitInfo"> 命中信息 </param>
-        protected void OnHit(RaycastHit hitInfo)
+        protected virtual void OnHit(RaycastHit hitInfo)
         {
             Damageable damageable = hitInfo.collider.GetComponent<Damageable>();
             if (damageable) {
-                damageable.InflictDamage(Owner, Damage);
+                damageable.InflictDamage(new DamageInfo { Attacker = Owner, Damage = Damage, Point = hitInfo.point });
                 OnHitTarget?.Invoke(hitInfo.collider.gameObject);
-                EventManager.Broadcast(new Event.BulletHitTargetEvent { Attacker = Owner, Victim = damageable.gameObject });
-            }
-            if (IsServer && m_Config.DestroyOnHit) {
-                Destroy(gameObject);
+                EventManager.Broadcast(new Event.BulletHitTargetEvent { Attacker = Owner, Victim = damageable.Owner });
             }
 
-            string tag = hitInfo.collider.gameObject.tag;
-            var effectIdx = m_Config.HitImpactPrefab.FindIndex(e => e.Tag == tag);
-            Vector3 up = Vector3.up;
-            if(hitInfo.normal == Vector3.up) {
-                up = Vector3.Cross(hitInfo.normal, (hitInfo.point - Owner.transform.position).normalized);
-            }
-            m_AudioAndEffectPlayGlobal.Play(tag, m_Config.HitImpactDuration, hitInfo.point, Quaternion.LookRotation(hitInfo.normal, up));
-            m_AudioAndEffectPlayGlobal.Play("SFX", m_Config.HitSfxDuration, hitInfo.point, Quaternion.identity);
-            // 打怪身上不要弹孔
-            // 这样不严谨，或许应该判断可以留单孔的位置，
-            // 或许要给物体添加脚本
-            if (!hitInfo.collider.gameObject.CompareTag("Enemy")) {
-                m_AudioAndEffectPlayGlobal.Play("BulletHole", m_Config.BulletHoleDuration, hitInfo.point, Quaternion.LookRotation(hitInfo.normal, up));
-            }
+            PlayAE(hitInfo);
+
             //if (effectIdx >= 0) {
             //    Director.Instance.RequestEffect(.Effect)
             //        .WithPosition(hitInfo.point)
@@ -104,7 +89,38 @@ namespace TPSDemo
             //        .Create();
             //}
             //Director.Instance.RequestAudio(m_Config.HitSfx).WithPosition(hitInfo.point).Play();
+
+            if (IsServer && m_Config.DestroyOnHit) {
+                NetworkObject.Despawn();
+            }
         }
 
+        private IEnumerator DespawnCoroutine()
+        {
+            yield return new WaitForSeconds(m_Config.MaxLifeTime);
+            NetworkObject.Despawn();
+        }
+
+        protected void PlayAE(RaycastHit hitInfo)
+        {
+            string tag = hitInfo.collider.gameObject.tag;
+            var effectIdx = m_Config.HitImpactPrefab.FindIndex(e => e.Tag == tag);
+            if (effectIdx < 0) {
+                tag = "Default";
+            }
+            Vector3 up = Vector3.up;
+            if (hitInfo.normal == Vector3.up) {
+                up = Vector3.Cross(hitInfo.normal, (hitInfo.point - Owner.transform.position).normalized);
+            }
+            Quaternion rotation = Quaternion.LookRotation(hitInfo.normal, up);
+            m_AudioAndEffectPlayGlobal.Play(tag, m_Config.HitImpactDuration, hitInfo.point, rotation);
+            m_AudioAndEffectPlayGlobal.Play("SFX", m_Config.HitSfxDuration, hitInfo.point, Quaternion.identity);
+            // 打怪身上不要弹孔
+            // 这样不严谨，或许应该判断可以留单孔的位置，
+            // 或许要给物体添加脚本
+            if (!hitInfo.collider.gameObject.CompareTag("Enemy")) {
+                m_AudioAndEffectPlayGlobal.Play("BulletHole", m_Config.BulletHoleDuration, hitInfo.point, rotation);
+            }
+        }
     }
 }

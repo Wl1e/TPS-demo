@@ -3,12 +3,14 @@ using UnityEngine.Audio;
 
 namespace TPSDemo
 {
+    using UI;
 	public class Director: Singleton<Director>
 	{
-        [SerializeField] AudioMixer m_Mixer;
-        [SerializeField] Transform EffectPool;
-        AudioSystem m_AudioSystem;
-        EffectPool m_EffectPool;
+        [SerializeField] private AudioMixer m_Mixer;
+        private AudioSystem m_AudioSystem;
+        private EffectPool m_EffectPool;
+        [SerializeField] private DamageValueUI m_DVPrefab;
+        private DamageValuePool m_DamageValuePool;
 
         bool m_SoundMuted = false;
         // Use this for initialization
@@ -20,6 +22,8 @@ namespace TPSDemo
             m_AudioSystem.Initialize();
             m_EffectPool = new EffectPool();
             m_EffectPool.Initialize();
+            m_DamageValuePool = new DamageValuePool();
+            m_DamageValuePool.Initialize(m_DVPrefab);
         }
 
         public AudioBuilder RequestAudio(AudioClip clip)
@@ -39,5 +43,7 @@ namespace TPSDemo
         {
             return m_EffectPool.GetEffectBuilder().SetEffect(effectPrefab);
         }
+
+        public void RequestDamageValue(Vector3 position, float damageValue, bool isCritical) => m_DamageValuePool.ShowDV(position, damageValue, isCritical);
     }
 }

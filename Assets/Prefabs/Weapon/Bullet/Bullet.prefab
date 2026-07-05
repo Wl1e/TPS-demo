@@ -61,7 +61,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.921, z: 0.383}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5655612271520043017}
@@ -80,7 +80,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2557721948
+  GlobalObjectIdHash: 2830738309
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -152,16 +152,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BulletController
   ShowTopMostFoldoutHeaderGroup: 1
+  m_Config: {fileID: 11400000, guid: 7e575d209e1fc3c46875b0343586fbba, type: 2}
   Owner: {fileID: 0}
   Damage: 40
   Speed: 20
   HitLayerMask:
     serializedVersion: 2
     m_Bits: 12585984
-  m_Config: {fileID: 11400000, guid: 9cf8dbc9fe8008e4784e3b0583b77ca2, type: 2}
-  Root: {fileID: 3775475086701282175}
-  Tip: {fileID: 2454428672126804440}
-  DetecionRadius: 0.0019
+  m_Tip: {fileID: 2454428672126804440}
+  m_DetecionRadius: 0.0019
 --- !u!114 &6620789254639068849
 MonoBehaviour:
   m_ObjectHideFlags: 0

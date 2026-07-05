@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable, Unity.Properties.GeneratePropertyBag]
-[Condition(name: "Agent see Target", story: "[Agent] see [Target]", category: "Conditions", id: "313573549b70636fab7b64c52e6904e5")]
+[Condition(name: "Agent see m_Target", story: "[Agent] see [m_Target]", category: "Conditions", id: "313573549b70636fab7b64c52e6904e5")]
 public partial class AgentSeeTargetCondition : Condition
 {
     [SerializeReference] public BlackboardVariable<GameObject> Agent;

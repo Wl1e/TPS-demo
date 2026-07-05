@@ -129,7 +129,7 @@ ModelImporter:
     second: SM_AR_01
   - first:
       74: 7400000
-    second: _Ref_Pose
+    second: Idle
   - first:
       74: 7400002
     second: A_FP_WEP_AR_01_Reload
@@ -144,7 +144,7 @@ ModelImporter:
     second: A_TP_WEP_AR_01_Reload_Empty
   - first:
       74: 7400010
-    second: A_WEP_AR_01_Fire
+    second: Fire
   - first:
       95: 9500000
     second: //RootNode
@@ -239,7 +239,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: _Ref_Pose
+      name: Idle
       takeName: SKEL_AR_01|_reference
       internalID: 0
       firstFrame: 0
@@ -384,7 +384,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: A_WEP_AR_01_Fire
+      name: Fire
       takeName: SKEL_AR_01|A_WEP_AR_01_Fire
       internalID: 0
       firstFrame: 0
@@ -473,7 +473,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.01
+    globalScale: 1
     rootMotionBoneName: root
     hasTranslationDoF: 0
     hasExtraRoot: 0

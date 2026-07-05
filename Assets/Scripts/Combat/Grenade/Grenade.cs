@@ -82,7 +82,7 @@ public class Grenade: NetworkBehaviour, IGrenade
         // 后续添加 IExplosionReceiver 解耦
         foreach (var collider in result) {
             if(collider.TryGetComponent(out Damageable damageable)) {
-                damageable.InflictDamage(attacker.gameObject, Damage);
+                damageable.InflictDamage(new DamageInfo { Attacker = attacker.gameObject, Damage = Damage, Point = collider.ClosestPoint(transform.position) });
             } else if(collider.TryGetComponent(out Rigidbody rigidbody)) {
                 rigidbody.AddExplosionForce(ExplosionForce, transform.position, ExplosionRadius);
             }

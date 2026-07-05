@@ -36,7 +36,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Rig|Attack
+      name: Attack
       takeName: Rig|Attack
       internalID: -3510217540682870009
       firstFrame: 0
@@ -65,7 +65,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Rig|BackFlip
+      name: BackFlip
       takeName: Rig|BackFlip
       internalID: 8685662898029636117
       firstFrame: 0
@@ -94,7 +94,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Rig|Charging
+      name: Charging
       takeName: Rig|Charging
       internalID: 963360092437884433
       firstFrame: 0
@@ -105,7 +105,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -123,7 +123,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Rig|Hit
+      name: Hit
       takeName: Rig|Hit
       internalID: 3341008991451901215
       firstFrame: 0
@@ -152,7 +152,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Rig|Idle
+      name: Idle
       takeName: Rig|Idle
       internalID: -429512112410174799
       firstFrame: 0
@@ -163,7 +163,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -181,7 +181,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Rig|Look
+      name: Look
       takeName: Rig|Look
       internalID: 1067367193620084528
       firstFrame: 0

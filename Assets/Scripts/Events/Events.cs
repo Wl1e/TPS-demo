@@ -90,6 +90,9 @@ namespace TPSDemo.Event
         public UI.WeaponUIData Weapon2;
     }
 
+    public class AmmoChangedEvent: InternalEvent
+    { };
+
     // ui -> logic
     public class SwapWeaponEvent : InternalEvent
     {
@@ -284,6 +287,11 @@ namespace TPSDemo.Event
     {
         public int MapId;
         public MapState State;
+    }
+
+    public class MapObjectiveUpdateEvent : InternalEvent
+    {
+        public ObjectiveProgress[] Objectives;
     }
     #endregion
 }

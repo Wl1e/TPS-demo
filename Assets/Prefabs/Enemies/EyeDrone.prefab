@@ -337,6 +337,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63ae980434afad345969753c3621104a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Damageable
+  Owner: {fileID: 8378100684060686700}
   Health: {fileID: 386272032009258269}
 --- !u!1 &2665565465178769710
 GameObject:
@@ -386,11 +387,11 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Owner: {fileID: 2700602984528541365}
   CD: 1
-  m_Damage: 0
-  m_AttackRange: 1.5
+  m_Damage: 10
+  m_AttackRange: {x: 0, y: 0}
   m_Time: 0.1
   m_Hitbox: {fileID: 9189784954787561295}
-  m_AttackSfx: {fileID: 0}
+  m_AttackSfx: {fileID: 8300000, guid: 0d44f0cb2e91f5f4ca09aded9a1bd9ab, type: 3}
 --- !u!1 &4145649519649269496
 GameObject:
   m_ObjectHideFlags: 0
@@ -674,6 +675,7 @@ GameObject:
   - component: {fileID: 2700602984528541365}
   - component: {fileID: 386272032009258269}
   - component: {fileID: 2758097229283135902}
+  - component: {fileID: 3185763591049186027}
   m_Layer: 13
   m_Name: EyeDrone
   m_TagString: Enemy
@@ -714,7 +716,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1011729811
+  GlobalObjectIdHash: 3647326498
   InScenePlacedSourceGlobalObjectIdHash: 1011729811
   DeferredDespawnTick: 0
   Ownership: 1
@@ -822,9 +824,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
   ShowTopMostFoldoutHeaderGroup: 1
-  DamageAudio: {fileID: 8300000, guid: 0d44f0cb2e91f5f4ca09aded9a1bd9ab, type: 3}
+  DamageAudio: {fileID: 8300000, guid: a7fae22399a6e1d448dc0dd2210f1dac, type: 3}
   DeadAudio: {fileID: 8300000, guid: 0a338d82d61863d4aa095317ca6ce19e, type: 3}
   MovementAudio: {fileID: 8300000, guid: 44c5f76f80602024e82d3e5f3af4ee97, type: 3}
+  DiedTime: 0.3
+  EnemyId: 1
   m_Attacker: {fileID: 1561573761350038458}
   m_BehaviorTree: {fileID: 2758097229283135902}
 --- !u!114 &386272032009258269
@@ -861,6 +865,7 @@ MonoBehaviour:
   - rid: 3983656116822736963
   - rid: 3983656116822736964
   - rid: 3983656116822736965
+  - rid: 2929608122677854764
   m_OriginalGraph: {fileID: 1871619638529690935, guid: cb8a8738a89f3f549b52135e4b201f6e, type: 2}
   m_IsInitialised: 0
   m_IsStarted: 0
@@ -868,6 +873,14 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 2929608122677854764
+      type: {class: 'BlackboardVariable`1[[TPSDemo.AttackerBase, Assembly-CSharp]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 4317583584658891390
+          m_Value1: 767324246683457435
+        Name: Attacker
+        m_Value: {fileID: 1561573761350038458}
     - rid: 3983656116822736963
       type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -892,6 +905,19 @@ MonoBehaviour:
           m_Value1: 4027271314811792464
         Name: AttackRange
         m_Value: 3
+--- !u!114 &3185763591049186027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8378100684060686700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dac5056cb17513d479c4f2cb63f80367, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.AudioAndEffectPlayGlobal
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &8763018216705361920
 GameObject:
   m_ObjectHideFlags: 0
@@ -1394,16 +1420,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   m_Animator: {fileID: 5868615648092499241}
   m_Clips:
-  - Type: 0
+  - Type: Idle
     Clip: {fileID: -429512112410174799, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
-  - Type: 1
-    Clip: {fileID: 0}
-  - Type: 3
+  - Type: Attack
     Clip: {fileID: -3510217540682870009, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
-  - Type: 4
+  - Type: Hit
     Clip: {fileID: 3341008991451901215, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
+  - Type: Charging
+    Clip: {fileID: 963360092437884433, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
   m_DefaultBlendDuration: 0.2
-  m_DefaultAnimationType: 0
+  m_DefaultAnimationName: Idle
 --- !u!4 &7882513969263288767 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}

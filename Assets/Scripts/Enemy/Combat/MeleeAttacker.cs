@@ -20,16 +20,20 @@ namespace TPSDemo
 
         private Coroutine m_Coroutine;
 
-        protected void Awake()
+        public override void OnNetworkSpawn()
         {
-            m_Hitbox.OnCollision += OnCollisionPlayerHurtbox;
+            if (IsOwner) {
+                m_Hitbox.OnCollision += OnCollisionPlayerHurtbox;
+            }
         }
 
-        public override void Attack(Vector3 pos)
+        public override void Attack(Transform target)
         {
             if (!IsServer) {
                 return;
             }
+
+            Vector3 pos = target.position;
 
             transform.LookAt(pos);
             m_Hitbox.SetEnable(true);
@@ -52,7 +56,7 @@ namespace TPSDemo
 
         private void OnCollisionPlayerHurtbox(Damageable damageable)
         {
-            damageable.InflictDamage(transform.parent.gameObject, m_Damage);
+            damageable.InflictDamage(new DamageInfo { Attacker = transform.parent.gameObject, Damage = m_Damage, Point = damageable.transform.position });
         }
 
         [ClientRpc]

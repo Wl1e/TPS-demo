@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TPSDemo
 {
-    [CreateAssetMenu(menuName = "Chest/ChestConfig", fileName = "ChestConfig")]
+    [CreateAssetMenu(menuName = "Config/Chest/ChestConfig", fileName = "ChestConfig")]
     public class ChestConfig : ScriptableObject
     {
         public int ChestId;

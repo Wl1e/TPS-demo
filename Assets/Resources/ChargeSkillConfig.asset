@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 957f6ecb7f823aa4ea808fb404fa6817, type: 3}
+  m_Name: ChargeSkillConfig
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.SkillConfig
+  Id: 0
+  Name: 
+  AttackRange: {x: 0, y: 0}
+  Cooldown: 0
+  WindupTime: 0
+  ActiveTime: 0
+  RecoveryTime: 0
+  Damage: 0
+  AnimationName: 
+  Args:
+  - Key: 

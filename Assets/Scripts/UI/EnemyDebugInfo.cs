@@ -12,7 +12,7 @@ namespace TPSDemo
         void Start()
         {
             health = Enemy.Health;
-            health.OnTakeDamaged += (GameObject obj, float value) => UpdateHealth(health.CurrentHealth);
+            health.OnTakeDamaged += info => UpdateHealth(health.CurrentHealth);
             health.OnHealed += (float value) => UpdateHealth(health.CurrentHealth);
             UpdateHealth(health.CurrentHealth);
         }

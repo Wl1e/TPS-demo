@@ -4,7 +4,7 @@ using UnityEngine;
 namespace TPSDemo
 {
 
-    [CreateAssetMenu(menuName = "Quest/QuestConfig", fileName = "QuestConfig")]
+    [CreateAssetMenu(menuName = "Config/Quest/QuestConfig", fileName = "QuestConfig")]
     public class QuestConfig: ScriptableObject
     {
         public int QuestId;

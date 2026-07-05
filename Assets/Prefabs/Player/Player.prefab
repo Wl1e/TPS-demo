@@ -548,8 +548,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1167400201805697760}
-  - component: {fileID: 2931509813886195485}
   - component: {fileID: 2803701341407067836}
+  - component: {fileID: 399029234182935163}
   m_Layer: 12
   m_Name: Hurtbox
   m_TagString: Player
@@ -572,14 +572,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6091626507694201701}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &2931509813886195485
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4570760398372818546}
-  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!136 &2803701341407067836
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -603,6 +595,20 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &399029234182935163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4570760398372818546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63ae980434afad345969753c3621104a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Damageable
+  Owner: {fileID: 8301697018837147508}
+  Health: {fileID: 2565274116203356825}
 --- !u!1 &5649322521467921942
 GameObject:
   m_ObjectHideFlags: 0
@@ -825,7 +831,6 @@ GameObject:
   - component: {fileID: 895164871690502373}
   - component: {fileID: 2565274116203356825}
   - component: {fileID: 3543983999482970046}
-  - component: {fileID: 6653891175510144316}
   - component: {fileID: 5432961123133243336}
   - component: {fileID: -4901112080724874790}
   - component: {fileID: 6486263949556210085}
@@ -883,7 +888,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 585497169
+  GlobalObjectIdHash: 41440137
   InScenePlacedSourceGlobalObjectIdHash: 585497169
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1117,19 +1122,6 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8301697018837147508}
   m_Enabled: 1
---- !u!114 &6653891175510144316
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8301697018837147508}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63ae980434afad345969753c3621104a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Damageable
-  Health: {fileID: 2565274116203356825}
 --- !u!114 &5432961123133243336
 MonoBehaviour:
   m_ObjectHideFlags: 0

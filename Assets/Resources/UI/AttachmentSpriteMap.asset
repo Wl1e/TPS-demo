@@ -18,13 +18,23 @@ MonoBehaviour:
     Sprites:
     - Attachment: {fileID: 11400000, guid: 3f399f0df03f2ea4db0526385546c8e3, type: 2}
       Sprite: {fileID: 21300000, guid: bbbb29d2cf3c91741bc1a1b953ca5776, type: 3}
+    - Attachment: {fileID: 11400000, guid: 3f399f0df03f2ea4db0526385546c8e3, type: 2}
+      Sprite: {fileID: 21300000, guid: bbbb29d2cf3c91741bc1a1b953ca5776, type: 3}
     - Attachment: {fileID: 11400000, guid: 4f323663f215b0c4dada5a50b0594dee, type: 2}
       Sprite: {fileID: 21300000, guid: 51d720b69910c244aa44a082bddf0155, type: 3}
     - Attachment: {fileID: 11400000, guid: 01a9e061e99d95e41ba5f5976fda888a, type: 2}
       Sprite: {fileID: 21300000, guid: 0e7f7770865ee0344a6742ba4edf8466, type: 3}
     - Attachment: {fileID: 11400000, guid: 9b47d1f63123164418f630eac2d9b18c, type: 2}
-      Sprite: {fileID: 21300000, guid: 9cac75e41b9310444ae0df2025422ef7, type: 3}
+      Sprite: {fileID: 21300000, guid: 510504b45f4b35b42838f90765041163, type: 3}
     - Attachment: {fileID: 11400000, guid: af18d3fb2f68635499fc14dc1952f304, type: 2}
       Sprite: {fileID: 21300000, guid: 405f111e0741d34479323db52502ee80, type: 3}
     - Attachment: {fileID: 11400000, guid: b6081799fccd21041964a6ff39b1aef4, type: 2}
       Sprite: {fileID: 21300000, guid: 92cdb883338b1c24c983e17964d2f5a4, type: 3}
+  - Weapon: {fileID: 11400000, guid: 453fd4cabd6c3b549962d86d544bf86d, type: 2}
+    Sprites:
+    - Attachment: {fileID: 11400000, guid: 15f717a4f0aab6646859d5ea1c8e452c, type: 2}
+      Sprite: {fileID: 21300000, guid: ebcb5612c77ab6f40b7f817a416b7040, type: 3}
+  - Weapon: {fileID: 11400000, guid: 7c197a89b973b5545b7bccaf908444c9, type: 2}
+    Sprites:
+    - Attachment: {fileID: 11400000, guid: 15f717a4f0aab6646859d5ea1c8e452c, type: 2}
+      Sprite: {fileID: 21300000, guid: 29df390af176ead47a2605c5629ba7b4, type: 3}

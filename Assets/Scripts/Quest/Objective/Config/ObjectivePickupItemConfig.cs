@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TPSDemo
 {
 
-    [CreateAssetMenu(menuName = "ObjectiveConfig/ObjectivePickupItemConfig", fileName = "ObjectivePickupItemConfig")]
+    [CreateAssetMenu(menuName = "Config/ObjectiveConfig/ObjectivePickupItemConfig", fileName = "ObjectivePickupItemConfig")]
     public class ObjectivePickupItemConfig : ObjectiveConfig
     {
         // FIXME: 后续改为ID

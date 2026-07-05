@@ -35,7 +35,7 @@ namespace TPSDemo
 
         public void OnPickupItem(PickupItemEvent evt)
         {
-            Debug.Log($"Pickup Item{evt.ItemId}, Target is {TargetId}");
+            Debug.Log($"Pickup Item{evt.ItemId}, m_Target is {TargetId}");
             if (TargetId != evt.ItemId || m_ActorId != evt.ActorId) {
                 return;
             }

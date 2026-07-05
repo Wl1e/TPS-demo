@@ -4,7 +4,7 @@ using UnityEngine;
 namespace TPSDemo
 {
 
-    [CreateAssetMenu(fileName = "ShopList", menuName = "Shop/ShopList")]
+    [CreateAssetMenu(fileName = "ShopList", menuName = "Config/Shop/ShopList")]
     public class ShopList: GameResource
     {
         public List<ShopConfig> Configs;

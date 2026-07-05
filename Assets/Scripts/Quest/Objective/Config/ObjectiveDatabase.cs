@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace TPSDemo
 {
-    [CreateAssetMenu(fileName = "ObjectiveDatabase", menuName = "ObjectiveConfig/ObjectiveDatabase")]
+    [CreateAssetMenu(fileName = "ObjectiveDatabase", menuName = "Config/ObjectiveConfig/ObjectiveDatabase")]
 	public class ObjectiveDatabase: GameResource
 	{
         public List<ObjectiveConfig> Configs;
