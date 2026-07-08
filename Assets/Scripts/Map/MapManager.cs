@@ -115,11 +115,18 @@ namespace TPSDemo
             if (e.SceneEventType == SceneEventType.UnloadComplete) {
                 //NetworkManager.SceneManager.LoadScene(SceneName, LoadSceneMode.Single);
             } else if (e.SceneEventType == SceneEventType.LoadComplete) {
+                var map = FindAnyObjectByType<Map>();
                 m_CurrentScene = e.Scene;
                 if (IsServer) {
                     InitializeMap();
+                    foreach(var actor in ActorManager.Instance.Actors.Values) {
+                        if(actor.TryGetComponent<PlayerController>(out var player)) {
+                            player.CharacterController.enabled = false;
+                            player.Movement.Teleport(map.EntryPoint.position, map.EntryPoint.rotation, Vector3.one);
+                            player.CharacterController.enabled = true;
+                        }
+                    }
                 } else if(IsOwner) {
-                    var map = FindAnyObjectByType<Map>();
                     EventManager.Broadcast(new Event.MessageLogEvent { Message = $"进入场景{map.Config.MapName}" });
                 }
                 //EventManager.Broadcast(new Event.MessageLogEvent { Message = $"进入: {config.MapName}" });

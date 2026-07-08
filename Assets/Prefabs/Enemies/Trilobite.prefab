@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Damageable
   Owner: {fileID: 2468997701101469573}
-  Health: {fileID: 0}
+  Health: {fileID: 8026769959742083628}
 --- !u!65 &9099058080421148781
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -141,7 +141,7 @@ Transform:
   m_GameObject: {fileID: 702548082429412597}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.06667, z: 0.75}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -201,8 +201,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 2, z: 1}
-  m_Center: {x: 0.5, y: 0, z: 0}
+  m_Size: {x: 2, y: 2.5, z: 2}
+  m_Center: {x: 0, y: 0, z: 0.5}
 --- !u!114 &44991996528250122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -459,9 +459,10 @@ GameObject:
   - component: {fileID: 9209652693041011493}
   - component: {fileID: 8026769959742083628}
   - component: {fileID: 3885528527569644279}
-  - component: {fileID: 5459586139137607308}
+  - component: {fileID: 2461418467057132247}
   - component: {fileID: 1087028485556542818}
   - component: {fileID: 2250684955211217543}
+  - component: {fileID: 5564267016493556409}
   m_Layer: 0
   m_Name: Trilobite
   m_TagString: Untagged
@@ -478,7 +479,7 @@ Transform:
   m_GameObject: {fileID: 2468997701101469573}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.5, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -548,9 +549,9 @@ MonoBehaviour:
   SyncRotAngleX: 1
   SyncRotAngleY: 1
   SyncRotAngleZ: 1
-  SyncScaleX: 1
-  SyncScaleY: 1
-  SyncScaleZ: 1
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
   PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
@@ -559,7 +560,7 @@ MonoBehaviour:
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
   SwitchTransformSpaceWhenParented: 0
-  Interpolate: 1
+  Interpolate: 0
   SlerpPosition: 0
 --- !u!114 &9209652693041011493
 MonoBehaviour:
@@ -588,9 +589,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.Health
   m_HealthValue:
-    value: 0
-    lo: 0
-    hi: 0
+    value: 100
+    lo: 10
+    hi: 100
 --- !u!195 &3885528527569644279
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -609,11 +610,11 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 2.5
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &5459586139137607308
+--- !u!114 &2461418467057132247
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -622,17 +623,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 2468997701101469573}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5496c499187aa446bc5001f01b90936, type: 3}
+  m_Script: {fileID: 11500000, guid: 8fa222d3fec7e22499297b970354d966, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.EnemyController
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.BossController
   ShowTopMostFoldoutHeaderGroup: 1
   DamageAudio: {fileID: 8300000, guid: a7fae22399a6e1d448dc0dd2210f1dac, type: 3}
   DeadAudio: {fileID: 8300000, guid: 65b7d1df144c6944cab9d6686649df0b, type: 3}
   MovementAudio: {fileID: 8300000, guid: 44c5f76f80602024e82d3e5f3af4ee97, type: 3}
+  m_SetTargetWhenHit: 0
+  m_Channel: {fileID: 11400000, guid: 47315a606f2d44a428be53b2775918d1, type: 2}
   DiedTime: 0.5
-  EnemyId: 3
+  EnemyId: 101
   m_Attacker: {fileID: 0}
   m_BehaviorTree: {fileID: 1087028485556542818}
+  EnemyHitbox: {fileID: 44991996528250122}
 --- !u!114 &1087028485556542818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -650,10 +654,12 @@ MonoBehaviour:
   m_BlackboardVariableOverridesList:
   - rid: 2929608122677854766
   - rid: 2929608122677854767
+  - rid: 2929608218942374224
+  - rid: 2929608218942374306
   m_OriginalGraph: {fileID: -4834311802447089878, guid: 9d5672fd8224d7940a3ac63936779b97, type: 2}
   m_IsInitialised: 0
   m_IsStarted: 0
-  NetcodeRunOnlyOnOwner: 0
+  NetcodeRunOnlyOnOwner: 1
   references:
     version: 2
     RefIds:
@@ -671,8 +677,24 @@ MonoBehaviour:
         GUID:
           m_Value0: 7503295842178592077
           m_Value1: 16994490642669336822
-        Name: Attacker
-        m_Value: {fileID: 0}
+        Name: MeleeAttacker
+        m_Value: {fileID: 2676283789705336559}
+    - rid: 2929608218942374224
+      type: {class: 'BlackboardVariable`1[[GameObjectEventChannel, Assembly-CSharp]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 15406752168112476179
+          m_Value1: 542201421093899970
+        Name: SetTarget
+        m_Value: {fileID: 11400000, guid: 47315a606f2d44a428be53b2775918d1, type: 2}
+    - rid: 2929608218942374306
+      type: {class: 'BlackboardVariable`1[[TPSDemo.AttackerBase, Assembly-CSharp]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 12821472182763274785
+          m_Value1: 8888896487234052266
+        Name: BulletAttacker
+        m_Value: {fileID: 8838818185625693656}
 --- !u!114 &2250684955211217543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -686,6 +708,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.AudioAndEffectPlayGlobal
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &5564267016493556409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2468997701101469573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cf0e09cab957904794bfe2f13270a85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.SkillController
+  Configs:
+  - Id: 1001
+    Config: {fileID: 11400000, guid: 474a94efa0a524c41ab70ddaaf77de78, type: 2}
+  m_FailRatio: 0
 --- !u!1 &2932811789169893351
 GameObject:
   m_ObjectHideFlags: 0
@@ -711,7 +749,7 @@ Transform:
   m_GameObject: {fileID: 2932811789169893351}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 2.25, z: -1}
+  m_LocalPosition: {x: 0.3, y: 2.11, z: -0.96}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -748,6 +786,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7917238477492602328}
+  - {fileID: 8775833900691866587}
   m_Father: {fileID: 5635242650150632274}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8838818185625693656
@@ -763,18 +802,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.BulletAttacker
   ShowTopMostFoldoutHeaderGroup: 1
-  Owner: {fileID: 5459586139137607308}
-  CD: 0.3
+  Owner: {fileID: 2461418467057132247}
+  CD: 1
   m_Damage: 10
-  m_AttackRange: {x: 0, y: 0}
-  Muzzle: {fileID: 7917238477492602328}
+  m_AttackRange: {x: 2, y: 5}
+  Muzzle:
+  - {fileID: 7917238477492602328}
+  - {fileID: 8775833900691866587}
   BulletPrefab: {fileID: 6601797778091609916, guid: 8409e2dcc23d54643b69db518e4d9821, type: 3}
-  BulletSpeed: 0
+  BulletSpeed: 1
   HitLayerMask:
     serializedVersion: 2
     m_Bits: 12590080
   m_ShootSfx: {fileID: 8300000, guid: 0d44f0cb2e91f5f4ca09aded9a1bd9ab, type: 3}
-  m_MuzzleFlashPrefab: {fileID: 0}
+  m_MuzzleFlashPrefab: {fileID: 100006, guid: f47cb9d88f4bc6c4bb7441e962c2c1a5, type: 3}
+  m_AttackAnimation: {fileID: -3510217540682870009, guid: 92d1ac957ad9ddf48aa62afae14cb282, type: 3}
 --- !u!1 &3219885272489356594
 GameObject:
   m_ObjectHideFlags: 0
@@ -1120,6 +1162,37 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &5968346362448530042
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8775833900691866587}
+  m_Layer: 13
+  m_Name: Muzzle (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8775833900691866587
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5968346362448530042}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: -0.3, y: 2.11, z: -0.96}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5839304363676556258}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &6263106707732225066
 GameObject:
   m_ObjectHideFlags: 0
@@ -1165,13 +1238,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.MeleeAttacker
   ShowTopMostFoldoutHeaderGroup: 1
-  Owner: {fileID: 5459586139137607308}
+  Owner: {fileID: 2461418467057132247}
   CD: 1
   m_Damage: 10
-  m_AttackRange: {x: 0, y: 0}
+  m_AttackRange: {x: 0, y: 2}
   m_Time: 0.1
   m_Hitbox: {fileID: 44991996528250122}
   m_AttackSfx: {fileID: 8300000, guid: 0d44f0cb2e91f5f4ca09aded9a1bd9ab, type: 3}
+  m_AttackAnimation: {fileID: -3510217540682870009, guid: 92d1ac957ad9ddf48aa62afae14cb282, type: 3}
 --- !u!1 &6816743084980033535
 GameObject:
   m_ObjectHideFlags: 0

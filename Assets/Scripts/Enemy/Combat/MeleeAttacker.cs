@@ -17,23 +17,34 @@ namespace TPSDemo
         [Header("资源")]
         [Tooltip("攻击音效")]
         [SerializeField] private AudioClip m_AttackSfx;
+        [SerializeField] AnimationClip m_AttackAnimation;
 
         private Coroutine m_Coroutine;
+
+        private const string m_SFName = "MeleeAttack";
 
         public override void OnNetworkSpawn()
         {
             if (IsOwner) {
                 m_Hitbox.OnCollision += OnCollisionPlayerHurtbox;
+                Owner.AEPlayer.AddAudio(m_SFName, m_AttackSfx);
             }
         }
 
         public override void Attack(Transform target)
         {
-            if (!IsServer) {
+            if (!IsOwner) {
+                return;
+            }
+
+            if(!CanAttack()) {
                 return;
             }
 
             Vector3 pos = target.position;
+            if(target.TryGetComponent<Actor>(out var actor)) {
+                pos = actor.AimPoint.position;
+            }
 
             transform.LookAt(pos);
             m_Hitbox.SetEnable(true);
@@ -44,8 +55,15 @@ namespace TPSDemo
             }
 
             WhenAttack();
-            HandleShootClientRpc();
+            PlayerAE();
             m_Coroutine = StartCoroutine(CloseHitboxCoroutine());
+        }
+
+        protected void PlayerAE()
+        {
+            Owner.AEPlayer.Play(m_SFName, float.PositiveInfinity, transform.position, transform.rotation);
+            Owner.AnimatorController.RegisterAnimationClip("Attack", m_AttackAnimation);
+            Owner.AnimatorController.Play("Attack");
         }
 
         private IEnumerator CloseHitboxCoroutine()
@@ -57,14 +75,6 @@ namespace TPSDemo
         private void OnCollisionPlayerHurtbox(Damageable damageable)
         {
             damageable.InflictDamage(new DamageInfo { Attacker = transform.parent.gameObject, Damage = m_Damage, Point = damageable.transform.position });
-        }
-
-        [ClientRpc]
-        public void HandleShootClientRpc()
-        {
-            Director.Instance.RequestAudio(m_AttackSfx)
-                .WithPosition(transform.position)
-                .Play();
         }
     }
 }

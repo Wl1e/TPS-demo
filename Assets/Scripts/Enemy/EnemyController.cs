@@ -2,7 +2,6 @@ using System.Collections;
 using Unity.Behavior;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace TPSDemo
 {
@@ -18,36 +17,42 @@ namespace TPSDemo
         [Tooltip("移动音效")]
         public AudioClip MovementAudio;
 
+        [Tooltip("被攻击时设置Target")]
+        [SerializeField] private bool m_SetTargetWhenHit = true;
+        [Tooltip("管道")]
+        [SerializeField] protected GameObjectEventChannel m_Channel;
+
         public float DiedTime = 0.3f;
 
         public int EnemyId = 0;
 
-        Health m_Health;
-        Actor m_Actor;
-        NavMeshAgent m_Agent;
-        Collider[] m_Colliders;
-        HealthBar m_HealthBar;
-        AudioAndEffectPlayGlobal m_AudioAndEffectPlayGlobal;
+        // 目前BossController继承使用EnemyController逻辑，所以暂时改成Protected
+        protected Health m_Health;
+        protected Actor m_Actor;
+        protected UnityEngine.AI.NavMeshAgent m_Agent;
+        protected HealthBar m_HealthBar;
+        protected AudioAndEffectPlayGlobal m_AudioAndEffectPlayGlobal;
 
         public AudioAndEffectPlayGlobal AEPlayer => m_AudioAndEffectPlayGlobal;
-        public NavMeshAgent Agent => m_Agent;
+        public UnityEngine.AI.NavMeshAgent Agent => m_Agent;
 
         [Tooltip("攻击者组件")]
-        [SerializeField] AttackerBase m_Attacker;
+        [SerializeField] protected AttackerBase m_Attacker;
 
         [Tooltip("行为树")]
-        [SerializeField] BehaviorGraphAgent m_BehaviorTree;
+        [SerializeField] protected BehaviorGraphAgent m_BehaviorTree;
 
         public Health Health => m_Health;
 
         private ManualAnimatorController m_AnimatorController;
+        public ManualAnimatorController AnimatorController => m_AnimatorController;
+        public Hitbox EnemyHitbox;
 
         private void Awake()
         {
             m_Actor = GetComponent<Actor>();
             m_Health = GetComponent<Health>();
-            m_Colliders = GetComponentsInChildren<Collider>();
-            m_Agent = GetComponent<NavMeshAgent>();
+            m_Agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
             m_HealthBar = GetComponentInChildren<HealthBar>();
             m_AnimatorController = GetComponentInChildren<ManualAnimatorController>();
             m_AudioAndEffectPlayGlobal = GetComponent<AudioAndEffectPlayGlobal>();
@@ -82,33 +87,22 @@ namespace TPSDemo
             base.OnNetworkDespawn();
         }
 
-        private void Update()
-        {
-            if (m_Agent.velocity.magnitude > 0f) {
-                m_AnimatorController.Play(ManualAnimatorController.AnimationType.Walk.ToString());
-            } else {
-                m_AnimatorController.Play(ManualAnimatorController.AnimationType.Idle.ToString());
-            }
-        }
-
         private void OnAttack()
         {
-            if (m_AnimatorController) {
-                m_AnimatorController.Play(ManualAnimatorController.AnimationType.Attack.ToString());
-            }
         }
 
         void OnTakeDamage(DamageInfo info)
         {
             if (IsServer) {
-                if (m_BehaviorTree.GetVariable("m_Target", out BlackboardVariable<GameObject> target)) {
-                    target.Value = info.Attacker;
-                }
                 m_HealthBar.UpdateHealthProgress(m_Health.Ratio);
                 if (m_AnimatorController) {
                     m_AnimatorController.Play(ManualAnimatorController.AnimationType.Hit.ToString());
                 }
                 Director.Instance.RequestAudio(DamageAudio).WithPosition(transform.position).Play();
+
+                if(m_SetTargetWhenHit && m_Channel) {
+                    m_Channel.SendEventMessage(info.Attacker);
+                }
             }
         }
 
@@ -132,9 +126,7 @@ namespace TPSDemo
         IEnumerator DiedCoroutine()
         {
             yield return new WaitForSeconds(DiedTime);
-            if (TryGetComponent<NetworkObject>(out var no)) {
-                no.Despawn();
-            }
+            NetworkObject.Despawn();
         }
     }
 }

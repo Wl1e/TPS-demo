@@ -59,4 +59,12 @@ namespace TPSDemo.Editor
         public override string Property1Name { get { return "Key"; } }
         public override string Property2Name { get { return "Value"; } }
     }
+
+    [CustomPropertyDrawer(typeof(SkillController.SkillEntry))]
+    public class SkillEntryDrawer : TwoPropertyDrawer
+    {
+        public override float NameWidthRatio { get { return 0.3f; } }
+        public override string Property1Name { get { return "Id"; } }
+        public override string Property2Name { get { return "Config"; } }
+    }
 }

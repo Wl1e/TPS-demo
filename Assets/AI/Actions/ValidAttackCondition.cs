@@ -14,12 +14,19 @@ public partial class ValidAttackCondition : Condition
     {
         var attacker = Attacker.Value;
         var target = Target.Value;
-        Debug.Log($"Attacker: {attacker}, Target: {target}");
-        return attacker.InAttackRange(target.transform) && attacker.CanAttack();
+        //Debug.Log($"Attacker: {attacker}, Target: {target}");
+        // attacker.CanAttack()放到Attack方法中自己判断
+        return attacker
+            && target
+            && attacker.InAttackRange(target.transform)
+            && TPSDemo.AI.AITool.AgentSeeTarget(attacker.Owner.gameObject, target, -1);
     }
 
     public override void OnStart()
     {
+        if(Attacker ==  null || Target == null) {
+            Debug.Log("Attacker or target is null");
+        }
     }
 
     public override void OnEnd()

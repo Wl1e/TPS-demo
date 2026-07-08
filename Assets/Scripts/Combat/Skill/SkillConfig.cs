@@ -10,9 +10,8 @@ namespace TPSDemo
     };
 
     [CreateAssetMenu(menuName = "Config/Skill/SkillConfig", fileName = "SkillConfig")]
-    public class SkillConfig : ScriptableObject
+    public class SkillConfig: ScriptableObject
     {
-        public int Id;
         public string Name;
         [Tooltip("攻击范围")]
         public Vector2 AttackRange;

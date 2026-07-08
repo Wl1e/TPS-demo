@@ -2,9 +2,6 @@ using UnityEngine;
 
 namespace TPSDemo
 {
-    
-
-
     public class SkillAttacker: AttackerBase
     {
         [Tooltip("技能列表")]
@@ -12,7 +9,6 @@ namespace TPSDemo
 
         public override void Attack(Transform target)
         {
-            throw new System.NotImplementedException();
         }
 
         public void Attack(Transform target, int skillIdx)

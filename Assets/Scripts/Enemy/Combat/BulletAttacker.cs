@@ -7,7 +7,7 @@ namespace TPSDemo
     public class BulletAttacker : AttackerBase
     {
         [Tooltip("枪口位置")]
-        public Transform Muzzle;
+        public System.Collections.Generic.List<Transform> Muzzle;
 
         [Header("子弹相关")]
         [Tooltip("子弹预制体")]
@@ -24,21 +24,48 @@ namespace TPSDemo
         [SerializeField] private AudioClip m_ShootSfx;
         [Tooltip("枪口闪光")]
         [SerializeField] private GameObject m_MuzzleFlashPrefab;
+        [SerializeField] private AnimationClip m_AttackAnimation;
+
+        private const string m_SFName = "BulletAttack";
 
         public override void OnNetworkSpawn()
         {
-            Owner.AEPlayer.AddAudio("Attack", m_ShootSfx);
-            Owner.AEPlayer.AddEffect("Attack", m_MuzzleFlashPrefab);
+            if (IsOwner) {
+                Owner.AEPlayer.AddAudio(m_SFName, m_ShootSfx);
+                Owner.AEPlayer.AddEffect(m_SFName, m_MuzzleFlashPrefab);
+            }
         }
 
         public override void Attack(Transform target)
         {
-            if(!IsServer) {
+            if(!IsOwner) {
+                return;
+            }
+
+            if(!CanAttack()) {
                 return;
             }
 
             Vector3 pos = target.position;
-            RifleBulletController bullet = Instantiate(BulletPrefab, Muzzle.position, Quaternion.LookRotation(Vector3.Normalize(pos - Muzzle.position)));
+            if (target.TryGetComponent<Actor>(out var actor)) {
+                pos = actor.AimPoint.position;
+            }
+
+            foreach (Transform t in Muzzle) {
+                SpawnBulletInMuzzle(t, pos);
+            }
+
+            WhenAttack();
+            PlayerAE();
+        }
+
+        private void SpawnBulletInMuzzle(Transform muzzle, Vector3 targetPos)
+        {
+            RifleBulletController bullet = Instantiate(
+                BulletPrefab, 
+                muzzle.position,
+                Quaternion.LookRotation(Vector3.Normalize(targetPos - muzzle.position))
+            );
             bullet.Owner = Owner.gameObject;
             bullet.Damage = m_Damage;
             bullet.Speed = BulletSpeed;
@@ -48,12 +75,16 @@ namespace TPSDemo
             if (!no.IsSpawned) {
                 no.SpawnWithOwnership(OwnerClientId);
             }
-
             bullet.OnShoot();
-            WhenAttack();
-            Owner.AEPlayer.Play("Attack", 0.3f, transform.position, Quaternion.LookRotation(transform.forward));
-            //HandleShootClientRpc();
         }
+
+        protected void PlayerAE()
+        {
+            Owner.AEPlayer.Play(m_SFName, 0.3f, transform.position, transform.rotation);
+            Owner.AnimatorController.RegisterAnimationClip("Attack", m_AttackAnimation);
+            Owner.AnimatorController.Play("Attack");
+        }
+
 
         //[ClientRpc]
         //public void HandleShootClientRpc()

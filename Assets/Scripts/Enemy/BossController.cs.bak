@@ -1,0 +1,113 @@
+﻿using System;
+using System.Collections;
+using Unity.Behavior;
+using Unity.Netcode;
+using UnityEngine;
+
+namespace TPSDemo
+{
+	public class BossController: NetworkBehaviour
+	{
+        [Header("资源")]
+        [Tooltip("受伤音效")]
+        public AudioClip DamageAudio;
+        [Tooltip("死亡音效")]
+        public AudioClip DeadAudio;
+        [Tooltip("移动音效")]
+        public AudioClip MovementAudio;
+
+        [Tooltip("玩家进入boss房后设置")]
+        [SerializeField] private GameObjectEventChannel m_Channel;
+
+        [Tooltip("BossId")]
+        [SerializeField] private int EnemyId = 0;
+
+        [Tooltip("死亡时间")]
+        public float DiedTime = 0.3f;
+
+        private Health m_Health;
+        private Actor m_Actor;
+        private UnityEngine.AI.NavMeshAgent m_Agent;
+        private AudioAndEffectPlayGlobal m_AudioAndEffectPlayGlobal;
+        private ManualAnimatorController m_AnimatorController;
+        private BehaviorGraphAgent m_BehaviorTree;
+
+        public AudioAndEffectPlayGlobal AEPlayer => m_AudioAndEffectPlayGlobal;
+        public UnityEngine.AI.NavMeshAgent Agent => m_Agent;
+        public Health Health => m_Health;
+        public ManualAnimatorController AnimatorController => m_AnimatorController;
+
+        private void Awake()
+        {
+            m_Health = GetComponent<Health>();
+            m_Actor = GetComponent<Actor>();
+            m_Agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+            m_AudioAndEffectPlayGlobal = GetComponent<AudioAndEffectPlayGlobal>();
+            m_BehaviorTree = GetComponent<BehaviorGraphAgent>();
+        }
+
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+            if(IsServer) {
+                Health.OnTakeDamaged += OnTakeDamage;
+                m_Health.OnDied += OnDied;
+            } else {
+                m_Health.enabled = false;
+                m_AudioAndEffectPlayGlobal.enabled = false;
+                m_Agent.enabled = false;
+                m_BehaviorTree.enabled = false;
+            }
+            m_AudioAndEffectPlayGlobal.AddAudio("Dead", DeadAudio);
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            if (IsServer) {
+                m_Health.OnTakeDamaged -= OnTakeDamage;
+                m_Health.OnDied -= OnDied;
+            }
+            base.OnNetworkDespawn();
+        }
+
+        private void OnTakeDamage(DamageInfo info)
+        {
+            if (IsServer) {
+                if (m_AnimatorController) {
+                    m_AnimatorController.Play(ManualAnimatorController.AnimationType.Hit.ToString());
+                }
+                Director.Instance.RequestAudio(DamageAudio).WithPosition(transform.position).Play();
+            }
+        }
+
+        private void OnDied(int attackerId)
+        {
+            if (!IsServer) {
+                return;
+            }
+            print($"{gameObject.name} IsDied");
+            m_AudioAndEffectPlayGlobal.Play("Dead", float.NegativeInfinity, transform.position, Quaternion.identity);
+            m_AnimatorController.Play(ManualAnimatorController.AnimationType.Died.ToString());
+            EventManager.Broadcast(
+                new Event.ActorDiedEvent {
+                    ActorId = m_Actor.Id,
+                    AttackerId = attackerId
+                }
+            );
+            StartCoroutine(DiedCoroutine());
+        }
+
+        private IEnumerator DiedCoroutine()
+        {
+            yield return new WaitForSeconds(DiedTime);
+            NetworkObject.Despawn();
+        }
+
+        public void SetStandPos(Vector3 pos)
+        {
+            if(m_BehaviorTree.GetVariable<Vector3>("StandPos", out var variable)) {
+                variable.Value = pos;
+            }
+        }
+    }
+}

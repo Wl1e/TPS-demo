@@ -3,7 +3,6 @@ using System.Linq;
 using Unity.Behavior;
 using Unity.Properties;
 using UnityEngine;
-using static UnityEngine.UI.Image;
 using Action = Unity.Behavior.Action;
 
 [Serializable, GeneratePropertyBag]
@@ -14,6 +13,9 @@ public partial class FindVisibleClosestWithTagInRangeAction : Action
     [SerializeReference] public BlackboardVariable<GameObject> Self;
     [SerializeReference] public BlackboardVariable<string> Tag;
     [SerializeReference] public BlackboardVariable<float> Range;
+
+    Vector3 m_AgentEyePos;
+    Vector3 m_AgentPos;
     Collider[] agentCollider;
 
     protected override Status OnStart()
@@ -24,39 +26,40 @@ public partial class FindVisibleClosestWithTagInRangeAction : Action
             return Status.Failure;
         }
 
-        //if (agentCollider.Length == 0) {
-        //    agentCollider = Agent.Value.GetComponentsInChildren<Collider>();
-        //}
-
-        Vector3 agentPosition = agent.transform.position;
-        Vector3 agentEyePos;
+        agentCollider = agent.GetComponentsInChildren<Collider>();
         if (agent.TryGetComponent<TPSDemo.Actor>(out var actor)) {
-            agentEyePos = actor.AimPoint.position;
+            m_AgentEyePos = actor.AimPoint.position;
         } else {
-            agentEyePos = agent.transform.position;
+            m_AgentEyePos = agent.transform.position;
         }
+        m_AgentPos = agent.transform.position;
 
+        return Status.Running;
+    }
+
+    protected override Status OnUpdate()
+    {
         GameObject[] gameObjects = GameObject.FindGameObjectsWithTag(Tag.Value);
-        float closestDistanceSq = Mathf.Infinity;
+        float closestDistanceSq = Range.Value * Range.Value;
         GameObject closestGameObject = null;
         foreach (GameObject gameObject in gameObjects) {
-            float distanceSq = Vector3.SqrMagnitude(agentPosition - gameObject.transform.position);
+            float distanceSq = Vector3.SqrMagnitude(m_AgentPos - gameObject.transform.position);
             if (distanceSq < closestDistanceSq) {
                 if (!gameObject.TryGetComponent<TPSDemo.Actor>(out var actor1)) {
                     continue;
                 }
                 Vector3 targetAimPos = actor1.AimPoint.position;
 
-                Debug.DrawLine(agentEyePos, targetAimPos, Color.yellow);
-                RaycastHit[] info = Physics.RaycastAll(agentEyePos, Vector3.Normalize(targetAimPos - agentEyePos),
+                Debug.DrawLine(m_AgentEyePos, targetAimPos, Color.yellow);
+                RaycastHit[] info = Physics.RaycastAll(m_AgentEyePos, Vector3.Normalize(targetAimPos - m_AgentEyePos),
                      Mathf.Sqrt(distanceSq) + 1f, -1, QueryTriggerInteraction.Ignore);
 
                 bool found = false;
                 if (info.Length > 0) {
                     bool isAgent = true;
-                    agentCollider = agent.GetComponentsInChildren<Collider>();
+                    
                     foreach (RaycastHit hit in info) {
-                        Debug.DrawLine(agentEyePos, hit.point, Color.green);
+                        Debug.DrawLine(m_AgentEyePos, hit.point, Color.green);
                         Debug.DrawLine(hit.point, hit.point + hit.normal * 0.5f, Color.blue);
                         if (hit.collider.gameObject.GetEntityId() == gameObject.GetEntityId()) {
                             found = true;
@@ -67,7 +70,7 @@ public partial class FindVisibleClosestWithTagInRangeAction : Action
                             break;
                         }
                     }
-                    if(!isAgent) {
+                    if (!isAgent) {
                         continue;
                     }
                 }
@@ -79,12 +82,8 @@ public partial class FindVisibleClosestWithTagInRangeAction : Action
         }
 
         Target.Value = closestGameObject;
-        return Status.Success;
-    }
-
-    protected override Status OnUpdate()
-    {
-        return Status.Success;
+        // 为了和寻路兼容，如果没找到改成返回running，意思是没找到就一直找
+        return closestGameObject != null ? Status.Success : Status.Running;
     }
 
     protected override void OnEnd()

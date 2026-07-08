@@ -198,10 +198,11 @@ MonoBehaviour:
   Owner: {fileID: 8316646840184788457}
   CD: 1
   m_Damage: 10
-  m_AttackRange: {x: 0, y: 0}
+  m_AttackRange: {x: 0, y: 1.5}
   m_Time: 0.1
   m_Hitbox: {fileID: 3727475304114750458}
   m_AttackSfx: {fileID: 8300000, guid: 0d44f0cb2e91f5f4ca09aded9a1bd9ab, type: 3}
+  m_AttackAnimation: {fileID: -3510217540682870009, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
 --- !u!1 &2792324663745568812
 GameObject:
   m_ObjectHideFlags: 0
@@ -895,7 +896,7 @@ Transform:
   m_GameObject: {fileID: 7945877638105405033}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.25686, y: 0.2, z: 4.86601}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -919,7 +920,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 115982580
+  GlobalObjectIdHash: 355872182
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1043,19 +1044,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Behavior::Unity.Behavior.BehaviorGraphAgent
   ShowTopMostFoldoutHeaderGroup: 1
-  m_Graph: {fileID: 1871619638529690935, guid: 06cbf8cf5e3437c4fb56e7c6b678b4ff, type: 2}
+  m_Graph: {fileID: 1871619638529690935, guid: e13d88359a2a36d4db0b4dea79fdfeaf, type: 2}
   m_BlackboardVariableOverridesList:
-  - rid: 2929608078622457856
-  - rid: 2929608078622457857
-  - rid: 2929608122677854765
-  m_OriginalGraph: {fileID: 1871619638529690935, guid: 06cbf8cf5e3437c4fb56e7c6b678b4ff, type: 2}
+  - rid: 2929608215445897476
+  - rid: 2929608215445897477
+  - rid: 2929608215445897478
+  - rid: 2929608215445897479
+  m_OriginalGraph: {fileID: 1871619638529690935, guid: e13d88359a2a36d4db0b4dea79fdfeaf, type: 2}
   m_IsInitialised: 0
   m_IsStarted: 0
-  NetcodeRunOnlyOnOwner: 0
+  NetcodeRunOnlyOnOwner: 1
   references:
     version: 2
     RefIds:
-    - rid: 2929608078622457856
+    - rid: 2929608215445897476
       type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
@@ -1063,22 +1065,30 @@ MonoBehaviour:
           m_Value1: 0
         Name: Self
         m_Value: {fileID: 7945877638105405033}
-    - rid: 2929608078622457857
+    - rid: 2929608215445897477
       type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
-          m_Value0: 5331596818753323169
-          m_Value1: 120181264275773066
-        Name: DetectionRange
-        m_Value: 3
-    - rid: 2929608122677854765
+          m_Value0: 16510425288138906377
+          m_Value1: 13367225270745681655
+        Name: MemoryTime
+        m_Value: 5
+    - rid: 2929608215445897478
       type: {class: 'BlackboardVariable`1[[TPSDemo.AttackerBase, Assembly-CSharp]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
-          m_Value0: 18289607330029817914
-          m_Value1: 14422387406989477360
+          m_Value0: 2885089099157114404
+          m_Value1: 14788750601399238306
         Name: Attacker
         m_Value: {fileID: 4019449383691798856}
+    - rid: 2929608215445897479
+      type: {class: 'BlackboardVariable`1[[GameObjectEventChannel, Assembly-CSharp]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 9652131255506372261
+          m_Value1: 18208328266680428228
+        Name: OnHit
+        m_Value: {fileID: 11400000, guid: 211e34ae5a2d5bf4bae298ef8d12ad68, type: 2}
 --- !u!114 &8316646840184788457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1095,10 +1105,13 @@ MonoBehaviour:
   DamageAudio: {fileID: 8300000, guid: a7fae22399a6e1d448dc0dd2210f1dac, type: 3}
   DeadAudio: {fileID: 8300000, guid: 65b7d1df144c6944cab9d6686649df0b, type: 3}
   MovementAudio: {fileID: 8300000, guid: 44c5f76f80602024e82d3e5f3af4ee97, type: 3}
+  m_SetTargetWhenHit: 1
+  m_Channel: {fileID: 11400000, guid: 211e34ae5a2d5bf4bae298ef8d12ad68, type: 2}
   DiedTime: 0.3
   EnemyId: 2
   m_Attacker: {fileID: 4019449383691798856}
   m_BehaviorTree: {fileID: 8709390099203272961}
+  EnemyHitbox: {fileID: 3727475304114750458}
 --- !u!114 &-1546642216274391276
 MonoBehaviour:
   m_ObjectHideFlags: 0

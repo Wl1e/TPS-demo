@@ -4,17 +4,7 @@ using UnityEngine;
 
 namespace TPSDemo
 {
-    public interface IAttacker
-    {
-        public bool CanAttack();
-
-        public Vector2 AttackRange { get; }
-        public bool InAttackRange(Transform target);
-        public void Attack(Transform target);
-        public event Action OnAttack;
-    }
-
-    public abstract class AttackerBase : NetworkBehaviour, IAttacker
+    public abstract class AttackerBase : NetworkBehaviour
     {
         public EnemyController Owner;
 
@@ -48,6 +38,7 @@ namespace TPSDemo
         public virtual bool InAttackRange(Transform target)
         {
             float distSqr = (transform.position - target.position).sqrMagnitude;
+            //print("distance: " + Mathf.Sqrt(distSqr));
             return distSqr >= m_AttackRange.x * m_AttackRange.x && distSqr <= m_AttackRange.y * m_AttackRange.y;
         }
 

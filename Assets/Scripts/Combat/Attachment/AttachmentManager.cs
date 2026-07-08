@@ -127,7 +127,7 @@ namespace TPSDemo
         [ServerRpc]
         private void AddAttachmentServerRpc(IAttachment.AttachmentSlot slot, int attachmentId)
         {
-            print($"Slot: {slot}, Id: {attachmentId}");
+            print($"Slot: {slot}, SkillIdx: {attachmentId}");
             if (slot == IAttachment.AttachmentSlot.Scope) {
                 m_ScopeNV.Value = attachmentId;
             } else if (slot == IAttachment.AttachmentSlot.Magazine) {

@@ -18,7 +18,7 @@ namespace TPSDemo
         {
             foreach (var data in m_DataList) {
                 if (m_Lookup.ContainsKey(data.Id)) {
-                    Debug.LogError($"Item {m_Lookup[data.Id].Name} and item {data.Name} has same Id");
+                    Debug.LogError($"Item {m_Lookup[data.Id].Name} and item {data.Name} has same SkillIdx");
                     continue;
                 }
                 m_Lookup[data.Id] = data;

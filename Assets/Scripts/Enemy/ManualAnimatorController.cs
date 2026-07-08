@@ -64,6 +64,7 @@ namespace TPSDemo
             return m_Clips[idx].Clip;
         }
 
+
         private bool Valid() => m_Animator != null;
 
         /// <summary>
@@ -172,12 +173,18 @@ namespace TPSDemo
             return m_CurrentName;
         }
 
+        public void RegisterAnimationClip(string name, AnimationClip clip)
+        {
+            if (m_Override[name] != clip) {
+                m_Override[name] = clip;
+            }
+        }
+
         private void InitializeOverride()
         {
             foreach(var entry in m_Clips) {
                 if (entry.Clip != null) {
-                    //print("Add override: |" + entry.Type.ToString() + "| -> |" + entry.Clip.name + '|');
-                    m_Override[entry.Type.ToString()] = entry.Clip;
+                    RegisterAnimationClip(entry.Type, entry.Clip);
                 }
             }
         }

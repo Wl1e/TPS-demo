@@ -388,10 +388,11 @@ MonoBehaviour:
   Owner: {fileID: 2700602984528541365}
   CD: 1
   m_Damage: 10
-  m_AttackRange: {x: 0, y: 0}
+  m_AttackRange: {x: 0, y: 1.5}
   m_Time: 0.1
   m_Hitbox: {fileID: 9189784954787561295}
   m_AttackSfx: {fileID: 8300000, guid: 0d44f0cb2e91f5f4ca09aded9a1bd9ab, type: 3}
+  m_AttackAnimation: {fileID: -3510217540682870009, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
 --- !u!1 &4145649519649269496
 GameObject:
   m_ObjectHideFlags: 0
@@ -691,8 +692,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8378100684060686700}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 1.02, y: 2.38, z: 5.17}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -703,7 +704,7 @@ Transform:
   - {fileID: 5966500627073248380}
   - {fileID: 4631553757167663517}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4531998687336516583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -716,7 +717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3647326498
+  GlobalObjectIdHash: 1011729811
   InScenePlacedSourceGlobalObjectIdHash: 1011729811
   DeferredDespawnTick: 0
   Ownership: 1
@@ -827,10 +828,13 @@ MonoBehaviour:
   DamageAudio: {fileID: 8300000, guid: a7fae22399a6e1d448dc0dd2210f1dac, type: 3}
   DeadAudio: {fileID: 8300000, guid: 0a338d82d61863d4aa095317ca6ce19e, type: 3}
   MovementAudio: {fileID: 8300000, guid: 44c5f76f80602024e82d3e5f3af4ee97, type: 3}
+  m_SetTargetWhenHit: 1
+  m_Channel: {fileID: 11400000, guid: 0522d476750fe4f49a19ea4322da1f77, type: 2}
   DiedTime: 0.3
   EnemyId: 1
   m_Attacker: {fileID: 1561573761350038458}
   m_BehaviorTree: {fileID: 2758097229283135902}
+  EnemyHitbox: {fileID: 9189784954787561295}
 --- !u!114 &386272032009258269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -864,8 +868,8 @@ MonoBehaviour:
   m_BlackboardVariableOverridesList:
   - rid: 3983656116822736963
   - rid: 3983656116822736964
-  - rid: 3983656116822736965
-  - rid: 2929608122677854764
+  - rid: 2929608191035572735
+  - rid: 2929608213555053415
   m_OriginalGraph: {fileID: 1871619638529690935, guid: cb8a8738a89f3f549b52135e4b201f6e, type: 2}
   m_IsInitialised: 0
   m_IsStarted: 0
@@ -873,14 +877,22 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2929608122677854764
+    - rid: 2929608191035572735
       type: {class: 'BlackboardVariable`1[[TPSDemo.AttackerBase, Assembly-CSharp]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
-          m_Value0: 4317583584658891390
-          m_Value1: 767324246683457435
+          m_Value0: 2885089099157114404
+          m_Value1: 14788750601399238306
         Name: Attacker
         m_Value: {fileID: 1561573761350038458}
+    - rid: 2929608213555053415
+      type: {class: 'BlackboardVariable`1[[GameObjectEventChannel, Assembly-CSharp]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 9652131255506372261
+          m_Value1: 18208328266680428228
+        Name: OnHit
+        m_Value: {fileID: 11400000, guid: 0522d476750fe4f49a19ea4322da1f77, type: 2}
     - rid: 3983656116822736963
       type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -896,14 +908,6 @@ MonoBehaviour:
           m_Value0: 5331596818753323169
           m_Value1: 120181264275773066
         Name: DetectionRange
-        m_Value: 3
-    - rid: 3983656116822736965
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 14322947383527461531
-          m_Value1: 4027271314811792464
-        Name: AttackRange
         m_Value: 3
 --- !u!114 &3185763591049186027
 MonoBehaviour:

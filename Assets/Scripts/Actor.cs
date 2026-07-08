@@ -56,7 +56,7 @@ namespace TPSDemo
     //    private int m_Id;
 
     //    public Transform AimPoint;
-    //    public int Id => m_Id;
+    //    public int SkillIdx => m_Id;
 
     //    private void Awake()
     //    {
