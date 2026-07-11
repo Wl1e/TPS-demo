@@ -6,7 +6,7 @@ namespace TPSDemo
     public struct SkillArgs
     {
         public string Key;
-        public Object Value;
+        public string Value;
     };
 
     [CreateAssetMenu(menuName = "Config/Skill/SkillConfig", fileName = "SkillConfig")]

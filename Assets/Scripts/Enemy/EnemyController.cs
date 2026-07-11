@@ -22,6 +22,11 @@ namespace TPSDemo
         [Tooltip("管道")]
         [SerializeField] protected GameObjectEventChannel m_Channel;
 
+        [Tooltip("旋转时间")]
+        [SerializeField] private float m_SmoothRotateTime = 1f;
+        private float m_SmoothVelocity = 0f;
+        private Vector3 m_TargetDir = Vector3.zero;
+
         public float DiedTime = 0.3f;
 
         public int EnemyId = 0;
@@ -56,6 +61,19 @@ namespace TPSDemo
             m_HealthBar = GetComponentInChildren<HealthBar>();
             m_AnimatorController = GetComponentInChildren<ManualAnimatorController>();
             m_AudioAndEffectPlayGlobal = GetComponent<AudioAndEffectPlayGlobal>();
+            m_TargetDir = transform.forward;
+            m_TargetDir.y = 0;
+        }
+
+        private void Update()
+        {
+            if(transform.forward != m_TargetDir) {
+                var forward = transform.forward;
+                var curAngle = Mathf.Atan2(forward.x, forward.z) * Mathf.Rad2Deg;
+                var targetAngle = Mathf.Atan2(m_TargetDir.x, m_TargetDir.z) * Mathf.Rad2Deg;
+                var d = Mathf.SmoothDampAngle(curAngle, targetAngle, ref m_SmoothVelocity, m_SmoothRotateTime);
+                transform.rotation = Quaternion.Euler(0, d, 0);
+            }
         }
 
         public override void OnNetworkSpawn()
@@ -128,5 +146,7 @@ namespace TPSDemo
             yield return new WaitForSeconds(DiedTime);
             NetworkObject.Despawn();
         }
+
+        public void LookTo(Vector3 dir) => m_TargetDir = dir;
     }
 }

@@ -2,11 +2,9 @@
 
 namespace TPSDemo
 {
-    // 好像没办法主动注册Skill...
-	public class ChargeSkill: SkillBase
+    public class ChargeSkill: SkillBase
 	{
-        private const int m_Id = 1001;
-        public static int SkillId => m_Id;
+        private const int SkillId = 1001;
 
         public float ChargeSpeed = 1f;
         private Vector3 m_TargetPos = Vector3.zero;
@@ -16,21 +14,19 @@ namespace TPSDemo
         [RuntimeInitializeOnLoadMethod]
         private static void RegisterSelf() => SkillFactory.Register<ChargeSkill>(SkillId);
 
-        //public override void Initialize(EnemyController enemy, SkillConfig config)
-        //{
-        //    base.Initialize(enemy, config);
-        //}
+        public override void Initialize(EnemyController enemy, SkillConfig config)
+        {
+            base.Initialize(enemy, config);
+            float.TryParse(Config.Args[0].Value, out ChargeSpeed);
+        }
 
         public override bool ValidPerform(Transform target)
         {
+            if (target == null) {
+                return false;
+            }
             var sqrDistance = Vector3.SqrMagnitude(target.position - m_EnemyController.transform.position);
-            var sqrAttackRange = Config.AttackRange * Config.AttackRange;
-            //Debug.Log($"sqrDistance: {sqrDistance}, " +
-            //    $"m_Threshold: {m_Threshold * m_Threshold}, " +
-            //    $"sqrAttackRange: {sqrAttackRange}");
-            return sqrDistance > m_Threshold * m_Threshold &&
-                sqrDistance >= sqrAttackRange.x &&
-                sqrDistance <= sqrAttackRange.y;
+            return !InCD() && InRange(sqrDistance, Config.AttackRange);
         }
 
         public override void Prepare(Transform target)
@@ -44,10 +40,9 @@ namespace TPSDemo
 
         protected override void Perform(float deltaTime)
         {
-            Debug.Log("charge skill perform");
-            if((m_LastPos - m_EnemyController.transform.position).sqrMagnitude < m_Threshold * m_Threshold) {
-                Debug.Log("charge skill finished");
-                m_State = SkillState.Recovery;
+            if((m_LastPos - m_EnemyController.transform.position).sqrMagnitude < m_Threshold * m_Threshold ||
+                m_Duration >= Config.ActiveTime) {
+                ChangeState(SkillState.Recovery);
                 return;
             }
             Vector3 dir = (m_TargetPos - m_EnemyController.transform.position).normalized;
@@ -55,8 +50,9 @@ namespace TPSDemo
             m_EnemyController.Agent.Move(ChargeSpeed * Time.deltaTime * dir);
         }
 
-        public override void End()
+        protected override void End()
         {
+            base.End();
             m_EnemyController.EnemyHitbox.SetEnable(false);
         }
 	}

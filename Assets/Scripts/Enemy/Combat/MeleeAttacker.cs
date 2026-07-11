@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Unity.Netcode;
 using UnityEngine;
 
 namespace TPSDemo
@@ -46,7 +45,14 @@ namespace TPSDemo
                 pos = actor.AimPoint.position;
             }
 
-            transform.LookAt(pos);
+            //Vector3 dir = target.position - Owner.transform.position;
+
+            //Owner.LookTo(dir);
+            //if (Owner.transform.forward.y != dir.y) {
+            //    print("Here");
+            //    return;
+            //}
+
             m_Hitbox.SetEnable(true);
 
             if (m_Coroutine != null) {

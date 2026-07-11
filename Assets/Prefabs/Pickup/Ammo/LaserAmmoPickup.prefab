@@ -10,11 +10,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 608024176257480489, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
       propertyPath: m_Name
-      value: ShotgunAmmoPickup
+      value: LaserAmmoPickup
       objectReference: {fileID: 0}
     - target: {fileID: 608024176257480489, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
       propertyPath: m_Layer
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2630851854725923138, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
+      propertyPath: SyncScaleX
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2630851854725923138, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
+      propertyPath: SyncScaleY
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2630851854725923138, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
+      propertyPath: SyncScaleZ
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6251817291085405488, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
       propertyPath: m_Data
@@ -26,7 +38,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8237854782321055835, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3153228734
+      value: 3315694561
       objectReference: {fileID: 0}
     - target: {fileID: 8237854782321055835, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash

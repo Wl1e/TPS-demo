@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: 7aa7ef13d9d69e645b5dbe9c3eefc841
   m_SerializeEntries:
+  - m_GUID: 7e9c50938e32351438a7df9ccad2f2a5
+    m_Address: Assets/Art/Effects/WarFX/_Effects/MuzzleFlashes/Sprites/WFX_MF Spr
+      RIFLE1.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 856b672ed5fba044493551f728daa1b4
     m_Address: Assets/Prefabs/Weapon/ARBulletCasing.prefab
     m_ReadOnly: 0

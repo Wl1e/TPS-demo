@@ -503,7 +503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 411984806
+  GlobalObjectIdHash: 2530470313
   InScenePlacedSourceGlobalObjectIdHash: 411984806
   DeferredDespawnTick: 0
   Ownership: 1
@@ -723,6 +723,8 @@ MonoBehaviour:
   Configs:
   - Id: 1001
     Config: {fileID: 11400000, guid: 474a94efa0a524c41ab70ddaaf77de78, type: 2}
+  - Id: 1002
+    Config: {fileID: 11400000, guid: 67722792c2702374cbb473a8511c5ecb, type: 2}
   m_FailRatio: 0
 --- !u!1 &2932811789169893351
 GameObject:

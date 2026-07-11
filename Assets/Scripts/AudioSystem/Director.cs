@@ -3,6 +3,7 @@ using UnityEngine.Audio;
 
 namespace TPSDemo
 {
+    using System;
     using UI;
 	public class Director: Singleton<Director>
 	{
@@ -40,6 +41,11 @@ namespace TPSDemo
             m_Mixer.SetFloat("Volume", mute ? -80f : 0f);
         }
         public EffectBuilder RequestEffect(GameObject effectPrefab)
+        {
+            return m_EffectPool.GetEffectBuilder().SetEffect(effectPrefab);
+        }
+
+        public EffectBuilder RequestEffect(UnityEngine.AddressableAssets.AssetReference effectPrefab)
         {
             return m_EffectPool.GetEffectBuilder().SetEffect(effectPrefab);
         }

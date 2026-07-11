@@ -31,8 +31,10 @@ namespace TPSDemo
             var player = ActorManager.Instance.GetActor(playerId).GetComponent<PlayerController>();
             if (Type == ItemType.Weapon) {
                 if (!player.Loadout.CanAddWeapon()) {
+                    print("CanntAddWeapon");
                     return;
                 }
+                print("InteractServerRpc");
                 player.Loadout.EquipWeapon(Data);
             } else {
                 player.Inventory.AddItemClientRpc(playerId, Id, Amount);

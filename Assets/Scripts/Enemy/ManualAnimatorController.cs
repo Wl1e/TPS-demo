@@ -77,9 +77,9 @@ namespace TPSDemo
             if(!Valid()) {
                 return;
             }
-            if(name == m_CurrentName) {
-                return;
-            }
+            //if(name == m_CurrentName) {
+            //    return;
+            //}
 
             var clip = GetAnimationClip(name);
             if (!clip) {

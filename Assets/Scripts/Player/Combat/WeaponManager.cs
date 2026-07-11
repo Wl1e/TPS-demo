@@ -312,7 +312,6 @@ namespace TPSDemo
                     if (IsOwner) {
                         m_CurrentFirearm.EndFire();
                         m_CurrentFirearm.OnUnequip();
-                        print("WeaponManager Exit");
                         Exit();
                     }
                     m_CurrentFirearm = null;
@@ -321,11 +320,11 @@ namespace TPSDemo
                     if (IsServer) {
                         if (m_CurrentFirearm != null) {
                             m_CurrentFirearm.Attach(RightHandAttach);
+                            m_CurrentFirearm.OnEquip();
                         }
                     }
-                    if (IsOwner) {
-                        m_CurrentFirearm.OnEquip();
-                    }
+                    //if (IsOwner) {
+                    //}
                 }
             }
 

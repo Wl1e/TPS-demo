@@ -5,7 +5,7 @@ using Action = Unity.Behavior.Action;
 using Unity.Properties;
 
 [Serializable, GeneratePropertyBag]
-[NodeDescription(name: "GetDistanceSqBetweenTransformAndTarget", story: "Get DistanceSq Between [Transform] And [m_Target] To [Variable]", category: "Action", id: "1d6ff66485e7b2665173a1cae13e7eb7")]
+[NodeDescription(name: "GetDistanceSqBetweenTransformAndTarget", story: "Get DistanceSq Between [Transform] And [Target] To [Variable]", category: "Action", id: "1d6ff66485e7b2665173a1cae13e7eb7")]
 public partial class GetDistanceSqBetweenTransformAndTargetAction : Action
 {
     [SerializeReference] public BlackboardVariable<Transform> Transform;

@@ -10,7 +10,9 @@ namespace TPSDemo.AI
     {
         static public bool AgentSeeTarget(GameObject agent, GameObject target, LayerMask seeLayer)
         {
-
+            if (!agent || !target) {
+                return false;
+            }
             Vector3 agentEyePos;
             if (agent.TryGetComponent<Actor>(out var actor)) {
                 agentEyePos = actor.AimPoint.position;
@@ -52,7 +54,7 @@ namespace TPSDemo.AI
 }
 
 [Serializable, Unity.Properties.GeneratePropertyBag]
-[Condition(name: "Agent see m_Target", story: "[Agent] see [m_Target]", category: "Conditions", id: "313573549b70636fab7b64c52e6904e5")]
+[Condition(name: "Agent see Target", story: "[Agent] see [Target]", category: "Conditions", id: "313573549b70636fab7b64c52e6904e5")]
 public partial class AgentSeeTargetCondition : Condition
 {
     [SerializeReference] public BlackboardVariable<GameObject> Agent;

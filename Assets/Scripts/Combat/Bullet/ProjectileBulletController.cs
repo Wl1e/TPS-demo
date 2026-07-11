@@ -30,7 +30,7 @@ namespace TPSDemo
 
                 damageable.InflictDamage(new DamageInfo { Attacker = Owner, Damage = Damage, Point = actor.AimPoint.position });
                 OnHitTarget?.Invoke(target.gameObject);
-                EventManager.Broadcast(new Event.BulletHitTargetEvent { Attacker = Owner, Victim = damageable.Owner });
+                EventManager.Broadcast(new Event.BulletHitTargetEvent { Attacker = Owner, VictimId = actor.Id });
             }
 
             PlayAE(hitInfo);

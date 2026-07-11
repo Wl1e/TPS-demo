@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.AppUI.UI;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using UnityEngine.UIElements;
 
 namespace TPSDemo
 {
@@ -40,7 +42,7 @@ namespace TPSDemo
         {
             if (s_Cache.TryGetValue(r.AssetGUID, out var cached)) {
                 var instance = Object.Instantiate(cached.Prefab, position, rotation, parent);
-                onLoaded?.Invoke(instance);           // 命中 → 同步回调
+                onLoaded?.Invoke(instance);
                 yield break;
             }
 
@@ -54,6 +56,18 @@ namespace TPSDemo
             }
             s_Cache[r.AssetGUID] = new AssetEntry(r.AssetGUID, handler.Result, handler);
             onLoaded?.Invoke(Object.Instantiate(handler.Result, position, rotation, parent));
+        }
+
+        static public IEnumerator Load(AssetReference r)
+        {
+            var handler = r.LoadAssetAsync<GameObject>();
+            yield return handler;
+
+            if (handler.Status != AsyncOperationStatus.Succeeded) {
+                Debug.LogError($"InstantiateAsync {r} fail, message {handler.OperationException.Message}");
+                yield break;
+            }
+            s_Cache[r.AssetGUID] = new AssetEntry(r.AssetGUID, handler.Result, handler);
         }
 
         static public IEnumerator LoadByLabel(string label)

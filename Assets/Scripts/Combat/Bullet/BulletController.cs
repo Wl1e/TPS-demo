@@ -77,7 +77,11 @@ namespace TPSDemo
             if (damageable) {
                 damageable.InflictDamage(new DamageInfo { Attacker = Owner, Damage = Damage, Point = hitInfo.point });
                 OnHitTarget?.Invoke(hitInfo.collider.gameObject);
-                EventManager.Broadcast(new Event.BulletHitTargetEvent { Attacker = Owner, Victim = damageable.Owner });
+                var actor = damageable.GetComponentInParent<Actor>();
+                if(actor) {
+                    OnHitClientRpc(hitInfo.point, actor.Id);
+                }
+
             }
 
             PlayAE(hitInfo);
@@ -92,6 +96,15 @@ namespace TPSDemo
 
             if (IsServer && m_Config.DestroyOnHit) {
                 NetworkObject.Despawn();
+            }
+        }
+
+        [ClientRpc]
+        private void OnHitClientRpc(Vector3 hitPoint, int victimId)
+        {
+            if (IsOwner) {
+                print("BulletHitTargetEvent");
+                EventManager.Broadcast(new Event.BulletHitTargetEvent { Attacker = Owner, VictimId = victimId });
             }
         }
 
@@ -118,7 +131,7 @@ namespace TPSDemo
             // 打怪身上不要弹孔
             // 这样不严谨，或许应该判断可以留单孔的位置，
             // 或许要给物体添加脚本
-            if (!hitInfo.collider.gameObject.CompareTag("Enemy")) {
+            if (!hitInfo.collider.gameObject.CompareTag("Enemy") && !hitInfo.collider.gameObject.CompareTag("Player")) {
                 m_AudioAndEffectPlayGlobal.Play("BulletHole", m_Config.BulletHoleDuration, hitInfo.point, rotation);
             }
         }

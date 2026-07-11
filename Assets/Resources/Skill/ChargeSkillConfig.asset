@@ -10,9 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 957f6ecb7f823aa4ea808fb404fa6817, type: 3}
-  m_Name: SkillConfig
+  m_Name: ChargeSkillConfig
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.SkillConfig
-  Id: 1001
   Name: Charge
   AttackRange: {x: 3, y: 5}
   Cooldown: 10
@@ -21,4 +20,6 @@ MonoBehaviour:
   RecoveryTime: 1
   Damage: 50
   AnimationName: Charge
-  Args: []
+  Args:
+  - Key: ChargeSpeed
+    Value: 5

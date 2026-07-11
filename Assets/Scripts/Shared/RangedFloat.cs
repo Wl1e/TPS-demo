@@ -1,8 +1,9 @@
 ﻿using System;
+using Unity.Netcode;
 using UnityEngine;
 
 [Serializable]
-public struct RangedFloat
+public struct RangedFloat: INetworkSerializable
 {
     [SerializeField] float value;
     [SerializeField] float lo;
@@ -30,4 +31,10 @@ public struct RangedFloat
     public float Add(float amount) => SetValue(value + amount);
     public float Subtract(float amount) => SetValue(value - amount);
 
+    void INetworkSerializable.NetworkSerialize<T>(BufferSerializer<T> serializer)
+    {
+        serializer.SerializeValue(ref lo);
+        serializer.SerializeValue(ref hi);
+        serializer.SerializeValue(ref value);
+    }
 }

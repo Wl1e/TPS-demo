@@ -6,7 +6,7 @@ using UnityEngine;
 using Action = Unity.Behavior.Action;
 
 [Serializable, GeneratePropertyBag]
-[NodeDescription(name: "Find Visible Closest With Tag in Range", story: "Find [m_Target] closest and visible to [Self] with [Tag] In [Range]", category: "Action", id: "eaac8f6d597438909a24060d1cd199da")]
+[NodeDescription(name: "Find Visible Closest With Tag in Range", story: "Find [Target] closest and visible to [Self] with [Tag] In [Range]", category: "Action", id: "eaac8f6d597438909a24060d1cd199da")]
 public partial class FindVisibleClosestWithTagInRangeAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Target;

@@ -1,11 +1,11 @@
-﻿using NUnit.Framework.Internal;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace TPSDemo
 {
     public class EffectBuilder: MonoBehaviour
     {
         GameObject m_EffectPrefab = null;
+        UnityEngine.AddressableAssets.AssetReference m_EffectRef = null;
         string m_EffectName = "Effect";
         Transform m_Parent = null;
         Vector3 m_Position = Vector3.zero;
@@ -45,6 +45,7 @@ namespace TPSDemo
             m_Duration = float.NegativeInfinity;
             m_Rotation = Quaternion.identity;
             m_EffectPrefab = null;
+            m_EffectRef = null;
             m_ParticleSystem = null;
         }
 
@@ -52,6 +53,13 @@ namespace TPSDemo
         {
             Initialze();
             m_EffectPrefab = effect;
+            return this;
+        }
+
+        public EffectBuilder SetEffect(UnityEngine.AddressableAssets.AssetReference effect)
+        {
+            Initialze();
+            m_EffectRef = effect;
             return this;
         }
 
@@ -109,30 +117,46 @@ namespace TPSDemo
 
         public GameObject Create()
         {
-            if(!m_EffectPrefab) {
+            if(m_EffectPrefab == null && m_EffectRef == null) {
+                print("effect is null");
                 OnCompleted?.Invoke(this);
                 return null;
             }
-            m_Effect = Instantiate(m_EffectPrefab, transform);
-            m_Effect.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            m_ParticleSystem = m_Effect.GetComponent<ParticleSystem>();
+
+            if (m_EffectPrefab != null) {
+                m_Effect = Instantiate(m_EffectPrefab, transform);
+                m_ParticleSystem = m_Effect.GetComponent<ParticleSystem>();
+                if (m_Duration == float.NegativeInfinity) {
+                    m_Duration = m_ParticleSystem.main.duration;
+                }
+                m_IsRunning = true;
+            } else if (m_EffectRef != null) {
+                // 获取武器时预加载过，这里可以直接赋值
+                StartCoroutine(AssetCache.GetOrLoad(m_EffectRef,
+                    Vector3.zero,
+                    Quaternion.identity,
+                    transform,
+                    res => {
+                        m_Effect = res;
+                        m_Effect.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+                        m_ParticleSystem = m_Effect.GetComponent<ParticleSystem>();
+                        if (m_Duration == float.NegativeInfinity) {
+                            m_Duration = m_ParticleSystem.main.duration;
+                        }
+                        m_IsRunning = true;
+                    }));
+            }
 
             gameObject.name = m_EffectName;
             gameObject.transform.localScale = Vector3.one * m_Scale;
             gameObject.transform.rotation = m_Rotation;
 
-            if(m_Parent != null) {
+            if (m_Parent != null) {
                 gameObject.transform.SetParent(m_Parent);
                 gameObject.transform.localPosition = m_Position;
             } else {
                 gameObject.transform.position = m_Position;
             }
-
-            if(m_Duration == float.NegativeInfinity) {
-                m_Duration = m_ParticleSystem.main.duration;
-            }
-
-            m_IsRunning = true;
 
             return gameObject;
         }

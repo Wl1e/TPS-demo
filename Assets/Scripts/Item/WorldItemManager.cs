@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace TPSDemo
 {
@@ -14,6 +15,8 @@ namespace TPSDemo
 
         // 没找到使用场景暂时就这样
         private readonly HashSet<ItemPickup> m_WorldItems = new();
+
+        private static bool IsServer => NetworkManager.Singleton != null && NetworkManager.Singleton.IsServer;
 
         protected override void Awake()
         {
@@ -28,13 +31,16 @@ namespace TPSDemo
 
         public IEnumerator SpawnItem(ItemData data, Vector3 pos, int amount, System.Action<GameObject> cb = null, bool destroyWithScene = true)
         {
+            if (!IsServer) {
+                Debug.LogError($"WorldItemManager.SpawnItem called from non-Server!\n{System.Environment.StackTrace}");
+                yield break;
+            }
             var pickupObj = Instantiate(data.PickupPrefab, pos, Quaternion.identity, ItemRoot);
             var pickup = pickupObj.GetComponent<ItemPickup>();
             pickup.Amount = amount;
 
             var no = pickupObj.GetComponent<NetworkObject>();
 
-            no.SetSceneObjectStatus(true);
             no.DestroyWithScene = destroyWithScene;
             if (!no.IsSpawned) {
                 no.Spawn();
@@ -91,6 +97,10 @@ namespace TPSDemo
             ulong ownerId = m_InvalidOwnerId
         )
         {
+            if (!IsServer) {
+                Debug.LogError($"WorldItemManager.CreateItemGO called from non-Server!\n{System.Environment.StackTrace}");
+                yield break;
+            }
             if (data.IsNetCodePrefab) {
                 var go = Instantiate(data.NOPrefab, position, rotation, parent);
                 if (!go.TryGetComponent<NetworkObject>(out var no)) {

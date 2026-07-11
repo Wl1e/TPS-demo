@@ -26,7 +26,7 @@ MonoBehaviour:
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
   NOPrefab: {fileID: 3276888101501728023, guid: cbac113e2745a3b4fa33ee4fa4bbff33, type: 3}
-  PickupPrefab: {fileID: 3804280116683418236, guid: 068a651c634cd0f4f9518df8aed575db, type: 3}
+  PickupPrefab: {fileID: 5979133958902751530, guid: 9b2298b81e9648148b313b92ca9a72ec, type: 3}
   DragType: -1
   MaxLifeTime: 5
   DestroyOnHit: 1

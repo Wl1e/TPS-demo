@@ -115,23 +115,33 @@ namespace TPSDemo
             if (e.SceneEventType == SceneEventType.UnloadComplete) {
                 //NetworkManager.SceneManager.LoadScene(SceneName, LoadSceneMode.Single);
             } else if (e.SceneEventType == SceneEventType.LoadComplete) {
-                var map = FindAnyObjectByType<Map>();
                 m_CurrentScene = e.Scene;
-                if (IsServer) {
+                var map = FindAnyObjectByType<Map>();
+                // 如果m_CurrentMap等于map，代表是client进入触发
+                if (IsServer && m_CurrentMap != map) {
                     InitializeMap();
-                    foreach(var actor in ActorManager.Instance.Actors.Values) {
-                        if(actor.TryGetComponent<PlayerController>(out var player)) {
-                            player.CharacterController.enabled = false;
-                            player.Movement.Teleport(map.EntryPoint.position, map.EntryPoint.rotation, Vector3.one);
-                            player.CharacterController.enabled = true;
-                        }
-                    }
+                    TeleportToClientRpc(m_CurrentMap.EntryPoint.position, m_CurrentMap.EntryPoint.rotation);
+                    //foreach(var actor in ActorManager.Instance.Actors.Values) {
+                    //    if(actor.TryGetComponent<PlayerController>(out var player)) {
+                            
+                            //player.Movement.Teleport(, , Vector3.one);
+                            
+                        //}
+                    //}
                 } else if(IsOwner) {
                     EventManager.Broadcast(new Event.MessageLogEvent { Message = $"进入场景{map.Config.MapName}" });
                 }
-                //EventManager.Broadcast(new Event.MessageLogEvent { Message = $"进入: {config.MapName}" });
             } else if (e.SceneEventType == SceneEventType.Synchronize) {
             }
+        }
+
+        [ClientRpc]
+        private void TeleportToClientRpc(Vector3 position, Quaternion rotation)
+        {
+            var player = PlayerDataProxy.Instance.GetPlayer();
+            player.CharacterController.enabled = false;
+            player.Movement.Teleport(position, rotation, Vector3.one);
+            player.CharacterController.enabled = true;
         }
 
         /// <summary>完成当前地图</summary>

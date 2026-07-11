@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Components;
@@ -17,44 +17,35 @@ namespace TPSDemo
 
     public class Weapon: NetworkBehaviour, IWeapon
     {
-        // ÎäÆ÷ËùÓĞÕß
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         GameObject m_Owner;
+
+        [SerializeField] private WeaponItemData m_Config;
+
+        #region Property
+
         public GameObject GO => gameObject;
         public GameObject Owner => m_Owner;
-        [Tooltip("Ç¹¿ÚÎ»ÖÃ")]
-        public Transform Muzzle;
 
-        // Recoil
-        [Header("ºó×øÁ¦")]
-        [Tooltip("ºó×øÁ¦´óĞ¡")]
-        [SerializeField] private float m_RecoilForce;
-        [Tooltip("ºó×øÁ¦ÆµÂÊ")]
-        [SerializeField] private float m_RecoilFrequency;
-        [Tooltip("ºó×øÁ¦»Øµ¯ËÙ¶È")]
-        [SerializeField] private float m_RecoilReturnSpeed;
-
-        [Header("Æ«ÒÆ")]
-        [Tooltip("¼¹ÖùÆ«ÒÆ")]
-        [SerializeField] private Vector3 m_SpineOffset;
-        [Tooltip("ÊÖ²¿Æ«ÒÆ")]
-        [SerializeField] Vector3 m_HandOffset;
-        [Tooltip("ÊÖ²¿Ğı×ª")]
-        [SerializeField] Vector3 m_HandRotation;
-        [Tooltip("±³²¿Æ«ÒÆ")]
-        [SerializeField] Vector3 m_BackOffset;
-        [Tooltip("ÎäÆ÷ID")]
-        [SerializeField] int m_WeaponId;
-        public int WeaponId => m_WeaponId;
+        public int WeaponId => m_Config.Id;
         public float ReloadTime => m_AmmoHandler.ReloadTime;
-        public float RecoilFrequency => m_RecoilFrequency;
-        public float RecoilForce => m_RecoilForce;
-        public float RecoilReturnSpeed => m_RecoilReturnSpeed;
+        public float RecoilFrequency => m_Config.RecoilFrequency;
+        public float RecoilForce => m_Config.RecoilForce;
+        public float RecoilReturnSpeed => m_Config.RecoilReturnSpeed;
+
+        public int CurrentAmmo => m_AmmoHandler.CurrentAmmo;
+        public int ClipAmmo => m_Config.DefaultClipSize;
+        public int AmmoId => m_Config.AmmoId;
+
+        public CrosshairData Crosshair => m_Config.Crosshair;
+
+        #endregion
+
+        [Tooltip("æªå£")]
+        public Transform Muzzle;
 
         // Ammo
         AmmoHandler m_AmmoHandler;
-        public int CurrentAmmo => m_AmmoHandler.CurrentAmmo;
-        public int ClipAmmo => m_AmmoHandler.ClipSize;
-        public int AmmoId => m_AmmoHandler.AmmoId;
 
         // Offset
         //public Vector3 SpineOffset => m_SpineOffset;
@@ -63,16 +54,16 @@ namespace TPSDemo
 
         // Component
         /// <summary>
-        /// ·¢ÉäĞĞÎª£¨Ò»¿Å×Óµ¯¡¢ö±µ¯Ç¹·¶Î§Ëæ»ú£©
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ò»ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¹ï¿½ï¿½Î§ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         IShootBehaviour m_Behaviour;
         /// <summary>
-        /// ·¢Éä¹æÂÉ£¨×Ô¶¯¡¢°ë×Ô¶¯¡¢ÈıÁ¬·¢£©
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É£ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         IFireMechanism m_FireMechanism;
         Transform m_Target;
         /// <summary>
-        /// Åä¼ş¹ÜÀí
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         AttachmentManager m_AttachmentManager;
 
@@ -82,32 +73,13 @@ namespace TPSDemo
         /// 
         /// </summary>
         private ManualAnimatorController m_Animator;
-
-        [Tooltip("×¼ĞÇ")]
-        [SerializeField] CrosshairData m_Crosshair;
-        public CrosshairData Crosshair => m_Crosshair;
-
+        
         // Action
         public event Action OnFire;
         public event Action OnAttachmentChanged;
 
-        [Tooltip("Å×µ¯¿Ç")]
+        [Tooltip("æŠ›å£³ä½ç½®")]
         public Transform ShellEjectPoint;
-        [Tooltip("Å×µ¯Á¦¶È")]
-        public float ShellEjectForce = 1f;
-        [Tooltip("Å×¿ÇÌØĞ§Ô¤ÖÆÌå")]
-        public UnityEngine.AddressableAssets.AssetReference ShellPrefab;
-
-        // Resrouce
-        [Header("×ÊÔ´")]
-        [Tooltip("Ç¹¿ÚÌØĞ§Ô¤ÖÆÌå")]
-        public GameObject MuzzleFlashPrefab;
-        [Tooltip("Ç¹Ñæ³ÖĞøÊ±¼ä")]
-        public float MuzzleFlashTime = 0.09f;
-        [Tooltip("Éä»÷ÒôĞ§")]
-        public AudioClip ShootSfx;
-        [Tooltip("»»µ¯ÒôĞ§")]
-        public AudioClip ReloadingSfx;
 
         void Awake()
         {
@@ -157,20 +129,20 @@ namespace TPSDemo
         }
 
         /// <summary>
-        /// Server¶Ë ·¢ÉäÂß¼­£¨¿Û×Óµ¯¡¢Í¬Ê±ÆäËûClient¸±±¾²¥·ÅÌØĞ§£©
+        /// Serverï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½Í¬Ê±ï¿½ï¿½ï¿½ï¿½Clientï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ§ï¿½ï¿½
         /// </summary>
         [ServerRpc]
-        void FireServerRpc(Vector3 dir)
+        void FireServerRpc(Vector3 position)
         {
             if (!m_AmmoHandler.ComsumeAmmo()) {
                 return;
             }
-            m_Behaviour.Shoot(dir, OwnerClientId);
+            m_Behaviour.Shoot(position - Muzzle.position, OwnerClientId);
             FireClientRpc();
         }
 
         /// <summary>
-        /// Client¶Ë ·¢ÉäÂß¼­£¨Ö»²¥·ÅÒôĞ§ºÍ¶¯»­£©
+        /// Clientï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ§ï¿½Í¶ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         [ClientRpc]
         void FireClientRpc()
@@ -188,37 +160,36 @@ namespace TPSDemo
             if (!m_AmmoHandler.EnoughAmmo()) {
                 return;
             }
-            FireServerRpc(m_Target.position - Muzzle.position);
+            FireServerRpc(m_Target.position);
 
             PlayerClientEffects();
         }
 
-        // ÔÚ×ÔÉíºÍ¸÷¸ö¿Í»§¶Ë²¥·Å(¶¯»­¡¢Å×³öµ¯¿Ç¡¢Ç¹Ñæ¡¢Ç¹Éù)
-        // ÎªÊ²Ã´²»ÓÃAudioAndEffectPlayGlobal?
-        // ¿ª»ğĞèÒªServerÅĞ¶Ï(FireServerRpc)£¬È»ºó²ÅÄÜÍ¨¹ırpc·µ»Øµ½ownerÖ´ĞĞ¿ª»ğ£¬ÄÇÃ´
-        // ¸É´àÈÃÕâ¸örpcÖ±½ÓÈÃËùÓĞclient²¥·ÅĞ§¹û£¬ÃâµÃownerÏòÆäËûclientÔÙ·¢rpc
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½Ë²ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×³ï¿½ï¿½ï¿½ï¿½Ç¡ï¿½Ç¹ï¿½æ¡¢Ç¹ï¿½ï¿½)
+        // ÎªÊ²Ã´ï¿½ï¿½ï¿½ï¿½AudioAndEffectPlayGlobal?
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÒªServerï¿½Ğ¶ï¿½(FireServerRpc)ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½rpcï¿½ï¿½ï¿½Øµï¿½ownerÖ´ï¿½Ğ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ã´
+        // ï¿½É´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½rpcÖ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½clientï¿½ï¿½ï¿½ï¿½Ğ§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ownerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½clientï¿½Ù·ï¿½rpc
         private void PlayerClientEffects()
         {
             if (m_Animator) {
                 m_Animator.Play("Fire");
             }
-            if (ShellPrefab.RuntimeKeyIsValid() && ShellEjectPoint) {
-                StartCoroutine(AssetCache.GetOrLoad(ShellPrefab, ShellEjectPoint.position, ShellEjectPoint.rotation, null, obj => {
+            if (m_Config.ShellPrefab.RuntimeKeyIsValid() && ShellEjectPoint) {
+                StartCoroutine(AssetCache.GetOrLoad(m_Config.ShellPrefab, ShellEjectPoint.position, ShellEjectPoint.rotation, null, obj => {
                     if (obj.TryGetComponent<Rigidbody>(out var rb)) {
-                        rb.AddForce(ShellEjectPoint.forward * ShellEjectForce, ForceMode.Impulse);
+                        rb.AddForce(ShellEjectPoint.forward * m_Config.ShellEjectForce, ForceMode.Impulse);
                         Destroy(obj, 3f);
                     }
                 }));
             }
 
-            // Ç¹¿ÚÑæ·½Ïò³¯Ïò-z£¬ËùÒÔÈ¡·´
-            Director.Instance.RequestEffect(MuzzleFlashPrefab)
+            Director.Instance.RequestEffect(m_Config.MuzzleFlashPrefab)
                 .WithParent(Muzzle)
                 .LookAt(-Muzzle.forward)
-                .WithDuration(MuzzleFlashTime)
+                .WithDuration(m_Config.MuzzleFlashTime)
                 .Create();
 
-            Director.Instance.RequestAudio(ShootSfx).AttachTo(transform).Play();
+            Director.Instance.RequestAudio(m_Config.ShootSfx).AttachTo(transform).Play();
         }
 
         #endregion
@@ -243,7 +214,7 @@ namespace TPSDemo
         public float GetScopeRatio()
         {
             var scope = m_AttachmentManager.GetAttachment(IAttachment.AttachmentSlot.Scope);
-            // £¿
+            // ï¿½ï¿½
             if (scope is ScopeAttachment scope1) {
                 return (float)scope1.Ratio;
             }
@@ -252,20 +223,35 @@ namespace TPSDemo
 
         public List<(IAttachment.AttachmentSlot, int)> GetAttachmentList() => m_AttachmentManager.GetAttachmentList();
 
+        private void AttachmentChanged()
+        {
+            OnAttachmentChanged?.Invoke();
+        }
+
         #endregion
 
-        #region Pos
+        #region Equip
 
         public void OnEquip()
         {
-            transform.localPosition = m_HandOffset;
-            transform.localRotation = Quaternion.Euler(m_HandRotation);
+            // Serverï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¸Ä³ï¿½Ownerï¿½ï¿½ï¿½Ã£ï¿½Rpcï¿½Ş¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½ï¿½Æ«ï¿½ï¿½
+            //transform.SetLocalPositionAndRotation(m_HandOffset, Quaternion.Euler(m_HandRotation));
+            OnEquipClientRpc();
+        }
+
+        [ClientRpc]
+        private void OnEquipClientRpc()
+        {
+            //transform.SetLocalPositionAndRotation(m_HandOffset, Quaternion.Euler(m_HandRotation));
+            StartCoroutine(AssetCache.Load(m_Config.ShellPrefab));
+            StartCoroutine(AssetCache.Load(m_Config.MuzzleFlashPrefab));
         }
 
         public void OnUnequip()
         {
-            transform.localPosition = m_BackOffset;
-            transform.localRotation = Quaternion.Euler(Vector3.zero);
+            //transform.SetLocalPositionAndRotation(m_BackOffset, Quaternion.Euler(Vector3.zero));
+            //transform.localPosition = m_BackOffset;
+            //transform.localRotation = Quaternion.Euler(Vector3.zero);
         }
 
         private AttachableNode m_AttachableNode;
@@ -280,12 +266,5 @@ namespace TPSDemo
         public void Detach() => m_Attachable.Detach();
 
         #endregion
-
-
-        private void AttachmentChanged()
-        {
-            print("Weapon.AttachmentChanged");
-            OnAttachmentChanged?.Invoke();
-        }
     }
 }

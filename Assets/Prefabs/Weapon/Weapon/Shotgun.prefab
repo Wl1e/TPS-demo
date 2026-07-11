@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3632697105
+  GlobalObjectIdHash: 424555567
   InScenePlacedSourceGlobalObjectIdHash: 424555567
   DeferredDespawnTick: 0
   Ownership: 1
@@ -67,7 +67,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5139761859503080794}
-  - component: {fileID: 4223511399328704590}
   - component: {fileID: 8992180748634676398}
   - component: {fileID: 8519998714745890618}
   - component: {fileID: 3849755216448767129}
@@ -88,61 +87,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6271915201595229886}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.41061893, y: 0.5043443, z: -0.57566667, w: 0.49561772}
+  m_LocalPosition: {x: 0.15, y: 0, z: -0.03}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8900495472634414603}
   - {fileID: 2585817231394289495}
   m_Father: {fileID: 7930224614410100874}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4223511399328704590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6271915201595229886}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Components.NetworkTransform
-  ShowTopMostFoldoutHeaderGroup: 1
-  NetworkTransformExpanded: 0
-  AutoOwnerAuthorityTickOffset: 1
-  PositionInterpolationType: 0
-  RotationInterpolationType: 0
-  ScaleInterpolationType: 0
-  PositionLerpSmoothing: 1
-  PositionMaxInterpolationTime: 0.1
-  RotationLerpSmoothing: 1
-  RotationMaxInterpolationTime: 0.1
-  ScaleLerpSmoothing: 1
-  ScaleMaxInterpolationTime: 0.1
-  AuthorityMode: 0
-  TickSyncChildren: 0
-  UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 1
-  SyncScaleY: 1
-  SyncScaleZ: 1
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  SwitchTransformSpaceWhenParented: 0
-  Interpolate: 0
-  SlerpPosition: 0
+  m_LocalEulerAnglesHint: {x: 10, y: 81, z: -90}
 --- !u!114 &8992180748634676398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,7 +138,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ShotgunShooting
   BulletPrefab: {fileID: 8312534977164171955, guid: 42660413f61826b4a949539017633d0e, type: 3}
-  BulletSpeed: 0
+  BulletSpeed: 10
   HitLayerMask:
     serializedVersion: 2
     m_Bits: 12594176
@@ -221,25 +174,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.Weapon
   ShowTopMostFoldoutHeaderGroup: 1
+  m_Config: {fileID: 11400000, guid: 0c2d214eb3f6d65429ebcbe87312c67d, type: 2}
   Muzzle: {fileID: 5733460286504788463}
-  m_RecoilForce: 0.1
-  m_RecoilFrequency: 100
-  m_RecoilReturnSpeed: 0
-  m_SpineOffset: {x: 0, y: 0, z: 0}
-  m_HandOffset: {x: 0.15, y: 0, z: -0.03}
-  m_HandRotation: {x: 10, y: 81, z: -90}
-  m_BackOffset: {x: 0, y: 0, z: 0}
-  m_WeaponId: 402
-  m_Crosshair:
-    Sprite: {fileID: 21300000, guid: c894ef28e9e98774e939a3a7d1a1aa40, type: 3}
-    Color: {r: 0.31132078, g: 0.31132078, b: 0.31132078, a: 1}
-    Scale: 0.1
-  ShellEjectPoint: {fileID: 0}
-  ShellPrefab: {fileID: 0}
-  MuzzleFlashPrefab: {fileID: 100006, guid: 7e9c50938e32351438a7df9ccad2f2a5, type: 3}
-  MuzzleFlashTime: 0.15
-  ShootSfx: {fileID: 8300000, guid: 6dd7024f00606b44eb5884197a66a893, type: 3}
-  ReloadingSfx: {fileID: 8300000, guid: 93331a7c9fe98494a84f18effb358899, type: 3}
+  ShellEjectPoint: {fileID: 2585817231394289487}
 --- !u!1 &7573711239843561682
 GameObject:
   m_ObjectHideFlags: 0
@@ -467,6 +404,11 @@ Transform:
 --- !u!4 &2585817231394289481 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400022, guid: f6d93d298c291ed488f806db88e98379, type: 3}
+  m_PrefabInstance: {fileID: 2585817231393893855}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2585817231394289487 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400016, guid: f6d93d298c291ed488f806db88e98379, type: 3}
   m_PrefabInstance: {fileID: 2585817231393893855}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &2585817231394289495 stripped

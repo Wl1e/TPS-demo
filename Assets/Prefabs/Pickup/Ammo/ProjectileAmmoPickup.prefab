@@ -74,9 +74,29 @@ PrefabInstance:
       propertyPath: m_Name
       value: ProjectileAmmoPickup
       objectReference: {fileID: 0}
+    - target: {fileID: 2630851854725923138, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
+      propertyPath: SyncScaleX
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2630851854725923138, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
+      propertyPath: SyncScaleY
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2630851854725923138, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
+      propertyPath: SyncScaleZ
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6251817291085405488, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
+      propertyPath: m_Data
+      value: 
+      objectReference: {fileID: 11400000, guid: 76e3c072e6ad0d54a8b82bc9df7370f6, type: 2}
+    - target: {fileID: 6251817291085405488, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
+      propertyPath: m_Amount
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8237854782321055835, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 1917615179
+      value: 2729763251
       objectReference: {fileID: 0}
     - target: {fileID: 8237854782321055835, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
@@ -128,10 +148,39 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8917841998358894310, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2605187943190063185}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 608024176257480489, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -7454914571257461684}
   m_SourcePrefab: {fileID: 100100000, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
 --- !u!4 &2398323344799645925 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8917841998358894310, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
   m_PrefabInstance: {fileID: 6524031874056230403}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5979133958902751530 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 608024176257480489, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
+  m_PrefabInstance: {fileID: 6524031874056230403}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &-7454914571257461684
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5979133958902751530}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.1, y: 0.1, z: 0.6}
+  m_Center: {x: 0, y: 0, z: 0}

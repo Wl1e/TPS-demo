@@ -127,7 +127,7 @@ namespace TPSDemo.Event
     {
         // 后续改用ActorID，通过ActorManager获取实体
         public GameObject Attacker;
-        public GameObject Victim;
+        public int VictimId;
     }
 
     #endregion

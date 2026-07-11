@@ -7,7 +7,6 @@ namespace TPSDemo
     public interface ISkill
     {
         public string Name { get; }
-        public static int SkillId { get; }
         public bool IsRunning { get; }
         public void Initialize(EnemyController enemy, SkillConfig config);
         /// <summary>
@@ -50,6 +49,15 @@ namespace TPSDemo
 
         protected Transform m_Target;
 
+        private float m_LastTime = 0f;
+
+        protected bool InCD() => (Time.time - m_LastTime) < Config.Cooldown;
+        protected void ChangeState(SkillState state)
+        {
+            m_State = state;
+            Debug.Log($"技能 {GetType().Name} 进入 {m_State} 状态");
+        }
+
         public virtual void Initialize(EnemyController enemy, SkillConfig config)
         {
             m_EnemyController = enemy;
@@ -62,40 +70,38 @@ namespace TPSDemo
                 return;
             }
             m_Target = target;
-            m_State = SkillState.Windup;
+            ChangeState(SkillState.Windup);
             m_Duration = 0f;
             m_WindupDuration = m_Config.WindupTime;
             m_RecoveryDuration = m_Config.RecoveryTime;
         }
 
-        public abstract void End();
+        protected virtual void End()
+        {
+            m_LastTime = Time.time;
+        }
 
         public void Update(float deltaTime)
         {
             if(m_State == SkillState.Windup) {
-                Debug.Log("进入前摇");
                 if (Windup(deltaTime)) {
                     return;
                 } else {
-                    m_State = SkillState.Running;
+                    ChangeState(SkillState.Running);
                 }
             }
 
             if(m_State == SkillState.Running) {
-                Debug.Log("释放");
                 m_Duration += deltaTime;
                 Perform(deltaTime);
-                if(m_Duration >= m_Config.ActiveTime) {
-                    m_State = SkillState.Recovery;
-                }
             }
 
             if(m_State == SkillState.Recovery) {
-                Debug.Log("进入后摇");
                 if (Recovery(deltaTime)) {
                     return;
                 } else {
-                    m_State = SkillState.Finished;
+                    End();
+                    ChangeState(SkillState.Finished);
                 }
             }
         }
@@ -124,12 +130,10 @@ namespace TPSDemo
             return m_RecoveryDuration > 0f;
         }
         public abstract bool ValidPerform(Transform target);
-    };
 
-    //static public class SkillGenerator
-    //{
-    //    static private SkillCreateDelegate
-    //    static private System.Collections.Generic.Dictionary<int, Delegate>
-    //    static public 
-    //}
+        static protected bool InRange(float sqrDistance, Vector2 range)
+        {
+            return sqrDistance >= range.x * range.x && sqrDistance <= range.y * range.y;
+        }
+    };
 }

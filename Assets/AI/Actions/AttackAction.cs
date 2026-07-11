@@ -5,7 +5,7 @@ using Action = Unity.Behavior.Action;
 using Unity.Properties;
 
 [Serializable, GeneratePropertyBag]
-[NodeDescription(name: "Attack", story: "[Attacker] attack [m_Target]", category: "Action", id: "e214e03901521f4e46df50d4243342e0")]
+[NodeDescription(name: "Attack", story: "[Attacker] attack [Target]", category: "Action", id: "e214e03901521f4e46df50d4243342e0")]
 public partial class AttackAction : Action
 {
     [SerializeReference] public BlackboardVariable<TPSDemo.AttackerBase> Attacker;

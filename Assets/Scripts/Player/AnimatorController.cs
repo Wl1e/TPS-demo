@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using Unity.AppUI.UI;
 using Unity.Netcode;
@@ -91,8 +92,12 @@ namespace TPSDemo
 
         // Aim
         [SerializeField] Rig m_Rig;
+        private NetworkVariable<float> m_RigWeight = new(0f, writePerm: NetworkVariableWritePermission.Owner);
         public MultiAimConstraint AimConstraint;
+        private NetworkVariable<Vector3> m_AimConstraintOffset = new(Vector3.zero, writePerm: NetworkVariableWritePermission.Owner);
         public float RigLerpDuration = 0.15f;
+        private bool m_SyncAimPoint = false;
+        [SerializeField] private Transform VisualAimPoint;
         // 平滑修改weight，实现动画平滑移动
         Coroutine m_RiggingCoroutine;
         [SerializeField] Vector3 m_CrouchOffset = new(20, -10, 0);
@@ -111,11 +116,35 @@ namespace TPSDemo
             m_UseItemTime = m_Animator.runtimeAnimatorController.animationClips.First(clip => clip.name == "Drinking").length;
         }
 
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+            m_RigWeight.OnValueChanged += OnRigWeightChanged;
+            m_AimConstraintOffset.OnValueChanged += OnAimConstraintOffsetChanged;
+        }
+
         private void LateUpdate()
         {
             if(!IsOwner) {
                 return;
             }
+            UpdateAnimatorParameter();
+            UpdateAimPositionServerRpc(VisualAimPoint.position);
+        }
+
+        [ServerRpc]
+        private void UpdateAimPositionServerRpc(Vector3 position) => UpdateAimPositionClientRpc(position);
+
+        [ClientRpc]
+        private void UpdateAimPositionClientRpc(Vector3 position)
+        {
+            if (!IsOwner) {
+                VisualAimPoint.position = position;
+            }
+        }
+
+        private void UpdateAnimatorParameter()
+        {
             var curData = m_PlayerRuntimeData.AniParameter;
 
             //Vector3 smoothVel = Vector3.Lerp(m_LastParameter.SmoothVelocity, curData.Velocity, 0.15f);
@@ -176,12 +205,12 @@ namespace TPSDemo
             if (m_LastParameter.IsLedge != curData.IsLedge) {
                 SetBool("Ledge", curData.IsLedge);
             }
-            if(m_LastParameter.DisableAimLayer != curData.DisableAimLayer) {
+            if (m_LastParameter.DisableAimLayer != curData.DisableAimLayer) {
                 SetAimLayerWeight(curData.DisableAimLayer ? 0f : 1f);
             }
 
             // combat
-            if(m_LastParameter.CombatSlot != curData.CombatSlot) {
+            if (m_LastParameter.CombatSlot != curData.CombatSlot) {
                 SetInteger("CombatSlot", curData.CombatSlot);
             }
             if (m_LastParameter.Throw != curData.Throw) {
@@ -193,7 +222,7 @@ namespace TPSDemo
             }
 
             // other
-            if(m_LastParameter.UseActiveItem != curData.UseActiveItem) {
+            if (m_LastParameter.UseActiveItem != curData.UseActiveItem) {
                 SetFloat("UseItemSpeed", m_UseItemTime / curData.UseTime);
                 UpdateTrigger("UseItem", curData.UseActiveItem);
             }
@@ -266,18 +295,33 @@ namespace TPSDemo
             while (elapsedTime < RigLerpDuration) {
                 elapsedTime += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsedTime / RigLerpDuration);
-                m_Rig.weight = Mathf.Lerp(startAimWeight, targetAimWeight, t);
-                AimConstraint.data.offset = Vector3.Lerp(startSpineOffset, targetSpineOffset, t);
+                m_RigWeight.Value = Mathf.Lerp(startAimWeight, targetAimWeight, t);
+                m_AimConstraintOffset.Value = Vector3.Lerp(startSpineOffset, targetSpineOffset, t);
                 yield return null;
             }
 
-            m_Rig.weight = targetAimWeight;
-            AimConstraint.data.offset = targetSpineOffset;
+            m_RigWeight.Value = targetAimWeight;
+            m_AimConstraintOffset.Value = targetSpineOffset;
             m_RiggingCoroutine = null;
         }
 
         void SetAimLayerWeight(float layerWeight) => m_Animator.SetLayerWeight(1, layerWeight);
 
         public void ResetAnimation() => m_PlayerRuntimeData.AniParameter = new AnimatorParameter();
+
+        private void OnAimConstraintOffsetChanged(Vector3 previousValue, Vector3 newValue)
+        {
+            AimConstraint.data.offset = newValue;
+        }
+
+        private void OnRigWeightChanged(float previousValue, float newValue)
+        {
+            m_Rig.weight = newValue;
+            if(newValue > 0f) {
+                m_SyncAimPoint = true;
+            } else {
+                m_SyncAimPoint = false;
+            }
+        }
     }
 }

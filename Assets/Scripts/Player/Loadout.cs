@@ -47,9 +47,9 @@ namespace TPSDemo
             if (IsOwner) {
                 EventManager.AddListener<Event.SwapWeaponEvent>(OnSwapWeapon);
                 EventManager.AddListener<Event.TryUnequipWeaponEvent>(UnequipWeapon);
-                if (DefaultWeapon != null) {
-                    EquipWeapon(DefaultWeapon);
-                }
+            }
+            if (IsServer && DefaultWeapon != null) {
+                EquipWeapon(DefaultWeapon);
             }
         }
 
@@ -82,7 +82,15 @@ namespace TPSDemo
 
         #region Client
 
-        public void EquipWeapon(ItemData WeaponData) => EquipWeaponServerRpc(WeaponData.Id);
+        //public void EquipWeapon(ItemData WeaponData) => EquipWeaponServerRpc(WeaponData.Id);
+        public void EquipWeapon(ItemData WeaponData)
+        {
+            if (!CanAddWeapon()) {
+                print($"Cant Add Weapon weapon1: {m_WeaponSlot1}, weapon2: {m_WeaponSlot2}");
+                return;
+            }
+            StartCoroutine(EquipWeaponCoroutine(WeaponData));
+        }
 
         public void UnequipWeapon(Event.TryUnequipWeaponEvent evt) => UnequipWeaponServerRpc(evt.WeaponIdx);
 
@@ -152,18 +160,22 @@ namespace TPSDemo
                 Quaternion.identity,
                 null,
                 obj => {
+                    print("Create Weapon");
                     if(!obj) {
+                        print("Weapon spawn fail");
                         return;
                     }
                     instance = obj;
 
                     var attachable = instance.GetComponentInChildren<AttachableBehaviour>();
                     if (attachable == null) {
+                        print("no attachable");
                         Destroy(instance);
                         return;
                     }
 
                     if (!attachable.TryGetComponent<IWeapon>(out var weapon)) {
+                        print("no iweapon");
                         Destroy(instance);
                         return;
                     }

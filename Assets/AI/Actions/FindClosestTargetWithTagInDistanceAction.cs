@@ -6,7 +6,7 @@ using UnityEngine;
 using Action = Unity.Behavior.Action;
 
 [Serializable, GeneratePropertyBag]
-[NodeDescription(name: "FindClosestTargetWithTagInDistance", story: "Find [m_Target] Closest To [Agent] With [Tag] In [Distance]", category: "Action/Find", id: "c5d833f79fa890abd86728017f791df7")]
+[NodeDescription(name: "FindClosestTargetWithTagInDistance", story: "Find [Target] Closest To [Agent] With [Tag] In [Distance]", category: "Action/Find", id: "c5d833f79fa890abd86728017f791df7")]
 public partial class FindClosestTargetWithTagInDistanceAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Target;

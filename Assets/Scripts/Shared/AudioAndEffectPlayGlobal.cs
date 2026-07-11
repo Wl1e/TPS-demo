@@ -30,8 +30,21 @@ namespace TPSDemo
 
         public void StopLoopAudio(string name)
         {
+            if (IsServer) {
+                StopLoopAudioClientRpc(name);
+            } else if(IsOwner) {
+                StopLoopAudioServerRpc(name);
+            }
+        }
+
+        [ServerRpc]
+        private void StopLoopAudioServerRpc(string name) => StopLoopAudioClientRpc(name);
+
+        [ClientRpc]
+        private void StopLoopAudioClientRpc(string name)
+        {
             if (m_LoopAudio.TryGetValue(name, out AudioClip audioClip)) {
-                if(m_LoopPlayer.TryGetValue(audioClip, out AudioPlayer player)) {
+                if (m_LoopPlayer.TryGetValue(audioClip, out AudioPlayer player)) {
                     // 或许可以只置空
                     player.AudioSource.loop = false;
                     player.Release();

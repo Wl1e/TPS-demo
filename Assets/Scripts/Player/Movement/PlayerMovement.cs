@@ -176,9 +176,10 @@ namespace TPSDemo
             m_PlayerRuntimeData.AniParameter.Velocity = transform.InverseTransformDirection(m_Velocity);
             m_PlayerRuntimeData.AniParameter.IsGrounded = m_IsGrounded;
 
-            if(MoveStart()) {
+            print("CurState: " + CurState);
+            if(CurState == PlayerMovementState.Walk && MoveStart()) {
                 m_Player.AudioEffectPlayer.Play("Movement", float.PositiveInfinity, Vector3.zero, Quaternion.identity, true);
-            } else if(MoveStop()) {
+            } else if(CurState != PlayerMovementState.Walk || MoveStop()) {
                 m_Player.AudioEffectPlayer.StopLoopAudio("Movement");
             }
             //PlayAudioServerRpc(m_Velocity.x != 0 || m_Velocity.z != 0);
@@ -283,6 +284,9 @@ namespace TPSDemo
 
         void GroundCheck()
         {
+            if(m_JumpThisFrame) {
+                return;
+            }
             m_IsGrounded = false;
             float checkDistance = m_CharacterController.skinWidth + 0.03f;
             float radius = m_CharacterController.radius;
