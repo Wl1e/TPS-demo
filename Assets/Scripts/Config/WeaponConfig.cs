@@ -4,7 +4,7 @@ using UnityEngine.AddressableAssets;
 namespace TPSDemo
 {
     [CreateAssetMenu(fileName = "WeaponData", menuName = "Config/Weapon/WeaponData")]
-    public class WeaponItemData : ItemData
+    public class WeaponItemData: ItemData
     {
         [Header("Mechanism")]
         [Tooltip("射速")]
@@ -51,11 +51,11 @@ namespace TPSDemo
 
         [Header("Effects & Audio")]
         [Tooltip("枪口特效预制体")]
-        public AssetReference MuzzleFlashPrefab;
+        public GameObject MuzzleFlashPrefab;
         [Tooltip("枪口特效持续时间（秒）")]
         public float MuzzleFlashTime = 0.09f;
         [Tooltip("弹壳特效预制体")]
-        public AssetReference ShellPrefab;
+        public GameObject ShellPrefab;
         [Tooltip("抛弹壳力度")]
         public float ShellEjectForce = 1f;
         [Tooltip("射击音效")]
@@ -65,6 +65,5 @@ namespace TPSDemo
 
         [Tooltip("准星")]
         public CrosshairData Crosshair;
-        
     }
 }

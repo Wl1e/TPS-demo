@@ -3,7 +3,6 @@ using UnityEngine.Audio;
 
 namespace TPSDemo
 {
-    using System;
     using UI;
 	public class Director: Singleton<Director>
 	{
@@ -28,6 +27,10 @@ namespace TPSDemo
         }
 
         public AudioBuilder RequestAudio(AudioClip clip)
+        {
+            return new AudioBuilder(m_AudioSystem, clip);
+        }
+        public AudioBuilder RequestAudio(UnityEngine.AddressableAssets.AssetReference clip)
         {
             return new AudioBuilder(m_AudioSystem, clip);
         }

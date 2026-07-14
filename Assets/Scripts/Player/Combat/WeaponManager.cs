@@ -341,7 +341,7 @@ namespace TPSDemo
             }
 
             var item = m_Inventory.GetItem(evt.InventoryIdx);
-            //if (!item.ItemData.Prefab.TryGetComponent<IAttachment>(out var attachment)) {
+            //if (!item.ItemData.Asset.TryGetComponent<IAttachment>(out var attachment)) {
             //    return;
             //}
             var attachmentData = item.ItemData as AttachmentItemData;

@@ -979,7 +979,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 585497169
+  GlobalObjectIdHash: 41440137
   InScenePlacedSourceGlobalObjectIdHash: 585497169
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1164,6 +1164,7 @@ MonoBehaviour:
   m_Weapon2Input: {fileID: 11400000, guid: 95c6015c4dfa79b489e1aabce480b0f1, type: 2}
   m_ActiveCursorInput: {fileID: 11400000, guid: 434070da627307d41a7204b84961a64d, type: 2}
   m_QuestPanelInput: {fileID: 11400000, guid: 8b538f1636886ce49b064d3eb5c2fd9d, type: 2}
+  m_SettingInput: {fileID: 11400000, guid: ccc2b969e91b62744bba043bc20a677f, type: 2}
 --- !u!114 &895164871690502373
 MonoBehaviour:
   m_ObjectHideFlags: 0

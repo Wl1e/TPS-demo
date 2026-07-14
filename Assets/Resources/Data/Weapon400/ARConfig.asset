@@ -43,19 +43,9 @@ MonoBehaviour:
   RecoilForce: 0.01
   RecoilFrequency: 100
   RecoilReturnSpeed: 1
-  MuzzleFlashPrefab:
-    m_AssetGUID: 7e9c50938e32351438a7df9ccad2f2a5
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_SubObjectGUID: 
-    m_EditorAssetChanged: 0
+  MuzzleFlashPrefab: {fileID: 100006, guid: 7e9c50938e32351438a7df9ccad2f2a5, type: 3}
   MuzzleFlashTime: 0.09
-  ShellPrefab:
-    m_AssetGUID: 856b672ed5fba044493551f728daa1b4
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_SubObjectGUID: 
-    m_EditorAssetChanged: 0
+  ShellPrefab: {fileID: 5804969533257448620, guid: 856b672ed5fba044493551f728daa1b4, type: 3}
   ShellEjectForce: 1
   ShootSfx: {fileID: 8300000, guid: 6739c01659ad96d47987f4ddee226b36, type: 3}
   ReloadingSfx: {fileID: 8300000, guid: 93331a7c9fe98494a84f18effb358899, type: 3}

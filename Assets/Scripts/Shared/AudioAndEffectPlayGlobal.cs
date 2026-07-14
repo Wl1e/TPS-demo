@@ -6,8 +6,8 @@ namespace TPSDemo
     /// <summary>
     /// 音效和特效默认只能在本地播放，若需要在全局播放，推荐使用该组件
     /// </summary>
-	public class AudioAndEffectPlayGlobal: NetworkBehaviour
-	{
+	public class AudioAndEffectPlayGlobal : NetworkBehaviour
+    {
         private readonly System.Collections.Generic.Dictionary<string, AudioClip> m_Audios = new();
         private readonly System.Collections.Generic.Dictionary<string, GameObject> m_Effects = new();
 
@@ -21,7 +21,7 @@ namespace TPSDemo
 
         public void Play(string name, float duration, Vector3 position, Quaternion rotation, bool bindSelf = false)
         {
-            if(IsServer) {
+            if (IsServer) {
                 PlayAudioAndEffectClientRpc(name, duration, position, rotation, bindSelf);
             } else {
                 PlayAudioAndEffectServerRpc(name, duration, position, rotation, bindSelf);
@@ -32,7 +32,7 @@ namespace TPSDemo
         {
             if (IsServer) {
                 StopLoopAudioClientRpc(name);
-            } else if(IsOwner) {
+            } else if (IsOwner) {
                 StopLoopAudioServerRpc(name);
             }
         }
@@ -60,7 +60,7 @@ namespace TPSDemo
         [ClientRpc]
         public void PlayAudioAndEffectClientRpc(string name, float duration, Vector3 position, Quaternion rotation, bool bindSelf)
         {
-            if(m_Audios.TryGetValue(name, out var audio)) {
+            if (m_Audios.TryGetValue(name, out var audio)) {
                 Director.Instance.RequestAudio(audio)
                     .WithPosition(position)
                     .WithDuration(duration)
@@ -74,7 +74,7 @@ namespace TPSDemo
                     .WithDuration(duration)
                     .Create();
             }
-            if(m_LoopAudio.TryGetValue(name, out var loopAudio)) {
+            if (m_LoopAudio.TryGetValue(name, out var loopAudio)) {
                 if (!m_LoopPlayer.ContainsKey(loopAudio)) {
                     var player = Director.Instance.Borrow();
                     if (bindSelf) {
@@ -89,5 +89,16 @@ namespace TPSDemo
                 }
             }
         }
-	}
+
+        public void Clear()
+        {
+            foreach (var player in m_LoopPlayer) {
+                player.Value.Release();
+            }
+            m_LoopPlayer.Clear();
+            m_Audios.Clear();
+            m_Effects.Clear();
+            m_LoopAudio.Clear();
+        }
+    }
 }

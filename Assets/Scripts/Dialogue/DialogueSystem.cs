@@ -82,6 +82,7 @@ using Event;
         public void ChangeNode(int NodeId)
         {
             m_CurrentNodeId = NodeId;
+            m_Npc.PlayAudio(NodeId);
             EventManager.Broadcast(new UpdateDialogEvent { DialogueNode = GetCurrentNode() });
         }
 
@@ -111,6 +112,7 @@ using Event;
             m_Npc = npc;
 
             m_Data = m_Npc.DialogueData;
+            print("DialogueData: " + m_Npc.DialogueData);
             m_CurrentPlayer.SetInputActive(false, false);
 
             ChangeState(DialogState.Active);

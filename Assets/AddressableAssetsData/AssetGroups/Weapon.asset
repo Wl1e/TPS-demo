@@ -20,22 +20,10 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 430e2aa2f8ddaa542844b1b3bf051bc6
-    m_Address: Assets/Prefabs/Weapon/Grenade.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - NetCodePrefab
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 46a90a4fc3490b54abd6dea5267a858d
     m_Address: Assets/Prefabs/Weapon/Attachment/AR_Default_Scope.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 599b94dcaec819e49815631b7eb37f07
-    m_Address: Assets/Prefabs/Weapon/AR.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - NetCodePrefab
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 619c2f23b58e7264dab2f08d65f9f522
     m_Address: Assets/Prefabs/Weapon/Attachment/LaserSight.prefab
@@ -47,14 +35,13 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9fb6b724080d60742802d70f1a0a0d6c
-    m_Address: Assets/Prefabs/Weapon/Shotgun.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - NetCodePrefab
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ad0dbfebd2652644f9dedd056999a584
     m_Address: Assets/Prefabs/Weapon/Attachment/LaserFlashlight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f638f8fa68ecca64ba961ab91bc523be
+    m_Address: Assets/Prefabs/Weapon/Attachment/Shotgun_Default_Scope.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

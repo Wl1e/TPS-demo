@@ -12,7 +12,7 @@ namespace TPSDemo.UI
         public List<(IAttachment.AttachmentSlot, int)> AttachmentIdList;
     }
 
-    public class LoadoutUI : MonoBehaviour
+    public class LoadoutUI : MonoBehaviour, IPanel
     {
         public WeaponSlotUI WeaponSlot1;
         public WeaponSlotUI WeaponSlot2;
@@ -22,16 +22,12 @@ namespace TPSDemo.UI
         private void Start()
         {
             EventManager.AddListener<Event.UpdateLoadoutUIEvent>(UpdateLoadout);
-            // 装备槽在UI上是背包的一部分，为了降低Inventory复杂度，单独拿出来
-            // 所以当背包打开/关闭时，装备槽也要跟着显示/隐藏
-            EventManager.AddListener<Event.InventoryStateChangeEvent>(OnInventoryStateChange);
             gameObject.SetActive(m_IsOpened);
         }
 
         private void OnDestroy()
         {
             EventManager.RemoveListener<Event.UpdateLoadoutUIEvent>(UpdateLoadout);
-            EventManager.RemoveListener<Event.InventoryStateChangeEvent>(OnInventoryStateChange);
         }
 
         public void Initialize()
@@ -58,9 +54,15 @@ namespace TPSDemo.UI
             WeaponSlot2.SetWeapon(evt.Weapon2);
         }
 
-        void OnInventoryStateChange(Event.InventoryStateChangeEvent evt)
+        public void Open()
         {
-            m_IsOpened = evt.IsOpened;
+            m_IsOpened = true;
+            gameObject.SetActive(m_IsOpened);
+        }
+
+        public void Close()
+        {
+            m_IsOpened = false;
             gameObject.SetActive(m_IsOpened);
         }
     }

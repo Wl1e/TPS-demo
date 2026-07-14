@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace TPSDemo.UI
@@ -7,16 +7,18 @@ namespace TPSDemo.UI
 using InventoryUpdateEvent = Event.InventoryUpdateEvent;
 using InventoryStateChangeEvent = Event.InventoryStateChangeEvent;
 
-    public class InventoryUI : MonoBehaviour
+    public class InventoryUI : MonoBehaviour, IPanel
     {
         [SerializeField] List<InventorySlotUI> m_Slots;
         bool m_IsOpened = false;
 
+        // 装备槽在UI上是背包的一部分，为了降低Inventory复杂度，单独拿出来
+        // 所以当背包打开/关闭时，装备槽也要跟着显示/隐藏
+        [SerializeField] LoadoutUI m_Loadout; 
+
         void Awake()
         {
             EventManager.AddListener<InventoryUpdateEvent>(HandleUpdateUI);
-            // �ĳ��߼���������룬ͨ���¼��򿪽���
-            EventManager.AddListener<InventoryStateChangeEvent>(OnInventoryStateChange);
             for (int idx = 0; idx < m_Slots.Count; idx++) {
                 m_Slots[idx].Inventory = this;
                 m_Slots[idx].SlotIdx = idx;
@@ -25,7 +27,6 @@ using InventoryStateChangeEvent = Event.InventoryStateChangeEvent;
         void OnDestroy()
         {
             EventManager.RemoveListener<InventoryUpdateEvent>(HandleUpdateUI);
-            EventManager.RemoveListener<InventoryStateChangeEvent>(OnInventoryStateChange);
         }
 
         private void Start()
@@ -66,11 +67,18 @@ using InventoryStateChangeEvent = Event.InventoryStateChangeEvent;
             );
         }
 
-        void OnInventoryStateChange(Event.InventoryStateChangeEvent evt)
+        public void Open()
         {
-            m_IsOpened = evt.IsOpened;
+            m_IsOpened = true;
             gameObject.SetActive(m_IsOpened);
-            Cursor.lockState = m_IsOpened ? CursorLockMode.None : CursorLockMode.Locked;
+            m_Loadout.gameObject.SetActive(m_IsOpened);
+        }
+
+        public void Close()
+        {
+            m_IsOpened = false;
+            gameObject.SetActive(m_IsOpened);
+            m_Loadout.gameObject.SetActive(m_IsOpened);
         }
     }
 }

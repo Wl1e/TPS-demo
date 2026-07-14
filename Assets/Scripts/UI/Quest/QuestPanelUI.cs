@@ -9,7 +9,7 @@ namespace TPSDemo.UI
     /// <summary>
     /// 任务面板主控 — 监听 QuestUpdateEvent，刷新左侧列表和右侧详情
     /// </summary>
-    public class QuestPanelUI : MonoBehaviour
+    public class QuestPanelUI : MonoBehaviour, IPanel
     {
         [Header("左侧列表")]
         [Tooltip("任务列表容器组件")]
@@ -41,7 +41,6 @@ namespace TPSDemo.UI
 
         private void Start()
         {
-            EventManager.AddListener<Event.QuestStateChangeEvent>(SetQuestState);
             EventManager.AddListener<Event.QuestUpdateEvent>(Refresh);
 
             m_QuestList.OnQuestSelected += UpdateQuestDetail;
@@ -70,7 +69,7 @@ namespace TPSDemo.UI
 
         private void OnDestroy()
         {
-            EventManager.RemoveListener<Event.QuestStateChangeEvent>(SetQuestState);
+            
             EventManager.RemoveListener<Event.QuestUpdateEvent>(Refresh);
         }
 
@@ -87,17 +86,6 @@ namespace TPSDemo.UI
             } else {
                 m_RewardButton.gameObject.SetActive(false);
                 m_CancelButton.gameObject.SetActive(false);
-            }
-        }
-
-        private void SetQuestState(Event.QuestStateChangeEvent evt)
-        {
-            m_IsOpened = evt.IsOpened;
-            if (m_IsOpened) {
-                gameObject.SetActive(true);
-                Refresh();
-            } else {
-                gameObject.SetActive(false);
             }
         }
 
@@ -179,6 +167,19 @@ namespace TPSDemo.UI
             } else {
                 m_CancelButton.gameObject.SetActive(true);
             }
+        }
+
+        public void Open()
+        {
+            m_IsOpened = true;
+            gameObject.SetActive(m_IsOpened);
+            Refresh();
+        }
+
+        public void Close()
+        {
+            m_IsOpened = false;
+            gameObject.SetActive(m_IsOpened);
         }
     }
 }

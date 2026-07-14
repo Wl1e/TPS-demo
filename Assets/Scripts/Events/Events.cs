@@ -2,7 +2,6 @@
 
 
 using System.Collections.Generic;
-using TPSDemo;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -136,12 +135,12 @@ namespace TPSDemo.Event
 
     public class InventoryStateChangeEvent : InternalEvent
     {
-        public bool IsOpened;
     }
 
     public class InventoryUpdateEvent: InternalEvent
     {
     }
+
     public class InventoryTrySwapItemEvent: InternalEvent
     {
         public int SlotIdx1;
@@ -245,7 +244,6 @@ namespace TPSDemo.Event
     // logic -> ui
     public class QuestStateChangeEvent: InternalEvent
     {
-        public bool IsOpened;
     }
 
     public class QuestUpdateEvent : InternalEvent
@@ -292,6 +290,31 @@ namespace TPSDemo.Event
     public class MapObjectiveUpdateEvent : InternalEvent
     {
         public ObjectiveProgress[] Objectives;
+    }
+
+    public class MapLoadProgressEvent: InternalEvent
+    {
+        public int MapId;
+        public float Progress;
+        public bool IsCompleted;
+    }
+
+    #endregion
+
+    #region Other
+    public class AssetUpdateEvent: InternalEvent
+    {
+        public List<string> Keys;
+    }
+
+    public class SettingChangedEvent: InternalEvent
+    {
+        public int Language;
+    }
+
+    public class LanguageChangedEvent: InternalEvent
+    {
+        public Language.LanguageEnum NewLanguage;
     }
     #endregion
 }

@@ -10,44 +10,47 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99b2094c21dbfc24585ef72b08d51758, type: 3}
-  m_Name: Dialogue
+  m_Name: DialogueEnglish
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   InitializeIdx: 0
   Nodes:
   - Id: 0
-    Content: "\u4F60\u597D"
+    Content: hello
+    ContentAudio: {fileID: 8300000, guid: 6b1a500d0fde34645b3e33b6e062668e, type: 3}
     Options:
-    - Content: "\u4F60\u597D"
+    - Content: hello
       Action: 0
       GotoIdx: 1
       ActionData: 
-    - Content: "\uFF08\u65E0\u89C6\uFF09"
+    - Content: (ignore)
       Action: 1
       GotoIdx: 1
       ActionData: 
   - Id: 1
-    Content: "\u6709\u4EC0\u4E48\u80FD\u5E2E\u5230\u4F60\u7684\u5417\uFF1F"
+    Content: Is there anything I can help you with?
+    ContentAudio: {fileID: 8300000, guid: b051f4ee314e80a4da43d64c557c394d, type: 3}
     Options:
-    - Content: "\u6211\u8981\u4E70\u4E1C\u897F\uFF08\u6253\u5F00\u5546\u5E97\uFF09"
+    - Content: "I want to buy something.\uFF08Open store\uFF09"
       Action: 4
       GotoIdx: 1
       ActionData: 1001
-    - Content: "\u63A5\u53D7\u4EFB\u52A11001"
+    - Content: Accept the task 1001
       Action: 3
       GotoIdx: 2
       ActionData: 1001
-    - Content: "\u63A5\u53D7\u4EFB\u52A12001"
+    - Content: Accept the task 2001
       Action: 3
       GotoIdx: 2
       ActionData: 2001
-    - Content: "\u6682\u65F6\u6CA1\u6709\u9700\u8981"
+    - Content: No need
       Action: 0
       GotoIdx: 2
       ActionData: 
   - Id: 2
-    Content: "\u6709\u9700\u8981\u968F\u65F6\u6765\u627E\u6211"
+    Content: Feel free to reach out to me whenever you need
+    ContentAudio: {fileID: 8300000, guid: 6a40a1f2b01122b46821f582e620ebfb, type: 3}
     Options:
-    - Content: "\uFF08\u5173\u95ED\u5BF9\u8BDD\uFF09"
+    - Content: "\uFF08End conversation\uFF09"
       Action: 1
       GotoIdx: 1
       ActionData: 

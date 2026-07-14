@@ -40,22 +40,12 @@ MonoBehaviour:
   DefaultClipSize: 1
   ReloadTime: 2
   AmmoId: 1003
-  RecoilForce: 1
+  RecoilForce: 0.2
   RecoilFrequency: 100
   RecoilReturnSpeed: 10
-  MuzzleFlashPrefab:
-    m_AssetGUID: 
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_SubObjectGUID: 
-    m_EditorAssetChanged: 0
+  MuzzleFlashPrefab: {fileID: 0}
   MuzzleFlashTime: 0.09
-  ShellPrefab:
-    m_AssetGUID: 
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_SubObjectGUID: 
-    m_EditorAssetChanged: 0
+  ShellPrefab: {fileID: 0}
   ShellEjectForce: 1
   ShootSfx: {fileID: 8300000, guid: f9eb44b85c96be5429737d4dcadbfa3b, type: 3}
   ReloadingSfx: {fileID: 0}

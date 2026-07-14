@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
+using System;
 
 
 public class PlayerInputHandler : NetworkBehaviour
@@ -24,6 +25,7 @@ public class PlayerInputHandler : NetworkBehaviour
     [SerializeField] private GameEvent m_Weapon2Input;
     [SerializeField] private BoolEvent m_ActiveCursorInput;
     [SerializeField] private GameEvent m_QuestPanelInput;
+    [SerializeField] private GameEvent m_SettingInput;
 
     public override void OnNetworkSpawn()
     {
@@ -63,6 +65,7 @@ public class PlayerInputHandler : NetworkBehaviour
         map.FindAction("Weapon2").performed += OnWeapon2;
         map.FindAction("ActiveCursor").performed += OnActiveCursor;
         map.FindAction("Quest").performed += OnQuest;
+        map.FindAction("Setting").performed += OnSetting;
     }
 
     private void UnregisterInputAction()
@@ -86,11 +89,12 @@ public class PlayerInputHandler : NetworkBehaviour
         map.FindAction("Weapon2").performed -= OnWeapon2;
         map.FindAction("ActiveCursor").performed -= OnActiveCursor;
         map.FindAction("Quest").performed -= OnQuest;
+        map.FindAction("Setting").performed -= OnSetting;
     }
 
     private bool ValidPlayerInput()
     {
-        return !m_InputBlock.IsLockd() && !m_OpenInventory;
+        return Cursor.lockState == CursorLockMode.Locked;
     }
 
     public void SetActive(bool active)
@@ -103,6 +107,7 @@ public class PlayerInputHandler : NetworkBehaviour
     }
 
     #region
+
     private void OnMove(InputAction.CallbackContext ctx)
     {
         if(!ValidPlayerInput()) {
@@ -111,6 +116,7 @@ public class PlayerInputHandler : NetworkBehaviour
         Vector2 moveValue = ctx.ReadValue<Vector2>();
         m_MoveInput.Raise(moveValue);
     }
+
     private void OnJump(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
@@ -118,6 +124,7 @@ public class PlayerInputHandler : NetworkBehaviour
         }
         m_JumpInput.Raise();
     }
+
     private void OnSprint(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
@@ -125,6 +132,7 @@ public class PlayerInputHandler : NetworkBehaviour
         }
         m_SprintInput.Raise();
     }
+
     private void OnCrouch(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
@@ -132,6 +140,7 @@ public class PlayerInputHandler : NetworkBehaviour
         }
         m_CrouchInput.Raise();
     }
+
     private void OnLook(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
@@ -148,6 +157,7 @@ public class PlayerInputHandler : NetworkBehaviour
         }
         m_ScrollInput.Raise(Mathf.FloorToInt(ctx.ReadValue<Vector2>().y));
     }
+
     private void OnFire(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
@@ -155,6 +165,7 @@ public class PlayerInputHandler : NetworkBehaviour
         }
         m_FireInput.Raise(ctx.ReadValueAsButton());
     }
+
     private void OnAimPressed(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
@@ -162,6 +173,7 @@ public class PlayerInputHandler : NetworkBehaviour
         }
         m_AimInput.Raise(true);
     }
+
     private void OnAimReleased(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
@@ -169,6 +181,7 @@ public class PlayerInputHandler : NetworkBehaviour
         }
         m_AimInput.Raise(false);
     }
+
     private void OnReload(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
@@ -176,6 +189,7 @@ public class PlayerInputHandler : NetworkBehaviour
         }
         m_ReloadInput.Raise();
     }
+
     private void OnInteraction(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
@@ -183,11 +197,7 @@ public class PlayerInputHandler : NetworkBehaviour
         }
         m_InteractionInput.Raise();
     }
-    private void OnInventory(InputAction.CallbackContext ctx)
-    {
-        m_OpenInventory = !m_OpenInventory;
-        m_InventoryInput.Raise();
-    }
+    
     private void OnGrenade(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
@@ -203,6 +213,7 @@ public class PlayerInputHandler : NetworkBehaviour
         }
         m_Weapon1Input.Raise();
     }
+
     private void OnWeapon2(InputAction.CallbackContext ctx)
     {
         if (!ValidPlayerInput()) {
@@ -211,17 +222,27 @@ public class PlayerInputHandler : NetworkBehaviour
         m_Weapon2Input.Raise();
     }
 
+
     private void OnActiveCursor(InputAction.CallbackContext ctx)
     {
-        if (!ValidPlayerInput()) {
-            return;
-        }
         m_ActiveCursorInput.Raise(ctx.ReadValueAsButton());
+    }
+
+    private void OnInventory(InputAction.CallbackContext ctx)
+    {
+        m_OpenInventory = !m_OpenInventory;
+        m_InventoryInput.Raise();
     }
 
     private void OnQuest(InputAction.CallbackContext obj)
     {
         m_QuestPanelInput.Raise();
     }
+
+    private void OnSetting(InputAction.CallbackContext context)
+    {
+        m_SettingInput.Raise();
+    }
+
     #endregion
 }

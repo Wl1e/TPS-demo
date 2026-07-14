@@ -5,8 +5,6 @@ using UnityEngine;
 
 namespace TPSDemo
 {
-
-
     public class EnemyController : NetworkBehaviour
     {
         [Header("资源")]
@@ -38,8 +36,8 @@ namespace TPSDemo
         protected HealthBar m_HealthBar;
         protected AudioAndEffectPlayGlobal m_AudioAndEffectPlayGlobal;
 
-        public AudioAndEffectPlayGlobal AEPlayer => m_AudioAndEffectPlayGlobal;
         public UnityEngine.AI.NavMeshAgent Agent => m_Agent;
+        public AudioAndEffectPlayGlobal AEPlayer => m_AudioAndEffectPlayGlobal;
 
         [Tooltip("攻击者组件")]
         [SerializeField] protected AttackerBase m_Attacker;
@@ -60,7 +58,6 @@ namespace TPSDemo
             m_Agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
             m_HealthBar = GetComponentInChildren<HealthBar>();
             m_AnimatorController = GetComponentInChildren<ManualAnimatorController>();
-            m_AudioAndEffectPlayGlobal = GetComponent<AudioAndEffectPlayGlobal>();
             m_TargetDir = transform.forward;
             m_TargetDir.y = 0;
         }
@@ -90,6 +87,7 @@ namespace TPSDemo
                 m_BehaviorTree.enabled = false;
             }
             m_HealthBar.Initialize(m_Health.Ratio);
+            //NetworkEffectService.Instance.AddAudio(DeadAudio);
             m_AudioAndEffectPlayGlobal.AddAudio("Dead", DeadAudio);
         }
 
@@ -130,7 +128,12 @@ namespace TPSDemo
                 return;
             }
             print($"{gameObject.name} IsDied");
-            m_AudioAndEffectPlayGlobal.Play("Dead", float.NegativeInfinity, transform.position, Quaternion.identity);
+            //NetworkEffectService.Instance.Play(
+            //    DeadAudio.name, float.NegativeInfinity, transform.position, Quaternion.identity
+            //);
+            m_AudioAndEffectPlayGlobal.Play(
+                "Dead", float.NegativeInfinity, transform.position, Quaternion.identity
+            );
             m_AnimatorController.Play(ManualAnimatorController.AnimationType.Died.ToString());
             EventManager.Broadcast(
                 new Event.ActorDiedEvent {

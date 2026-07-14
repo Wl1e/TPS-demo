@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -44,9 +43,11 @@ namespace TPSDemo
         Coroutine m_WaitAnimatorCoroutine = null;
 
         // Dialog
-        [Tooltip("对话数据")]
-        [SerializeField] DialogueData m_DialogueData;
-        public DialogueData DialogueData => m_DialogueData;
+        [Tooltip("中文对话数据")]
+        [SerializeField] DialogueData m_DialogueDataCN;
+        [Tooltip("英文对话数据")]
+        [SerializeField] DialogueData m_DialogueDataEN;
+        public DialogueData DialogueData { get; private set; }
         /// <summary>
         /// 当前是否正在和player交流
         /// </summary>
@@ -72,9 +73,12 @@ namespace TPSDemo
             BackTurn = 3,
         }
 
+        private AudioAndEffectPlayGlobal m_AudioAndEffectPlayGlobal;
+
         private void Awake()
         {
             m_Animator = GetComponentInChildren<Animator>();
+            m_AudioAndEffectPlayGlobal = GetComponent<AudioAndEffectPlayGlobal>();
         }
 
         public override void OnNetworkSpawn()
@@ -82,7 +86,37 @@ namespace TPSDemo
             base.OnNetworkSpawn();
             if(IsClient) {
                 m_ChattingPlayer.OnValueChanged += OnPlayerChatting;
+                LanguageChanged(LocalizationManager.Instance.CurLanguage);
+                EventManager.AddListener<Event.LanguageChangedEvent>(ChangeAudio);
             }
+        }
+
+        private void ChangeAudio(Event.LanguageChangedEvent evt)
+        {
+            print("Npc更新语音：" + LocalizationManager.Instance.GetCurrentLanguageString());
+            LanguageChanged(LocalizationManager.Instance.CurLanguage);
+        }
+
+        private void LanguageChanged(Language.LanguageEnum language)
+        {
+            StartCoroutine(AssetCache.GetOrLoadByLabel<AudioClip>(
+                Language.GetLanguageString(language),
+                clipList => {
+                    if (language == Language.LanguageEnum.Chinese) {
+                        DialogueData = m_DialogueDataCN;
+                        print("load chinese dialog");
+                    } else if (language == Language.LanguageEnum.English) {
+                        DialogueData = m_DialogueDataEN;
+                        print("load english dialog");
+                    }
+                    print("New Dialog: " + DialogueData);
+                    m_AudioAndEffectPlayGlobal.Clear();
+                    foreach (AudioClip clip in clipList) {
+                        m_AudioAndEffectPlayGlobal.AddAudio(clip.name, clip);
+                        print("Add Audio " + clip.name);
+                    }
+                }
+            ));
         }
 
         public override void OnNetworkDespawn()
@@ -214,9 +248,19 @@ namespace TPSDemo
         private void OnPlayerChatting(int previousValue, int newValue)
         {
             if(IsClient && m_Player != null && m_Player.Id == newValue) {
-                print($"Client {newValue} Start Dialog");
                 DialogueSystem.Instance.Enter(m_Player, this);
             }
+        }
+
+        public void PlayAudio(int dialogId)
+        {
+            m_AudioAndEffectPlayGlobal.Play(
+                $"NpcAudio{dialogId}_{LocalizationManager.Instance.GetCurrentLanguageString()}",
+                float.PositiveInfinity,
+                transform.position,
+                Quaternion.identity
+            );
+            print("Npc Play Audio " + $"NpcAudio{dialogId}_{LocalizationManager.Instance.GetCurrentLanguageString()}");
         }
     }
 }

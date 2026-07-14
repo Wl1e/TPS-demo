@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using TPSDemo.Event;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -131,7 +133,10 @@ namespace TPSDemo
                 } else if(IsOwner) {
                     EventManager.Broadcast(new Event.MessageLogEvent { Message = $"进入场景{map.Config.MapName}" });
                 }
-            } else if (e.SceneEventType == SceneEventType.Synchronize) {
+            } else if (e.SceneEventType == SceneEventType.Load) {
+                if(IsOwner) {
+                    StartCoroutine(UpdateProcess(e.AsyncOperation));
+                }
             }
         }
 
@@ -175,5 +180,26 @@ namespace TPSDemo
         }
 
         #endregion 地图切换（仅服务器）
+
+        #region UI
+        private IEnumerator UpdateProcess(AsyncOperation asyncOperation)
+        {
+            while (!asyncOperation.isDone) {
+                EventManager.Broadcast(
+                    new MapLoadProgressEvent {
+                        MapId = 0,
+                        Progress = asyncOperation.progress,
+                        IsCompleted = asyncOperation.isDone
+                    });
+                yield return null;
+            }
+            EventManager.Broadcast(
+                    new MapLoadProgressEvent {
+                        MapId = 0,
+                        Progress = asyncOperation.progress,
+                        IsCompleted = asyncOperation.isDone
+                    });
+        }
+        #endregion
     }
 }

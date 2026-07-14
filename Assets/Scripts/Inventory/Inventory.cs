@@ -15,8 +15,6 @@ namespace TPSDemo
         private int m_Size;
         public int DefaultSize = 12;
 
-        private bool m_IsOpened = false;
-
         [SerializeField] private GameEvent m_InventoryEvent;
 
         private PlayerController m_Owner;
@@ -234,16 +232,7 @@ namespace TPSDemo
             EventManager.Broadcast(new Event.InventoryUpdateEvent());
         }
 
-        private void OnInventoryInput()
-        {
-            m_IsOpened = !m_IsOpened;
-            if (m_IsOpened) {
-                m_Owner.SetInputActive(false, false);
-            } else {
-                m_Owner.SetInputActive(true, true);
-            }
-            EventManager.Broadcast(new Event.InventoryStateChangeEvent { IsOpened = m_IsOpened });
-        }
+        private void OnInventoryInput() => EventManager.Broadcast(new Event.InventoryStateChangeEvent());
 
         #region Server
 

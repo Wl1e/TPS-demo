@@ -17,7 +17,6 @@ namespace TPSDemo
 
     public class Weapon: NetworkBehaviour, IWeapon
     {
-        // ����������
         GameObject m_Owner;
 
         [SerializeField] private WeaponItemData m_Config;
@@ -54,16 +53,13 @@ namespace TPSDemo
 
         // Component
         /// <summary>
-        /// ������Ϊ��һ���ӵ�������ǹ��Χ�����
         /// </summary>
         IShootBehaviour m_Behaviour;
         /// <summary>
-        /// ������ɣ��Զ������Զ�����������
         /// </summary>
         IFireMechanism m_FireMechanism;
         Transform m_Target;
         /// <summary>
-        /// �������
         /// </summary>
         AttachmentManager m_AttachmentManager;
 
@@ -129,7 +125,6 @@ namespace TPSDemo
         }
 
         /// <summary>
-        /// Server�� �����߼������ӵ���ͬʱ����Client����������Ч��
         /// </summary>
         [ServerRpc]
         void FireServerRpc(Vector3 position)
@@ -142,7 +137,6 @@ namespace TPSDemo
         }
 
         /// <summary>
-        /// Client�� �����߼���ֻ������Ч�Ͷ�����
         /// </summary>
         [ClientRpc]
         void FireClientRpc()
@@ -165,22 +159,17 @@ namespace TPSDemo
             PlayerClientEffects();
         }
 
-        // �������͸����ͻ��˲���(�������׳����ǡ�ǹ�桢ǹ��)
-        // Ϊʲô����AudioAndEffectPlayGlobal?
-        // ������ҪServer�ж�(FireServerRpc)��Ȼ�����ͨ��rpc���ص�ownerִ�п�����ô
-        // �ɴ������rpcֱ��������client����Ч�������owner������client�ٷ�rpc
         private void PlayerClientEffects()
         {
             if (m_Animator) {
                 m_Animator.Play("Fire");
             }
-            if (m_Config.ShellPrefab.RuntimeKeyIsValid() && ShellEjectPoint) {
-                StartCoroutine(AssetCache.GetOrLoad(m_Config.ShellPrefab, ShellEjectPoint.position, ShellEjectPoint.rotation, null, obj => {
-                    if (obj.TryGetComponent<Rigidbody>(out var rb)) {
-                        rb.AddForce(ShellEjectPoint.forward * m_Config.ShellEjectForce, ForceMode.Impulse);
-                        Destroy(obj, 3f);
-                    }
-                }));
+            if (m_Config.ShellPrefab && ShellEjectPoint) {
+                var shell = Instantiate(m_Config.ShellPrefab, ShellEjectPoint.position, ShellEjectPoint.rotation, null);
+                if (shell.TryGetComponent<Rigidbody>(out var rb)) {
+                    rb.AddForce(ShellEjectPoint.forward * m_Config.ShellEjectForce, ForceMode.Impulse);
+                    Destroy(shell, 3f);
+                }
             }
 
             Director.Instance.RequestEffect(m_Config.MuzzleFlashPrefab)
@@ -243,8 +232,6 @@ namespace TPSDemo
         private void OnEquipClientRpc()
         {
             //transform.SetLocalPositionAndRotation(m_HandOffset, Quaternion.Euler(m_HandRotation));
-            StartCoroutine(AssetCache.Load(m_Config.ShellPrefab));
-            StartCoroutine(AssetCache.Load(m_Config.MuzzleFlashPrefab));
         }
 
         public void OnUnequip()

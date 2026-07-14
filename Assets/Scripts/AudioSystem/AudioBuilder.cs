@@ -6,6 +6,7 @@ namespace TPSDemo
     {
         AudioSystem m_AudioSystem;
         AudioClip m_AudioClip;
+        readonly UnityEngine.AddressableAssets.AssetReference m_AudioRef;
         Transform m_AttachTransform;
         Vector3 m_Position;
         float m_Duration = float.PositiveInfinity;
@@ -14,6 +15,12 @@ namespace TPSDemo
         {
             m_AudioSystem = audioSystem;
             m_AudioClip = clip;
+        }
+
+        public AudioBuilder(AudioSystem audioSystem, UnityEngine.AddressableAssets.AssetReference audioRef)
+        {
+            m_AudioSystem = audioSystem;
+            m_AudioRef = audioRef;
         }
 
         public AudioBuilder AttachTo(Transform attach)
@@ -36,15 +43,19 @@ namespace TPSDemo
 
         public void Play()
         {
-            if (m_AudioSystem == null || !m_AudioClip) {
+            if (m_AudioSystem == null) {
                 return;
             }
-            m_AudioSystem.Play(new AudioSystem.AudioInfo {
-                AudioClip = m_AudioClip,
-                AttachTransform = m_AttachTransform,
-                Position = m_Position,
-                Duration = m_Duration
-            });
+            if (m_AudioClip != null) {
+                m_AudioSystem.Play(
+                    new AudioSystem.AudioInfo {
+                        AudioClip = m_AudioClip,
+                        AttachTransform = m_AttachTransform,
+                        Position = m_Position,
+                        Duration = m_Duration
+                    }
+                );
+            }
         }
     }
 }

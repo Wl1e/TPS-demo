@@ -1,6 +1,5 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
-using static UnityEngine.AdaptivePerformance.Provider.AdaptivePerformanceSubsystemDescriptor;
 
 namespace TPSDemo
 {

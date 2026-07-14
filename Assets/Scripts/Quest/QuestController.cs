@@ -17,7 +17,6 @@ namespace TPSDemo
         private readonly NetworkList<QuestProcess> m_Processes = new();
         public NetworkList<QuestProcess> QuestProcesses => m_Processes;
 
-        private bool m_UIOpened =false;
         [SerializeField] GameEvent m_OpenQuestPanelInput;
 
         PlayerController m_PlayerController;
@@ -192,13 +191,7 @@ namespace TPSDemo
 
         private void OpenQuestPanel()
         {
-            m_UIOpened = !m_UIOpened;
-            if (m_UIOpened) {
-                m_PlayerController.SetInputActive(false, false);
-            } else {
-                m_PlayerController.SetInputActive(true, true);
-            }
-            EventManager.Broadcast(new Event.QuestStateChangeEvent{ IsOpened = m_UIOpened });
+            EventManager.Broadcast(new Event.QuestStateChangeEvent());
         }
 
         #endregion

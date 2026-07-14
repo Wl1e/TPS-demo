@@ -6,7 +6,7 @@ namespace TPSDemo.UI
 {
 using Event;
 
-    public class DialogUI : MonoBehaviour
+    public class DialogUI : MonoBehaviour, IPanel
     {
         public Image BackGround;
         public TextMeshProUGUI Name;
@@ -37,13 +37,11 @@ using Event;
         {
             m_CurrentPlayerId = evt.PlayerId;
             m_NpcName = evt.Npc.Name;
-            gameObject.SetActive(true);
         }
 
         void DialogEnd(EndDialogEvent evt)
         {
             ClearUI();
-            gameObject.SetActive(false);
         }
 
         void DialogUpdate(UpdateDialogEvent evt)
@@ -80,6 +78,16 @@ using Event;
             for (int i = OptionsPanel.content.childCount - 1; i >= 0; i--) {
                 Destroy(OptionsPanel.content.GetChild(i).gameObject);
             }
+        }
+
+        public void Open()
+        {
+            gameObject.SetActive(true);
+        }
+
+        public void Close()
+        {
+            gameObject.SetActive(false);
         }
     }
 
