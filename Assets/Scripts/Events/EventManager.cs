@@ -43,4 +43,13 @@ namespace TPSDemo
             }
         }
     }
+
+    static public class MessageLog
+    {
+        static public void Log(string message, float duration = -1f)
+        {
+            EventManager.Broadcast(new MessageLogEvent { Message = message, Duration = duration });
+        }
+    }
+
 }

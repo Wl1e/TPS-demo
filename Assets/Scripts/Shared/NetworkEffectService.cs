@@ -92,6 +92,7 @@ namespace TPSDemo
             
             if (m_Audios.TryGetValue(name, out var audio)) {
                 Director.Instance.RequestAudio(audio)
+                    .WithMixerGroup(Director.Instance.GetGroup(2))
                     .WithPosition(position)
                     .WithDuration(duration)
                     .Play();
@@ -115,7 +116,7 @@ namespace TPSDemo
                     }
                     player.AudioSource.loop = true;
                     m_LoopPlayer.Add(name, player);
-                    player.Play(loopAudio, float.PositiveInfinity);
+                    player.Play(loopAudio, Director.Instance.GetGroup(2), float.PositiveInfinity);
                 }
             }
         }

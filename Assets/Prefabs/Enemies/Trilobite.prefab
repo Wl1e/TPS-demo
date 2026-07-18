@@ -503,7 +503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2530470313
+  GlobalObjectIdHash: 411984806
   InScenePlacedSourceGlobalObjectIdHash: 411984806
   DeferredDespawnTick: 0
   Ownership: 1
@@ -588,10 +588,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70f2772760337c84196dc4a2e4ffb2c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.Health
+  ShowTopMostFoldoutHeaderGroup: 1
   m_HealthValue:
-    value: 100
-    lo: 10
-    hi: 100
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue:
+      value: 0
+      lo: 0
+      hi: 0
 --- !u!195 &3885528527569644279
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -632,6 +637,7 @@ MonoBehaviour:
   MovementAudio: {fileID: 8300000, guid: 44c5f76f80602024e82d3e5f3af4ee97, type: 3}
   m_SetTargetWhenHit: 0
   m_Channel: {fileID: 11400000, guid: 47315a606f2d44a428be53b2775918d1, type: 2}
+  m_SmoothRotateTime: 1
   DiedTime: 0.5
   EnemyId: 101
   m_Attacker: {fileID: 0}
@@ -812,7 +818,7 @@ MonoBehaviour:
   - {fileID: 7917238477492602328}
   - {fileID: 8775833900691866587}
   BulletPrefab: {fileID: 6601797778091609916, guid: 8409e2dcc23d54643b69db518e4d9821, type: 3}
-  BulletSpeed: 1
+  BulletSpeed: 5
   HitLayerMask:
     serializedVersion: 2
     m_Bits: 12590080

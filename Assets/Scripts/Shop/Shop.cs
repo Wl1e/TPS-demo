@@ -100,14 +100,12 @@ namespace TPSDemo
         public void Enter(PlayerController player)
         {
             m_Player = player;
-            m_Player.SetInputActive(false, false);
             //EventManager.AddListener<Event.TryBuyEvent>(TryBuy);
             EventManager.Broadcast(new Event.ShopOpenEvent { ShopId = ShopId, ShopName = ShopName });
         }
 
         public void Exit(PlayerController player)
         {
-            player.SetInputActive(true, true);
             //EventManager.RemoveListener<Event.TryBuyEvent>(TryBuy);
             EventManager.Broadcast(new Event.ShopCloseEvent { ShopId = ShopId });
         }

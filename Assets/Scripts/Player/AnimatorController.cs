@@ -8,7 +8,7 @@ using UnityEngine.Animations.Rigging;
 
 namespace TPSDemo
 {
-    public struct AnimatorParameter
+    public class AnimatorParameter
     {
         public Vector3 Velocity;
         public bool IsMove;
@@ -33,6 +33,8 @@ namespace TPSDemo
 
         public bool UseActiveItem;
         public float UseTime;
+
+        public bool TakeDamage;
         public AnimatorParameter(int i = 0)
         {
             Velocity = Vector3.zero;
@@ -54,6 +56,7 @@ namespace TPSDemo
             DisableAimLayer = false;
             UseActiveItem = false;
             UseTime = 1f;
+            TakeDamage = false;
         }
 
         public void Copy(AnimatorParameter other)
@@ -75,6 +78,7 @@ namespace TPSDemo
             CombatSlot = other.CombatSlot;
             DisableAimLayer = other.DisableAimLayer;
             UseActiveItem = other.UseActiveItem;
+            //TakeDamage = other.TakeDamage;
         }
     }
 
@@ -129,7 +133,9 @@ namespace TPSDemo
                 return;
             }
             UpdateAnimatorParameter();
-            UpdateAimPositionServerRpc(VisualAimPoint.position);
+            if (m_SyncAimPoint) {
+                UpdateAimPositionServerRpc(VisualAimPoint.position);
+            }
         }
 
         [ServerRpc]
@@ -138,7 +144,7 @@ namespace TPSDemo
         [ClientRpc]
         private void UpdateAimPositionClientRpc(Vector3 position)
         {
-            if (!IsOwner) {
+            if (IsClient && !IsOwner) {
                 VisualAimPoint.position = position;
             }
         }
@@ -196,7 +202,6 @@ namespace TPSDemo
 
             // climb
             if (m_LastParameter.IsMantle != curData.IsMantle) {
-                print("UpdateMantle");
                 UpdateTrigger("Mantle", curData.IsMantle);
             }
             if (m_LastParameter.IsClimb != curData.IsClimb) {
@@ -225,6 +230,11 @@ namespace TPSDemo
             if (m_LastParameter.UseActiveItem != curData.UseActiveItem) {
                 SetFloat("UseItemSpeed", m_UseItemTime / curData.UseTime);
                 UpdateTrigger("UseItem", curData.UseActiveItem);
+            }
+
+            if(m_LastParameter.TakeDamage != curData.TakeDamage) {
+                UpdateTrigger("TakeDamage", curData.TakeDamage);
+                curData.TakeDamage = false;
             }
 
             m_LastParameter.Copy(curData);
@@ -288,6 +298,8 @@ namespace TPSDemo
 
         IEnumerator AimRiggingCoroutine(float targetAimWeight, Vector3 targetSpineOffset)
         {
+            m_SyncAimPoint = (targetAimWeight == 1.0f);
+
             float startAimWeight = m_Rig.weight;
             Vector3 startSpineOffset = AimConstraint.data.offset;
             float elapsedTime = 0;
@@ -317,11 +329,11 @@ namespace TPSDemo
         private void OnRigWeightChanged(float previousValue, float newValue)
         {
             m_Rig.weight = newValue;
-            if(newValue > 0f) {
-                m_SyncAimPoint = true;
-            } else {
-                m_SyncAimPoint = false;
-            }
+            //if (newValue > 0f) {
+            //    m_SyncAimPoint = true;
+            //} else {
+            //    m_SyncAimPoint = false;
+            //}
         }
     }
 }

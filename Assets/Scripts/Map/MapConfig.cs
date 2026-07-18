@@ -5,6 +5,7 @@ namespace TPSDemo
 {
     public enum MapType
     {
+        Boot,
         Hub,       // 起始城镇/大厅
         Combat,    // 战斗区域
     }

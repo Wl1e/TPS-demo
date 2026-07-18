@@ -64,7 +64,7 @@ namespace TPSDemo
             int count = Physics.SphereCastNonAlloc(
                     m_Tip.position, m_DetecionRadius, transform.forward,
                     m_Results, Speed * Time.deltaTime,
-                    HitLayerMask, QueryTriggerInteraction.Ignore);
+                    HitLayerMask);
             if (count != 0) {
                 m_WillHit = true;
                 for (int i = 0; i < count; i++) {

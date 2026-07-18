@@ -92,7 +92,6 @@ using Event;
             if (state == DialogState.Active) {
                 EventManager.Broadcast(new StartDialogEvent { Npc = m_Npc, PlayerId = m_CurrentPlayer.Id });
             } else if (state == DialogState.Interrupted || state == DialogState.Completed) {
-                m_CurrentPlayer.SetInputActive(true, true);
                 m_Npc.StopChat();
                 EventManager.Broadcast(new EndDialogEvent { State = m_State });
             }
@@ -113,7 +112,6 @@ using Event;
 
             m_Data = m_Npc.DialogueData;
             print("DialogueData: " + m_Npc.DialogueData);
-            m_CurrentPlayer.SetInputActive(false, false);
 
             ChangeState(DialogState.Active);
             ChangeNode(m_Data.InitializeIdx);

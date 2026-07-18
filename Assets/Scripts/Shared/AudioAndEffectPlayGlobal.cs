@@ -85,7 +85,8 @@ namespace TPSDemo
                     }
                     player.AudioSource.loop = true;
                     m_LoopPlayer.Add(loopAudio, player);
-                    player.Play(loopAudio, float.PositiveInfinity);
+                    // 绝大部分使用该组件播放的都是音效
+                    player.Play(loopAudio, Director.Instance.GetGroup(2), float.PositiveInfinity);
                 }
             }
         }

@@ -40,7 +40,7 @@ namespace TPSDemo.AI
                         break;
                     }
                     if (!agentCollider.Contains(hit.collider)) {
-                        Debug.Log("Collider: " + hit.collider.gameObject);
+                        //Debug.Log("Collider: " + hit.collider.gameObject);
                         break;
                     }
                 }

@@ -49,6 +49,8 @@ namespace TPSDemo
             Vector3 dir = target.position - Owner.transform.position;
             dir.y = 0;
 
+            Owner.transform.rotation = Quaternion.LookRotation(dir);
+
             //Owner.LookTo(dir);
             //if ((Owner.transform.forward.x - dir.x) >= 0.01 || (Owner.transform.forward.z - dir.z) >= 0.01) {
             //    return;
@@ -63,6 +65,7 @@ namespace TPSDemo
 
             foreach (Transform t in Muzzle) {
                 SpawnBulletInMuzzle(t, pos);
+                Owner.AEPlayer.Play(m_SFName, 0.3f, t.position, t.rotation);
             }
 
             WhenAttack();
@@ -90,7 +93,8 @@ namespace TPSDemo
 
         protected void PlayerAE()
         {
-            Owner.AEPlayer.Play(m_SFName, 0.3f, transform.position, transform.rotation);
+            
+
             Owner.AnimatorController.RegisterAnimationClip("Attack", m_AttackAnimation);
             Owner.AnimatorController.Play("Attack");
         }

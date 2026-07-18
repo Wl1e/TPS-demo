@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 
 namespace TPSDemo
 {
@@ -10,6 +11,7 @@ namespace TPSDemo
         Transform m_AttachTransform;
         Vector3 m_Position;
         float m_Duration = float.PositiveInfinity;
+        AudioMixerGroup m_MixerGroup;
 
         public AudioBuilder(AudioSystem audioSystem, AudioClip clip)
         {
@@ -21,6 +23,13 @@ namespace TPSDemo
         {
             m_AudioSystem = audioSystem;
             m_AudioRef = audioRef;
+        }
+
+
+        public AudioBuilder WithMixerGroup(AudioMixerGroup group)
+        {
+            m_MixerGroup = group;
+            return this;
         }
 
         public AudioBuilder AttachTo(Transform attach)

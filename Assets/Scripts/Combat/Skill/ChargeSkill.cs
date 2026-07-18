@@ -11,6 +11,8 @@ namespace TPSDemo
         private Vector3 m_LastPos = Vector3.negativeInfinity;
         private float m_Threshold = 0.1f;
 
+        [SerializeField] Hitbox m_Hitbox;
+
         [RuntimeInitializeOnLoadMethod]
         private static void RegisterSelf() => SkillFactory.Register<ChargeSkill>(SkillId);
 
@@ -45,6 +47,7 @@ namespace TPSDemo
                 ChangeState(SkillState.Recovery);
                 return;
             }
+
             Vector3 dir = (m_TargetPos - m_EnemyController.transform.position).normalized;
             m_EnemyController.Agent.isStopped = true;
             m_EnemyController.Agent.Move(ChargeSpeed * Time.deltaTime * dir);

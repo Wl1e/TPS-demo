@@ -45,8 +45,10 @@ namespace TPSDemo
                 pos = actor.AimPoint.position;
             }
 
-            //Vector3 dir = target.position - Owner.transform.position;
+            Vector3 dir = target.position - Owner.transform.position;
+            dir.y = 0;
 
+            Owner.transform.rotation = Quaternion.LookRotation(dir);
             //Owner.LookTo(dir);
             //if (Owner.transform.forward.y != dir.y) {
             //    print("Here");

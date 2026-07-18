@@ -43,6 +43,8 @@ namespace TPSDemo
         [Tooltip("枪口")]
         public Transform Muzzle;
 
+        private Unity.Cinemachine.CinemachineImpulseSource m_ImpulseSource;
+
         // Ammo
         AmmoHandler m_AmmoHandler;
 
@@ -86,6 +88,7 @@ namespace TPSDemo
             m_Attachable = GetComponent<AttachableBehaviour>();
             m_Behaviour.SetMuzzle(Muzzle);
             m_Animator = GetComponentInChildren<ManualAnimatorController>();
+            m_ImpulseSource = GetComponent<Unity.Cinemachine.CinemachineImpulseSource>();
         }
 
         void Update()
@@ -105,6 +108,12 @@ namespace TPSDemo
                 m_AttachmentManager.OnAttachmentChanged += AttachmentChanged;
                 m_AttachmentManager.Weapon = this;
             }
+        }
+
+        public override void OnDestroy()
+        {
+            base.OnDestroy();
+            print(name + "is Destroy");
         }
 
         public void Initialize(GameObject holder)
@@ -157,6 +166,9 @@ namespace TPSDemo
             FireServerRpc(m_Target.position);
 
             PlayerClientEffects();
+            if (m_ImpulseSource) {
+                m_ImpulseSource.GenerateImpulse();
+            }
         }
 
         private void PlayerClientEffects()
@@ -178,7 +190,10 @@ namespace TPSDemo
                 .WithDuration(m_Config.MuzzleFlashTime)
                 .Create();
 
-            Director.Instance.RequestAudio(m_Config.ShootSfx).AttachTo(transform).Play();
+            Director.Instance.RequestAudio(m_Config.ShootSfx)
+                .WithMixerGroup(Director.Instance.GetGroup(2))
+                .AttachTo(transform)
+                .Play();
         }
 
         #endregion
@@ -225,7 +240,7 @@ namespace TPSDemo
         {
             // Server���ã���������������ɸĳ�Owner���ã�Rpc�޸������ͻ���ƫ��
             //transform.SetLocalPositionAndRotation(m_HandOffset, Quaternion.Euler(m_HandRotation));
-            OnEquipClientRpc();
+            //OnEquipClientRpc();
         }
 
         [ClientRpc]

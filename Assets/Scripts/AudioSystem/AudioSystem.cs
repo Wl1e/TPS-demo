@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Pool;
 
 namespace TPSDemo
@@ -9,6 +10,7 @@ namespace TPSDemo
         public struct AudioInfo
         {
             public AudioClip AudioClip;
+            public AudioMixerGroup MixerGroup;
             public Transform AttachTransform;
             public Vector3 Position;
             public float Duration;
@@ -20,6 +22,8 @@ namespace TPSDemo
         public int DefaultEmitterSize = 10;
         public int MaxEmitterSize = 100;
 
+        private AudioMixer m_Mixer;
+
         GameObject CreateAudioGO()
         {
             GameObject audioSource = new("AGO", typeof(AudioSource));
@@ -28,10 +32,14 @@ namespace TPSDemo
             return audioSource;
         }
 
-        public void Initialize()
+        public void Initialize(AudioMixer mixer)
         {
-            m_AudioHolder = new GameObject("AudioHolder");
-            GameFlowManager.Instance.SetDDOL(m_AudioHolder);
+            m_Mixer = mixer;
+            m_AudioHolder = GameObject.Find("AudioHolder");
+            if(!m_AudioHolder) {
+                m_AudioHolder = new GameObject("AudioHolder");
+                GameFlowManager.Instance.SetDDOL(m_AudioHolder);
+            }
             m_AudioPlayerPool = new ObjectPool<AudioPlayer>(
                 createFunc: () => {
                     var audioSource = CreateAudioGO();
@@ -59,10 +67,10 @@ namespace TPSDemo
             if (!info.AudioClip) {
                 return;
             }
-            Play(info.AudioClip, info.Position, info.Duration, info.AttachTransform);
+            Play(info.AudioClip, info.MixerGroup, info.Position, info.Duration, info.AttachTransform);
         }
 
-        void Play(AudioClip audioClip, Vector3 Position, float duration, Transform attach = null)
+        void Play(AudioClip audioClip, AudioMixerGroup group, Vector3 Position, float duration, Transform attach = null)
         {
             var audioPlayer = m_AudioPlayerPool.Get();
             if (attach != null) {
@@ -71,7 +79,8 @@ namespace TPSDemo
             } else {
                 audioPlayer.transform.position = Position;
             }
-            audioPlayer.Play(audioClip, duration);
+            //audioPlayer.
+            audioPlayer.Play(audioClip, group, duration);
         }
 
         // Play只针对触发型音效，持续型音效会反复调用造成性能浪费和预料之外的效果

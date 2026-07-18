@@ -79,8 +79,9 @@ namespace TPSDemo
         /// </summary>
         public bool CanExit()
         {
-            return (Config.Type == MapType.Hub) ||
-                (Config.Type == MapType.Combat) && m_State == MapState.Completed;
+            return (Config.Type == MapType.Boot)
+                || (Config.Type == MapType.Hub)
+                || (Config.Type == MapType.Combat) && m_State == MapState.Completed;
         }
 
         #endregion

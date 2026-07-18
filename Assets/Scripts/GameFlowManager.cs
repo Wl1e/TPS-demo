@@ -14,9 +14,6 @@ namespace TPSDemo
                     DontDestroyOnLoad(go);
                 }
             }
-
-            // 将NetCode Prefab加载到内存
-            // StartCoroutine(AssetCache.LoadByLabel("NetCodePrefab"));
         }
 
         public void SetDDOL(GameObject go)

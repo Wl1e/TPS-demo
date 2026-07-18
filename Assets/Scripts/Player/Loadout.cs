@@ -48,9 +48,6 @@ namespace TPSDemo
                 EventManager.AddListener<Event.SwapWeaponEvent>(OnSwapWeapon);
                 EventManager.AddListener<Event.TryUnequipWeaponEvent>(UnequipWeapon);
             }
-            if (IsServer && DefaultWeapon != null) {
-                EquipWeapon(DefaultWeapon);
-            }
         }
 
         public override void OnNetworkDespawn()
@@ -82,14 +79,17 @@ namespace TPSDemo
 
         #region Client
 
-        //public void EquipWeapon(ItemData WeaponData) => EquipWeaponServerRpc(WeaponData.Id);
-        public void EquipWeapon(ItemData WeaponData)
+        public IEnumerator EquipWeaponCo(ItemData weaponData)
         {
             if (!CanAddWeapon()) {
                 print($"Cant Add Weapon weapon1: {m_WeaponSlot1}, weapon2: {m_WeaponSlot2}");
-                return;
+                yield break;
             }
-            StartCoroutine(EquipWeaponCoroutine(WeaponData));
+            yield return EquipWeaponCoroutine(weaponData);
+        }
+        public void EquipWeapon(ItemData weaponData)
+        {
+            StartCoroutine(EquipWeaponCo(weaponData));
         }
 
         public void UnequipWeapon(Event.TryUnequipWeaponEvent evt) => UnequipWeaponServerRpc(evt.WeaponIdx);
@@ -160,7 +160,6 @@ namespace TPSDemo
                 Quaternion.identity,
                 null,
                 obj => {
-                    print("Create Weapon");
                     if(!obj) {
                         print("Weapon spawn fail");
                         return;
@@ -179,6 +178,7 @@ namespace TPSDemo
                         Destroy(instance);
                         return;
                     }
+                    obj.DestroyWithScene = false;
                     EquipWeapon(instance);
                 },
                 OwnerClientId

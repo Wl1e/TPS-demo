@@ -37,7 +37,9 @@ namespace TPSDemo
             if (m_IsDied) {
                 return 0;
             }
+            print($"info damage: {info.Damage}, health: {m_HealthValue.Value.Value}");
             float trueDamage = -m_HealthValue.Value.Subtract(info.Damage);
+            print($"trueDamage: {trueDamage}, health: {m_HealthValue.Value.Value}");
             if (trueDamage > 0) {
                 OnTakeDamaged?.Invoke(info);
                 if (gameObject.CompareTag("Player")) {

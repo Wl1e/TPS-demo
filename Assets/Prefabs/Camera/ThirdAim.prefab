@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 3711771354867688801}
   - component: {fileID: 476213290374780377}
   - component: {fileID: 7953029965453157266}
-  - component: {fileID: 4500255797030144810}
   - component: {fileID: 7952736696846578649}
+  - component: {fileID: 4500255797030144810}
   m_Layer: 0
   m_Name: ThirdAim
   m_TagString: Untagged
@@ -123,6 +123,22 @@ MonoBehaviour:
   IgnoreTag: 
   AimDistance: 200
   NoiseCancellation: 1
+--- !u!114 &7952736696846578649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14487544072006403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 530d660b68b24fe4ca2b9071eb1bcf63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraMode
+  ModeName: Aim
+  CouplingMode: 1
+  DefaultFOV: 60
+  DefaultBlendTime: 0.2
 --- !u!114 &4500255797030144810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,17 +163,3 @@ MonoBehaviour:
     FrequencyGain: 1
     Duration: 1
     m_NoiseOffsets: {x: 0, y: 0, z: 0}
---- !u!114 &7952736696846578649
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 14487544072006403}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 530d660b68b24fe4ca2b9071eb1bcf63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CameraMode
-  ModeName: Aim
-  CouplingMode: 1

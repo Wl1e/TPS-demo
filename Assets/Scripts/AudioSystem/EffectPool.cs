@@ -12,8 +12,13 @@ namespace TPSDemo
 
 		public void Initialize()
 		{
-            m_EffectPoolRoot = new GameObject("EffectPool").transform;
-            GameFlowManager.Instance.SetDDOL(m_EffectPoolRoot.gameObject);
+            var e = GameObject.Find("EffectPool");
+            if (e) {
+                m_EffectPoolRoot = e.transform;
+            } else {
+                m_EffectPoolRoot = new GameObject("EffectPool").transform;
+                GameFlowManager.Instance.SetDDOL(m_EffectPoolRoot.gameObject);
+            }
 
             m_Pool = new ObjectPool<EffectBuilder>(
                 createFunc: () => CreateEffectGO(),

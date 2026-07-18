@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace TPSDemo.UI
 {
-    public class UIController : MonoBehaviour
+    public class UIController : Singleton<UIController>
     {
         [SerializeField] HUD m_HUD;
         [SerializeField] InventoryUI m_InventoryUI;
@@ -13,6 +13,7 @@ namespace TPSDemo.UI
         [SerializeField] LoadoutUI m_LoadoutUI;
         [SerializeField] QuestPanelUI m_QuestUI;
         [SerializeField] SettingUI m_SettingUI;
+        [SerializeField] ShopUI m_ShopUI;
 
         [SerializeField] Image Frame;
 
@@ -60,7 +61,7 @@ namespace TPSDemo.UI
             EventManager.AddListener<EndDialogEvent>(evt => Close(m_DialogUI));
 
             // quest
-            EventManager.RemoveListener<QuestStateChangeEvent>(
+            EventManager.AddListener<QuestStateChangeEvent>(
                 evt => {
                     if (m_CurrentPanel == null) {
                         Open(m_QuestUI);
@@ -71,6 +72,9 @@ namespace TPSDemo.UI
             );
 
             m_OpenSettingEvent.RegisterListener(OnEscPressed);
+
+            EventManager.AddListener<ShopOpenEvent>(evt => Open(m_ShopUI));
+            EventManager.AddListener<ShopCloseEvent>(evt => Close(m_ShopUI));
         }
 
         private void OnEscPressed()
@@ -87,6 +91,7 @@ namespace TPSDemo.UI
             if (m_CurrentPanel == null) {
                 m_CurrentPanel = panel;
                 m_CurrentPanel.Open();
+                print("Open " + panel);
                 if (Cursor.lockState == CursorLockMode.Locked) {
                     Cursor.lockState = CursorLockMode.None;
                 }
@@ -98,10 +103,21 @@ namespace TPSDemo.UI
             if(m_CurrentPanel == panel) {
                 m_CurrentPanel.Close();
                 m_CurrentPanel = null;
+                print("Close " + panel);
                 if (Cursor.lockState == CursorLockMode.None) {
                     Cursor.lockState = CursorLockMode.Locked;
                 }
             }
+        }
+
+        public void CloseAllUI()
+        {
+            m_HUD.gameObject.SetActive(false);
+            m_InventoryUI.gameObject.SetActive(false);
+            m_DialogUI.gameObject.SetActive(false);
+            m_LoadoutUI.gameObject.SetActive(false);
+            m_QuestUI.gameObject.SetActive(false);
+            m_SettingUI.gameObject.SetActive(false);
         }
     }
 }

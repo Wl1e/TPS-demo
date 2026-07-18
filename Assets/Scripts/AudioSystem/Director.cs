@@ -6,20 +6,39 @@ namespace TPSDemo
     using UI;
 	public class Director: Singleton<Director>
 	{
-        [SerializeField] private AudioMixer m_Mixer;
         private AudioSystem m_AudioSystem;
         private EffectPool m_EffectPool;
         [SerializeField] private DamageValueUI m_DVPrefab;
         private DamageValuePool m_DamageValuePool;
 
-        bool m_SoundMuted = false;
+        [SerializeField] private AudioMixer m_Mixer;
+        [SerializeField] private AudioMixerGroup m_MasterGroup;
+        [SerializeField] private AudioMixerGroup m_BGMGroup;
+        [SerializeField] private AudioMixerGroup m_SFXGroup;
+
         // Use this for initialization
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="idx">
+        /// 0: Master
+        /// 1: BGM
+        /// 2: SFX
+        /// </param>
+        /// <returns></returns>
+        public AudioMixerGroup GetGroup(int idx) => idx switch {
+            0 => m_MasterGroup,
+            1 => m_BGMGroup,
+            2 => m_SFXGroup,
+            _ => null
+        };
 
         protected override void Awake()
         {
             base.Awake();
             m_AudioSystem = new AudioSystem();
-            m_AudioSystem.Initialize();
+            m_AudioSystem.Initialize(m_Mixer);
             m_EffectPool = new EffectPool();
             m_EffectPool.Initialize();
             m_DamageValuePool = new DamageValuePool();
@@ -38,10 +57,15 @@ namespace TPSDemo
         // 用完记得Release
         public AudioPlayer Borrow() => m_AudioSystem.Borrow();
 
-        public void MuteSound(bool mute)
+        public void SetVolume(int idx, float volume)
         {
-            m_SoundMuted = mute;
-            m_Mixer.SetFloat("Volume", mute ? -80f : 0f);
+            if (idx == 0) {
+                m_Mixer.SetFloat("Master", volume);
+            } else if (idx == 1) {
+                m_Mixer.SetFloat("BGM", volume);
+            } else if (idx == 2) {
+                m_Mixer.SetFloat("SFX", volume);
+            }
         }
         public EffectBuilder RequestEffect(GameObject effectPrefab)
         {

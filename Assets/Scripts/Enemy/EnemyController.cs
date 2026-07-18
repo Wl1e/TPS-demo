@@ -58,19 +58,20 @@ namespace TPSDemo
             m_Agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
             m_HealthBar = GetComponentInChildren<HealthBar>();
             m_AnimatorController = GetComponentInChildren<ManualAnimatorController>();
+            m_AudioAndEffectPlayGlobal = GetComponent<AudioAndEffectPlayGlobal>();
             m_TargetDir = transform.forward;
             m_TargetDir.y = 0;
         }
 
         private void Update()
         {
-            if(transform.forward != m_TargetDir) {
-                var forward = transform.forward;
-                var curAngle = Mathf.Atan2(forward.x, forward.z) * Mathf.Rad2Deg;
-                var targetAngle = Mathf.Atan2(m_TargetDir.x, m_TargetDir.z) * Mathf.Rad2Deg;
-                var d = Mathf.SmoothDampAngle(curAngle, targetAngle, ref m_SmoothVelocity, m_SmoothRotateTime);
-                transform.rotation = Quaternion.Euler(0, d, 0);
-            }
+            //if(transform.forward != m_TargetDir) {
+            //    var forward = transform.forward;
+            //    var curAngle = Mathf.Atan2(forward.x, forward.z) * Mathf.Rad2Deg;
+            //    var targetAngle = Mathf.Atan2(m_TargetDir.x, m_TargetDir.z) * Mathf.Rad2Deg;
+            //    var d = Mathf.SmoothDampAngle(curAngle, targetAngle, ref m_SmoothVelocity, m_SmoothRotateTime);
+            //    transform.rotation = Quaternion.Euler(0, d, 0);
+            //}
         }
 
         public override void OnNetworkSpawn()
@@ -114,7 +115,10 @@ namespace TPSDemo
                 if (m_AnimatorController) {
                     m_AnimatorController.Play(ManualAnimatorController.AnimationType.Hit.ToString());
                 }
-                Director.Instance.RequestAudio(DamageAudio).WithPosition(transform.position).Play();
+                Director.Instance.RequestAudio(DamageAudio)
+                    .WithMixerGroup(Director.Instance.GetGroup(2))
+                    .WithPosition(transform.position)
+                    .Play();
 
                 if(m_SetTargetWhenHit && m_Channel) {
                     m_Channel.SendEventMessage(info.Attacker);

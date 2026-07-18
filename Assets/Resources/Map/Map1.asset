@@ -15,6 +15,6 @@ MonoBehaviour:
   MapId: 1
   MapName: "\u57CE\u9547"
   Description: "\u6E29\u99A8\u57CE\u9547"
-  Type: 0
+  Type: 1
   SceneName: Hub
-  Configs: []
+  ObjConfigs: []

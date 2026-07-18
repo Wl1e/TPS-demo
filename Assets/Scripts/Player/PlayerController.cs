@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using TPSDemo.Event;
 using Unity.Netcode;
 using UnityEngine;
@@ -39,7 +41,6 @@ namespace TPSDemo
         private InteractionController m_InteractionController;
         private AudioAndEffectPlayGlobal m_AudioEffectPlayer;
 
-        private CountDownLatch m_CursorBlock = new();
 
         #endregion component
 
@@ -120,7 +121,7 @@ namespace TPSDemo
         /// <summary>
         /// 玩家运行时数据
         /// </summary>
-        public PlayerRuntimeData RuntimeData = new PlayerRuntimeData();
+        public PlayerRuntimeData RuntimeData = new();
 
         /// <summary>
         /// 交互控制
@@ -141,6 +142,8 @@ namespace TPSDemo
         [SerializeField] private GameEvent OnCrouchInput;
         [SerializeField] private Vector2Event OnLookInput;
         [SerializeField] private BoolEvent OnActiveCursorInput;
+
+        public AudioClip m_MovementAudio;
 
         public int Id => m_Actor.Id;
 
@@ -210,18 +213,33 @@ namespace TPSDemo
             if (IsOwner) {
                 m_FSM.InitializeFSM();
                 RegisterEvents();
-                PlayerDataProxy.Instance.RegisterPlayer(this);
-                // 通知UI和DebugLayer
-                EventManager.Broadcast(new PlayerFinishedInitialzeEvent());
+                m_Health.OnTakeDamaged += OnPlayerTakeDamage;
+                StartCoroutine(PlayerInitialize());
 
-                foreach (var prefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs) {
-                    var no = prefab.Prefab.GetComponent<NetworkObject>();
-                }
-
-                print($"Player {Id} Spawn");
             } else {
                 DisableClientComponents();
             }
+        }
+
+        private IEnumerator PlayerInitialize()
+        {
+            yield return m_Loadout.EquipWeaponCo(m_Loadout.DefaultWeapon);
+            PlayerDataProxy.Instance.RegisterPlayer(this);
+            // 通知BootTel、UI和DebugLayer
+            EventManager.Broadcast(new PlayerFinishedInitialzeEvent());
+            InitialzePlayerPosServerRpc();
+            print($"Player {Id} Spawn");
+        }
+
+        [ServerRpc]
+        private void InitialzePlayerPosServerRpc()
+        {
+            BootTel.TeleportToHub();
+        }
+
+        private void OnPlayerTakeDamage(DamageInfo info)
+        {
+            RuntimeData.AniParameter.TakeDamage = true;
         }
 
         public override void OnNetworkDespawn()
@@ -268,31 +286,31 @@ namespace TPSDemo
 
         private void OnActiveCursor(bool active)
         {
-            SetInputActive(active, active);
+            Cursor.lockState = CursorLockMode.None;
         }
 
-        public void SetInputActive(bool active, bool activeCursor)
-        {
-            //print($"SetInputActive: {active} {activeCursor}");
-            if (!activeCursor) {
-                m_CursorBlock.Increase();
-            } else {
-                m_CursorBlock.Decrease();
-            }
-            if (Cursor.lockState == CursorLockMode.Locked && m_CursorBlock.IsLockd()) {
-                Cursor.lockState = CursorLockMode.None;
-            } else if (Cursor.lockState == CursorLockMode.None && !m_CursorBlock.IsLockd()) {
-                Cursor.lockState = CursorLockMode.Locked;
-            }
-            if (active) {
-                m_Movement.MovementLock.Decrease();
-            } else {
-                m_Movement.MovementLock.Increase();
-            }
-            if (m_CursorBlock.IsLockd()) {
-                m_FSM.ChangeState("Idle");
-            }
-        }
+        //public void SetInputActive(bool active, bool activeCursor)
+        //{
+        //    //print($"SetInputActive: {active} {activeCursor}");
+        //    if (!activeCursor) {
+        //        m_CursorBlock.Increase();
+        //    } else {
+        //        m_CursorBlock.Decrease();
+        //    }
+        //    if (Cursor.lockState == CursorLockMode.Locked && m_CursorBlock.IsLockd()) {
+        //        Cursor.lockState = CursorLockMode.None;
+        //    } else if (Cursor.lockState == CursorLockMode.None && !m_CursorBlock.IsLockd()) {
+        //        Cursor.lockState = CursorLockMode.Locked;
+        //    }
+        //    if (active) {
+        //        m_Movement.MovementLock.Decrease();
+        //    } else {
+        //        m_Movement.MovementLock.Increase();
+        //    }
+        //    if (m_CursorBlock.IsLockd()) {
+        //        m_FSM.ChangeState("Idle");
+        //    }
+        //}
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
         {

@@ -73,15 +73,16 @@ namespace TPSDemo
         /// <param name="hitInfo"> 命中信息 </param>
         protected virtual void OnHit(RaycastHit hitInfo)
         {
-            Damageable damageable = hitInfo.collider.GetComponent<Damageable>();
+            print("bullet hit " + hitInfo.collider.name);
+            Damageable damageable = hitInfo.collider.GetComponentInChildren<Damageable>();
             if (damageable) {
+                print(hitInfo.collider.name + "has damageable");
                 damageable.InflictDamage(new DamageInfo { Attacker = Owner, Damage = Damage, Point = hitInfo.point });
                 OnHitTarget?.Invoke(hitInfo.collider.gameObject);
                 var actor = damageable.GetComponentInParent<Actor>();
                 if(actor) {
                     OnHitClientRpc(hitInfo.point, actor.Id);
                 }
-
             }
 
             PlayAE(hitInfo);
@@ -118,7 +119,7 @@ namespace TPSDemo
         {
             string tag = hitInfo.collider.gameObject.tag;
             var effectIdx = m_Config.HitImpactPrefab.FindIndex(e => e.Tag == tag);
-            if (effectIdx < 0) {
+            if (effectIdx < 0 && tag != "Enemy" && tag != "Player") {
                 tag = "Default";
             }
             Vector3 up = Vector3.up;

@@ -22,7 +22,10 @@ namespace TPSDemo.UI
                 defaultCapacity: DefaultSize,
                 maxSize: MaxSize
             );
-            if (!m_DVRoot) {
+            var e = GameObject.Find("DamageValueRoot");
+            if(e) {
+                m_DVRoot = e.transform;
+            } else {
                 m_DVRoot = new GameObject("DamageValueRoot").transform;
                 GameFlowManager.Instance.SetDDOL(m_DVRoot.gameObject);
             }

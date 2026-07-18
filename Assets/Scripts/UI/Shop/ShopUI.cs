@@ -7,8 +7,9 @@ namespace TPSDemo.UI
     using Event;
     using TMPro;
     using TPSDemo.Combat;
+    using WebSocketSharp;
 
-    public class ShopUI : MonoBehaviour
+    public class ShopUI : MonoBehaviour, IPanel
     {
         int m_CurrentShopId = -1;
         [SerializeField] Button m_CloseButton;
@@ -47,7 +48,6 @@ namespace TPSDemo.UI
 
         void OnShopOpen(ShopOpenEvent evt)
         {
-            gameObject.SetActive(true);
             m_CurrentShopId = evt.ShopId;
             m_Money.text = PlayerDataProxy.Instance.GetMoney(m_CurrentShopId).ToString();
             SetShopGoods(evt.ShopId);
@@ -127,6 +127,16 @@ namespace TPSDemo.UI
         void HandleCloseButtonClick()
         {
             EventManager.Broadcast(new CloseShopEvent());
+        }
+
+        void IPanel.Open()
+        {
+            gameObject.SetActive(true);
+        }
+
+        void IPanel.Close()
+        {
+            gameObject.SetActive(false);
         }
     }
 }

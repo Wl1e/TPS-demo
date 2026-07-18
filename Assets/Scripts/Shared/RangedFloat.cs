@@ -3,7 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 [Serializable]
-public struct RangedFloat: INetworkSerializable
+public class RangedFloat: INetworkSerializable, IEquatable<RangedFloat>
 {
     [SerializeField] float value;
     [SerializeField] float lo;
@@ -36,5 +36,10 @@ public struct RangedFloat: INetworkSerializable
         serializer.SerializeValue(ref lo);
         serializer.SerializeValue(ref hi);
         serializer.SerializeValue(ref value);
+    }
+
+    bool IEquatable<RangedFloat>.Equals(RangedFloat other)
+    {
+        return value == other.value && lo == other.lo && hi == other.hi;
     }
 }

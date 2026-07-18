@@ -109,11 +109,11 @@ namespace TPSDemo
                         DialogueData = m_DialogueDataEN;
                         print("load english dialog");
                     }
-                    print("New Dialog: " + DialogueData);
+                    //print("New Dialog: " + DialogueData);
                     m_AudioAndEffectPlayGlobal.Clear();
                     foreach (AudioClip clip in clipList) {
                         m_AudioAndEffectPlayGlobal.AddAudio(clip.name, clip);
-                        print("Add Audio " + clip.name);
+                        //print("Add Audio " + clip.name);
                     }
                 }
             ));

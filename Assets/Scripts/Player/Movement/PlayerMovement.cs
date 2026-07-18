@@ -138,7 +138,6 @@ namespace TPSDemo
                 OnMoveInput.RegisterListener(OnMove);
                 EventManager.AddListener<Event.AimEvent>(OnAim);
             }
-            m_Player.AudioEffectPlayer.LoopAudio("Movement", m_MovementAudio);
         }
 
         public override void OnNetworkDespawn()
@@ -156,7 +155,6 @@ namespace TPSDemo
             if (!IsOwner) {
                 return;
             }
-
             m_LastVelocity = m_Velocity;
 
             if (!m_CharacterController.enabled) {
@@ -176,19 +174,8 @@ namespace TPSDemo
             m_PlayerRuntimeData.AniParameter.Velocity = transform.InverseTransformDirection(m_Velocity);
             m_PlayerRuntimeData.AniParameter.IsGrounded = m_IsGrounded;
 
-            print("CurState: " + CurState);
-            if(CurState == PlayerMovementState.Walk && MoveStart()) {
-                m_Player.AudioEffectPlayer.Play("Movement", float.PositiveInfinity, Vector3.zero, Quaternion.identity, true);
-            } else if(CurState != PlayerMovementState.Walk || MoveStop()) {
-                m_Player.AudioEffectPlayer.StopLoopAudio("Movement");
-            }
-            //PlayAudioServerRpc(m_Velocity.x != 0 || m_Velocity.z != 0);
-
             //print($"InputVector: {m_InputGlobal}, Velocity: {m_Velocity}, selfVelocity: {transform.InverseTransformDirection(m_Velocity)}");
         }
-
-        private bool MoveStart() => IsGrounded && (m_Velocity.x != 0 || m_Velocity.z != 0) && (m_LastVelocity.x == 0 && m_LastVelocity.z == 0);
-        private bool MoveStop() => IsGrounded && (m_LastVelocity.x != 0 || m_LastVelocity.z != 0) && (m_Velocity.x == 0 && m_Velocity.z == 0);
         void UpdateMovement()
         {
             var velocityXZ = Vector3.ProjectOnPlane(m_Velocity, Vector3.up);

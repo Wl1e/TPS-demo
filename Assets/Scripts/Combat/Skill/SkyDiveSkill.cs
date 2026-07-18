@@ -61,6 +61,10 @@ namespace TPSDemo
 
         protected override void Perform(float deltaTime)
         {
+            var dir = m_Target.position - m_EnemyController.transform.position;
+            dir.y = 0f;
+            var rotation = Quaternion.LookRotation(dir);
+            m_EnemyController.transform.rotation = rotation;
             if (m_Duration < m_RiseTime) {
                 // 阶段1：垂直升空
                 float t = m_Duration / m_RiseTime;
@@ -76,12 +80,12 @@ namespace TPSDemo
             } else {
                 if(float.IsNegativeInfinity(m_DiveDir.x)) {
                     m_DiveDir = Vector3.Normalize(m_Target.position - m_EnemyController.transform.position);
-                    Debug.Log("m_DiveDir: " + m_DiveDir);
+                    //Debug.Log("m_DiveDir: " + m_DiveDir);
                 }
 
                 // 阶段3：俯冲向目标
                 m_EnemyController.transform.position += m_DiveDir * m_DiveSpeed * Time.deltaTime;
-                Debug.Log("position: " + m_EnemyController.transform.position);
+                //Debug.Log("position: " + m_EnemyController.transform.position);
 
                 // 落地判定
                 if (!m_HasLanded && CheckGround()) {

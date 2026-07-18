@@ -15,7 +15,6 @@ MonoBehaviour:
   MapId: 2
   MapName: "\u6218\u6597\u573A\u666F1"
   Description: "\u51FB\u8D25\u654C\u4EBA"
-  Type: 1
+  Type: 2
   SceneName: Combat1
-  Configs:
-  - {fileID: 11400000, guid: 86485709172ecc4459c41292dfd9c845, type: 2}
+  ObjConfigs: []

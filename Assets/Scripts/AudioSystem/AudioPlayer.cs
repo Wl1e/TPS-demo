@@ -39,9 +39,15 @@ namespace TPSDemo
                 }
             }
         }
-        public void Play(AudioClip clip, float duration)
+
+        public void SetAudioGroup(UnityEngine.Audio.AudioMixer audioMixer)
+        {
+            //m_AudioSource.outputAudioMixerGroup = audioMixer;
+        }
+        public void Play(AudioClip clip, UnityEngine.Audio.AudioMixerGroup group, float duration)
         {
             m_IsPlaying = true;
+            m_AudioSource.outputAudioMixerGroup = group;
             m_AudioSource.clip = clip;
             m_AudioSource.Play();
             m_Duration = duration;
@@ -57,6 +63,7 @@ namespace TPSDemo
             if (m_IsPlaying) {
                 Stop();
             }
+            m_AudioSource.outputAudioMixerGroup = null;
             OnRelease?.Invoke(this);
         }
 
