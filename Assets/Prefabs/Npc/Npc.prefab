@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 4223118140
+  GlobalObjectIdHash: 2440729568
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -357,17 +357,21 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: bfe9e0e804505ed4191d6c5dc34ef144, type: 2}
+    - target: {fileID: 4870552773557632513, guid: e6ceab2f079137b45b726e6bc79ab0d9, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5159078012444724336, guid: e6ceab2f079137b45b726e6bc79ab0d9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5159078012444724336, guid: e6ceab2f079137b45b726e6bc79ab0d9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.7968
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5159078012444724336, guid: e6ceab2f079137b45b726e6bc79ab0d9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.03161
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5159078012444724336, guid: e6ceab2f079137b45b726e6bc79ab0d9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -449,6 +453,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4843614395330177062, guid: e6ceab2f079137b45b726e6bc79ab0d9, type: 3}
   m_PrefabInstance: {fileID: 6651260412833868720}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &2295054507440510385 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4870552773557632513, guid: e6ceab2f079137b45b726e6bc79ab0d9, type: 3}
+  m_PrefabInstance: {fileID: 6651260412833868720}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3768064453477631446 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -1728013695380148634, guid: e6ceab2f079137b45b726e6bc79ab0d9, type: 3}
@@ -469,10 +478,25 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   NetworkAnimatorExpanded: 0
   AuthorityMode: 0
-  m_Animator: {fileID: 0}
-  TransitionStateInfoList: []
+  m_Animator: {fileID: 2295054507440510385}
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 2081823275
+    DestinationState: -2146256263
+    TransitionDuration: 0.25
+    TriggerNameHash: -2146256263
+    TransitionIndex: 0
   AnimatorParameterEntries:
-    ParameterEntries: []
+    ParameterEntries:
+    - name: TurnDir
+      NameHash: 878008533
+      Synchronize: 1
+      ParameterType: 1
+    - name: Turn
+      NameHash: -2146256263
+      Synchronize: 1
+      ParameterType: 9
   AnimatorParametersExpanded: 0
 --- !u!114 &3941752748760059659
 MonoBehaviour:

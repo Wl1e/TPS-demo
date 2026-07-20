@@ -63,10 +63,11 @@ using Event;
             } else if (option.Action == OptionAction.AcceptQuest) {
                 m_CurrentPlayer.QuestController.AddQuest(int.Parse(option.ActionData));
             } else if (option.Action == OptionAction.OpenShop) {
+                ChangeState(DialogState.Interrupted);
                 EventManager.Broadcast(
                     new OpenShopEvent {
-                        playerId = m_CurrentPlayer.Id,
-                        ShopId = int.Parse(option.ActionData)
+                        PlayerId = m_CurrentPlayer.Id,
+                        ShopId = int.Parse(option.ActionData),
                     }
                 );
                 Interrupt();
@@ -82,7 +83,7 @@ using Event;
         public void ChangeNode(int NodeId)
         {
             m_CurrentNodeId = NodeId;
-            m_Npc.PlayAudio(NodeId);
+            m_Npc.PlayAudioServerRpc(NodeId);
             EventManager.Broadcast(new UpdateDialogEvent { DialogueNode = GetCurrentNode() });
         }
 

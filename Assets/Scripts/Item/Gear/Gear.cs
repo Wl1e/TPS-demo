@@ -48,7 +48,10 @@ namespace TPSDemo
             return Color.black;
         }
 
-        public abstract void Interact(GameObject obj);
+        public abstract float HoldDuration { get; }
+        public abstract void OnInteractPress(GameObject interactor);
+        public abstract void OnInteractHold(GameObject interactor);
+        public abstract void OnInteractRelease(GameObject interactor, bool completed);
         public abstract void Drop(GameObject obj);
         public void WhenSee()
         { }
@@ -58,12 +61,18 @@ namespace TPSDemo
     {
         [SerializeField] float m_Shield;
         [SerializeField] float m_EVOPoint = 0f;
-        public override void Interact(GameObject obj)
+
+        public override float HoldDuration => 0f;
+        public override void OnInteractPress(GameObject interactor)
         {
-            if (obj.TryGetComponent<Shield>(out var shield)) {
+            if (interactor.TryGetComponent<Shield>(out var shield)) {
                 shield.SetMaxShield(m_Shield);
             }
         }
+        public override void OnInteractHold(GameObject interactor)
+        { }
+        public override void OnInteractRelease(GameObject interactor, bool completed)
+        { }
 
         public override void Drop(GameObject obj)
         {

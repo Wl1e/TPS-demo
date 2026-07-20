@@ -1,6 +1,4 @@
-using System;
-using System.Collections;
-using TPSDemo.Event;
+﻿using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -39,6 +37,7 @@ namespace TPSDemo
         private AnimatorController m_AnimatorController;
         private QuestController m_QuestController;
         private InteractionController m_InteractionController;
+        private PlayerLifeController m_LifeController;
         private AudioAndEffectPlayGlobal m_AudioEffectPlayer;
 
 
@@ -131,6 +130,7 @@ namespace TPSDemo
         /// <summary>
         /// 音效动画播放rpc
         /// </summary>
+        public PlayerLifeController LifeController => m_LifeController;
         public AudioAndEffectPlayGlobal AudioEffectPlayer => m_AudioEffectPlayer;
 
         #endregion Property
@@ -161,6 +161,7 @@ namespace TPSDemo
             m_AnimatorController = GetComponent<AnimatorController>();
             m_QuestController = GetComponent<QuestController>();
             m_InteractionController = GetComponent<InteractionController>();
+            m_LifeController = GetComponent<PlayerLifeController>();
             m_AudioEffectPlayer = GetComponent<AudioAndEffectPlayGlobal>();
 
             // Combat
@@ -200,6 +201,9 @@ namespace TPSDemo
             if (m_InputHandler) {
                 m_InputHandler.enabled = false;
             }
+            if (m_CharacterController) {
+                m_CharacterController.enabled = false;
+            }
             if(TryGetComponent<AudioListener>(out var listener)) {
                 listener.enabled = false;
             }
@@ -211,37 +215,20 @@ namespace TPSDemo
             base.OnNetworkSpawn();
 
             if (IsOwner) {
+                m_CharacterController.enabled = false;
+                PlayerDataProxy.Instance.RegisterPlayer(this);
                 m_FSM.InitializeFSM();
                 RegisterEvents();
                 m_Health.OnTakeDamaged += OnPlayerTakeDamage;
-                StartCoroutine(PlayerInitialize());
-
+                m_Health.OnDied += OnDied;
             } else {
                 DisableClientComponents();
             }
+            if(IsServer) {
+                GameModeManager.Instance.RegisterPlayer(this);
+                StartCoroutine(PlayerInitializeCoroutine());
+            }
         }
-
-        private IEnumerator PlayerInitialize()
-        {
-            yield return m_Loadout.EquipWeaponCo(m_Loadout.DefaultWeapon);
-            PlayerDataProxy.Instance.RegisterPlayer(this);
-            // 通知BootTel、UI和DebugLayer
-            EventManager.Broadcast(new PlayerFinishedInitialzeEvent());
-            InitialzePlayerPosServerRpc();
-            print($"Player {Id} Spawn");
-        }
-
-        [ServerRpc]
-        private void InitialzePlayerPosServerRpc()
-        {
-            BootTel.TeleportToHub();
-        }
-
-        private void OnPlayerTakeDamage(DamageInfo info)
-        {
-            RuntimeData.AniParameter.TakeDamage = true;
-        }
-
         public override void OnNetworkDespawn()
         {
             if (IsOwner) {
@@ -249,6 +236,27 @@ namespace TPSDemo
                 PlayerDataProxy.Instance.UnregisterPlayer();
             }
             base.OnNetworkDespawn();
+        }
+
+        #region Initialize
+
+        // 初始化需要在Server端运行的东西
+        private IEnumerator PlayerInitializeCoroutine()
+        {
+            yield return m_Loadout.EquipWeaponCo(m_Loadout.DefaultWeapon);
+            BootTel.TeleportToHub();
+            InitializeFinishClientRpc();
+        }
+
+        [ClientRpc]
+        private void InitializeFinishClientRpc()
+        {
+            // 通知UI和DebugLayer
+            if (IsOwner) {
+                m_CharacterController.enabled = true;
+                EventManager.Broadcast(new Event.PlayerFinishedInitialzeEvent());
+                print($"Player {Id} Spawn");
+            }
         }
 
         private void RegisterEvents()
@@ -267,6 +275,15 @@ namespace TPSDemo
             OnCrouchInput.UnregisterListener(OnCrouch);
             OnActiveCursorInput.UnregisterListener(OnActiveCursor);
             //OnLookInput.UnregisterListener(OnLook);
+        }
+
+        #endregion Initialize
+
+        #region Callback
+
+        private void OnPlayerTakeDamage(DamageInfo info)
+        {
+            RuntimeData.AniParameter.TakeDamage = true;
         }
 
         private void OnJump()
@@ -289,28 +306,22 @@ namespace TPSDemo
             Cursor.lockState = CursorLockMode.None;
         }
 
-        //public void SetInputActive(bool active, bool activeCursor)
-        //{
-        //    //print($"SetInputActive: {active} {activeCursor}");
-        //    if (!activeCursor) {
-        //        m_CursorBlock.Increase();
-        //    } else {
-        //        m_CursorBlock.Decrease();
-        //    }
-        //    if (Cursor.lockState == CursorLockMode.Locked && m_CursorBlock.IsLockd()) {
-        //        Cursor.lockState = CursorLockMode.None;
-        //    } else if (Cursor.lockState == CursorLockMode.None && !m_CursorBlock.IsLockd()) {
-        //        Cursor.lockState = CursorLockMode.Locked;
-        //    }
-        //    if (active) {
-        //        m_Movement.MovementLock.Decrease();
-        //    } else {
-        //        m_Movement.MovementLock.Increase();
-        //    }
-        //    if (m_CursorBlock.IsLockd()) {
-        //        m_FSM.ChangeState("Idle");
-        //    }
-        //}
+        private void OnDied(int attackerId)
+        {
+            if (m_LifeController != null) {
+                m_LifeController.HandleDeathLocally();
+            }
+
+            DiedServerRpc(attackerId);
+        }
+
+        #endregion Callback
+
+        [ServerRpc]
+        private void DiedServerRpc(int attackerId)
+        {
+            EventManager.Broadcast(new Event.ActorDiedEvent { ActorId = Id, AttackerId = attackerId });
+        }
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
         {

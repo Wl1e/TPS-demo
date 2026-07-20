@@ -1,26 +1,34 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace TPSDemo
 {
-
     [System.Serializable]
-    public struct ShopEntry: INetworkSerializable
+    public class ShopEntry: INetworkSerializable
     {
-        public string GoodName;
-        public int GoodId;
-        public int Amount;
-        public int Price;
-        public float Discount;
-        public bool Soldout;
+        public string GoodName = "";
+        public int GoodId = 0;
+        public int Amount = 0;
+        public int Price = 0;
+        public float Discount = 0f;
+        public bool Soldout = true;
+        public bool Restocking = false;
+        public float RestockTime = 0f;
 
-        public readonly int FinalPrice
+        public int FinalPrice
         {
             get => Mathf.Min(1, Mathf.RoundToInt(Price * Discount / 100f));
         }
 
-        public ShopEntry(ItemData item, int price, int amount = 1, float discount = 100f)
+        public ShopEntry() { }
+
+        public ShopEntry(
+            ItemData item,
+            int price,
+            int amount = 1,
+            float discount = 100f
+        )
         {
             GoodId = item.Id;
             GoodName = item.Name;
@@ -28,6 +36,8 @@ namespace TPSDemo
             Amount = amount;
             Discount = discount;
             Soldout = false;
+            Restocking = false;
+            RestockTime = 0f;
         }
 
         void INetworkSerializable.NetworkSerialize<T>(BufferSerializer<T> serializer)
@@ -38,7 +48,8 @@ namespace TPSDemo
             serializer.SerializeValue(ref Price);
             serializer.SerializeValue(ref Discount);
             serializer.SerializeValue(ref Soldout);
-
+            serializer.SerializeValue(ref Restocking);
+            serializer.SerializeValue(ref RestockTime);
         }
     }
 
@@ -61,7 +72,7 @@ namespace TPSDemo
         public Shop(ShopConfig config)
         {
             ShopId = config.ShopId;
-            // ĞŞ¸Ä»áÍ¬²½µ½SO£¬±äÏàµÄ´æ´¢?
+            // ä¿®æ”¹ä¼šåŒæ­¥åˆ°SOï¼Œå˜ç›¸çš„å­˜å‚¨?
             // m_Goods = config.Goods?.Count > 0 ? config.Goods : new List<ShopEntry>();
             foreach(var goodConfig in config.Goods) {
                 AddGood(goodConfig.Good, goodConfig.Price, goodConfig.Amount, goodConfig.Discount);
@@ -70,48 +81,101 @@ namespace TPSDemo
 
         private ShopConfig GetConfig() => ResourceManager.Instance.GetResource<ShopList>("Shop").GetConfig(ShopId);
 
-        public void SetGoods(List<ShopEntry> newGoods) => m_Goods = newGoods;
+        public void SetGoods(List<ShopEntry> newGoods)
+        {
+            m_Goods = newGoods;
+            for (int i = 0; i < m_Goods.Count; i++) {
+                UpdateGoodState(i);
+            }
+        }
         public void SetGoods(ShopEntry[] newGoods) => m_Goods = new(newGoods);
+        /// <summary>
+        /// ç”±ServeråŒæ­¥ç»™å„ä¸ªClientï¼ŒClientæ›´æ–°æ•°æ®
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="good"></param>
+        public void SetGood(int slot, ShopEntry good)
+        {
+            //Debug.Log($"slot {slot} become {good.Restocking} {good.RestockTime}");
+            m_Goods[slot] = good;
+            UpdateGoodState(slot);
+        }
 
         public void AddGood(ItemData item, int price, int amount = 1, float discount = 100f) => m_Goods.Add(new ShopEntry(item, price, amount, discount));
 
         public void AddGood(ShopEntry entry) => m_Goods.Add(entry);
 
-        public void GoodSoldout(int slot)
+        public void UpdateGoodState(int slot)
         {
             if (slot < 0 || slot >= m_Goods.Count) {
                 return;
             }
-            // Èç¹ûÖ±½ÓRemoveAt£¬»áµ¼ÖÂUIµÄslotºÍlogicµÄslot²»Í¬²½
+            // å¦‚æœç›´æ¥RemoveAtï¼Œä¼šå¯¼è‡´UIçš„slotå’Œlogicçš„slotä¸åŒæ­¥
             // m_Goods.RemoveAt(slot);
             ShopEntry good = m_Goods[slot];
-            good.Soldout = true;
-            m_Goods[slot] = good;
-            Debug.Log($"Set {slot} Soldout");
+            if(good.Restocking) {
+                ShopManager.Instance.StartRestockCoroutine(this, slot);
+                Debug.Log($"Good {slot} Restock");
+            } else if(good.Soldout) {
+                Debug.Log($"Good {slot} Soldout");
+            }
+            EventManager.Broadcast(new Event.ShopUpdateEvent {
+                ShopId = ShopId,
+                Slot = slot
+            });
         }
 
-        public ShopEntry? GetGood(int slot)
+        /// <summary>
+        /// è¡¥è´§å•†å“
+        /// </summary>
+        /// <param name="slot"></param>
+        public void RestockGood(int slot)
         {
-            if (slot < 0 || slot >= m_Goods.Count)
+            Debug.Log("slot " + slot + "finish Restock");
+            m_Goods[slot].Restocking = false;
+            m_Goods[slot].RestockTime = 0f;
+            EventManager.Broadcast(new Event.ShopUpdateEvent {
+                ShopId = ShopId,
+                Slot = slot
+            });
+        }
+
+        /// <summary>
+        /// è·å–å•æ ¼å•†å“
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public ShopEntry GetGood(int slot)
+        {
+            if (slot < 0 || slot >= m_Goods.Count) {
                 return null;
+            }
             return m_Goods[slot];
         }
 
+        /// <summary>
+        /// å•†åº—è¿›å…¥
+        /// </summary>
+        /// <param name="player"></param>
         public void Enter(PlayerController player)
         {
             m_Player = player;
             //EventManager.AddListener<Event.TryBuyEvent>(TryBuy);
-            EventManager.Broadcast(new Event.ShopOpenEvent { ShopId = ShopId, ShopName = ShopName });
+            EventManager.Broadcast(new Event.OpenShopUIEvent { ShopId = ShopId, ShopName = ShopName });
         }
 
+        /// <summary>
+        /// å•†åº—é€€å‡º
+        /// </summary>
         public void Exit(PlayerController player)
         {
             //EventManager.RemoveListener<Event.TryBuyEvent>(TryBuy);
-            EventManager.Broadcast(new Event.ShopCloseEvent { ShopId = ShopId });
+            EventManager.Broadcast(new Event.CloseShopUIEvent { ShopId = ShopId });
         }
 
         #region Server
         /// <summary>
+        /// å•†åº—è´­ä¹°çš„é€»è¾‘
         /// Only call by server
         /// </summary>
         public Event.ShopBuyEvent Buy(PlayerController player, int slot)
@@ -121,36 +185,43 @@ namespace TPSDemo
                 Slot = slot,
                 Price = 0,
                 IsSuccess = false,
-                FailInfo = ""
+                Info = $"å•†åº—{ShopId}: "
             };
 
-            if (slot < 0 || slot >= m_Goods.Count) {
-                evt.FailInfo = "´íÎóÉÌµê²ÛÎ» " + slot;
+            var good = GetGood(slot);
+            if(good == null) {
+                evt.Info += "é”™è¯¯å•†åº—æ§½ä½ " + slot;
                 return evt;
             }
 
-            var good = m_Goods[slot];
+            if(good.Soldout || good.Restocking) {
+                evt.Info += "å•†å“å·²å”®ç©ºæˆ–è¡¥è´§ä¸­";
+                return evt;
+            }
+
             var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(good.GoodId);
             if (itemData == null) {
-                evt.FailInfo = $"²»´æÔÚµÀ¾ß: {good.GoodId}";
+                evt.Info += $"ä¸å­˜åœ¨é“å…·: {good.GoodId}";
                 return evt;
             }
 
-            var goodEntry = m_Goods[slot];
-            int finalPrice = goodEntry.FinalPrice;
+            int finalPrice = good.FinalPrice;
 
             if (player.Economy.CanAfford(MoneyId, finalPrice)) {
                 player.Economy.SpendMoney(MoneyId, finalPrice);
-                GoodSoldout(slot);
-                player.Inventory.AddItemClientRpc(player.Id, itemData.Id, goodEntry.Amount);
+                player.Inventory.AddItemClientRpc(player.Id, itemData.Id, good.Amount);
                 evt.IsSuccess = true;
+
+                good.Soldout = !Restock;
+                good.Restocking = Restock;
+                good.RestockTime = RestockTime;
+                evt.Info += $"è´­ä¹°{itemData.Name}æˆåŠŸ";
             } else {
                 evt.IsSuccess = false;
-                evt.FailInfo = $"¹ºÂò{itemData.Name}Ê§°Ü£¬½ğ±Ò²»×ã";
+                evt.Info += $"è´­ä¹°{itemData.Name}å¤±è´¥ï¼Œé‡‘å¸ä¸è¶³";
             }
 
             evt.Price = finalPrice;
-
             return evt;
         }
 

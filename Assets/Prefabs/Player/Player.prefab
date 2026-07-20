@@ -928,6 +928,7 @@ GameObject:
   - component: {fileID: 8674277532388271026}
   - component: {fileID: 3466044232605965439}
   - component: {fileID: 122346622546593560}
+  - component: {fileID: 8219723764251447864}
   m_Layer: 12
   m_Name: Player
   m_TagString: Player
@@ -1315,6 +1316,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.AudioAndEffectPlayGlobal
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &8219723764251447864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8301697018837147508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c64910fa8fa9a344a8e8ddf7ed2cab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.PlayerLifeController
+  ShowTopMostFoldoutHeaderGroup: 1
+  m_ReviveArea: {fileID: 0}
+  m_ReviveDuration: 3
 --- !u!1 &8439695403502581523
 GameObject:
   m_ObjectHideFlags: 0

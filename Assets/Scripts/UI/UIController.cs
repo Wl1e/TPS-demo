@@ -2,6 +2,7 @@ using System;
 using TPSDemo.Event;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 namespace TPSDemo.UI
 {
@@ -20,6 +21,14 @@ namespace TPSDemo.UI
         IPanel m_CurrentPanel = null;
 
         [SerializeField] GameEvent m_OpenSettingEvent;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            if(Instance != this) {
+                Destroy(transform.parent.gameObject);
+            }
+        }
 
         private void Start()
         {
@@ -73,8 +82,8 @@ namespace TPSDemo.UI
 
             m_OpenSettingEvent.RegisterListener(OnEscPressed);
 
-            EventManager.AddListener<ShopOpenEvent>(evt => Open(m_ShopUI));
-            EventManager.AddListener<ShopCloseEvent>(evt => Close(m_ShopUI));
+            EventManager.AddListener<OpenShopUIEvent>(evt => Open(m_ShopUI));
+            EventManager.AddListener<CloseShopUIEvent>(evt => Close(m_ShopUI));
         }
 
         private void OnEscPressed()
@@ -98,7 +107,7 @@ namespace TPSDemo.UI
             }
         }
 
-        private void Close(IPanel panel)
+        public void Close(IPanel panel)
         {
             if(m_CurrentPanel == panel) {
                 m_CurrentPanel.Close();
@@ -110,14 +119,9 @@ namespace TPSDemo.UI
             }
         }
 
-        public void CloseAllUI()
+        public void CloseCurPanel()
         {
-            m_HUD.gameObject.SetActive(false);
-            m_InventoryUI.gameObject.SetActive(false);
-            m_DialogUI.gameObject.SetActive(false);
-            m_LoadoutUI.gameObject.SetActive(false);
-            m_QuestUI.gameObject.SetActive(false);
-            m_SettingUI.gameObject.SetActive(false);
+            Close(m_CurrentPanel);
         }
     }
 }

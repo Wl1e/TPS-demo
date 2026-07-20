@@ -27,6 +27,7 @@ public class RangedFloat: INetworkSerializable, IEquatable<RangedFloat>
         return value - oldValue;
     }
 
+    public void FullHealth() => value = hi;
 
     public float Add(float amount) => SetValue(value + amount);
     public float Subtract(float amount) => SetValue(value - amount);

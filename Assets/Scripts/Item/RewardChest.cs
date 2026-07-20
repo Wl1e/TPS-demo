@@ -46,9 +46,18 @@ namespace TPSDemo
         }
 
         // === IInteractive ===
-        void IInteractive.Interact(GameObject playerObj)
+
+        float IInteractive.HoldDuration => 1f;
+        void IInteractive.OnInteractPress(GameObject interactor)
+        { }
+        void IInteractive.OnInteractHold(GameObject interactor)
+        { }
+        void IInteractive.OnInteractRelease(GameObject interactor, bool completed)
         {
-            if (!playerObj.TryGetComponent<PlayerController>(out var player)) {
+            if (!completed) {
+                return;
+            }
+            if (!interactor.TryGetComponent<PlayerController>(out var player)) {
                 return;
             }
             player.InteractionController.OnInteracted();

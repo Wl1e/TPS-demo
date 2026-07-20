@@ -12,6 +12,13 @@ namespace TPSDemo.Event
     public abstract class InternalEvent
     { }
 
+    #region Game
+
+    public class GameOverEvent: InternalEvent
+    { }
+
+    #endregion
+
     #region Actor
     /// <summary>
     /// 死亡事件(玩家、敌人)
@@ -188,7 +195,7 @@ namespace TPSDemo.Event
     // ui -> logic
     public class OpenShopEvent: InternalEvent
     {
-        public int playerId;
+        public int PlayerId;
         public int ShopId;
     }
     public class CloseShopEvent : InternalEvent
@@ -202,14 +209,14 @@ namespace TPSDemo.Event
     }
 
     // logic -> ui
-    public class ShopOpenEvent : InternalEvent
+    public class OpenShopUIEvent : InternalEvent
     {
         public int PlayerId;
         public int ShopId;
         public string ShopName;
     }
 
-    public class ShopCloseEvent : InternalEvent
+    public class CloseShopUIEvent : InternalEvent
     {
         public int ShopId;
     }
@@ -221,7 +228,7 @@ namespace TPSDemo.Event
         public int Slot;
         public int Price;
         public bool IsSuccess;
-        public string FailInfo;
+        public string Info;
 
         void INetworkSerializable.NetworkSerialize<T>(BufferSerializer<T> serializer)
         {
@@ -229,13 +236,14 @@ namespace TPSDemo.Event
             serializer.SerializeValue(ref Slot);
             serializer.SerializeValue(ref Price);
             serializer.SerializeValue(ref IsSuccess);
-            serializer.SerializeValue(ref FailInfo);
+            serializer.SerializeValue(ref Info);
         }
     }
 
     public class ShopUpdateEvent: InternalEvent
     {
         public int ShopId;
+        public int Slot;
     }
 
     #endregion

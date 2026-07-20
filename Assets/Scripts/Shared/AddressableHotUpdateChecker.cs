@@ -23,7 +23,7 @@ namespace TPSDemo
         IEnumerator AutoCheckLoop()
         {
             while (CheckInterval != 0f) {
-                print("检查远程更新");
+                //print("检查远程更新");
                 yield return new WaitForSeconds(CheckInterval);
                 yield return CheckAsync();
             }

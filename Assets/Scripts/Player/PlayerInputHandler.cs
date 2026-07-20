@@ -18,7 +18,7 @@ public class PlayerInputHandler : NetworkBehaviour
     [SerializeField] private BoolEvent m_FireInput;
     [SerializeField] private BoolEvent m_AimInput;
     [SerializeField] private GameEvent m_ReloadInput;
-    [SerializeField] private GameEvent m_InteractionInput;
+    [SerializeField] private BoolEvent m_InteractionInput;
     [SerializeField] private GameEvent m_InventoryInput;
     [SerializeField] private GameEvent m_GrenadeInput;
     [SerializeField] private GameEvent m_Weapon1Input;
@@ -195,7 +195,7 @@ public class PlayerInputHandler : NetworkBehaviour
         if (!ValidPlayerInput()) {
             return;
         }
-        m_InteractionInput.Raise();
+        m_InteractionInput.Raise(ctx.ReadValueAsButton());
     }
     
     private void OnGrenade(InputAction.CallbackContext ctx)

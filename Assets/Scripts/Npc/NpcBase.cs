@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
@@ -10,7 +10,7 @@ namespace TPSDemo
     {
         // Base
         /// <summary>
-        /// npcmÃû×Ö
+        /// npcmåå­—
         /// </summary>
         string m_NpcName;
         public string Name => m_NpcName;
@@ -19,53 +19,52 @@ namespace TPSDemo
         public Transform ModelTransform;
 
         /// <summary>
-        /// µ±Ç°½»»¥µÄÍæ¼Ò(Local)
+        /// å½“å‰äº¤äº’çš„ç©å®¶(Local)
         /// </summary>
         private PlayerController m_Player;
 
+        [Tooltip("Npcçœ‹å‘ä½ç½®")]
         public Transform SeePos;
-        [Tooltip("×î´ó×ªÍ·½Ç¶È")]
+        [Tooltip("æœ€å¤§è½¬å¤´è§’åº¦")]
         public float SeeAngleRange = 70f;
-        [Tooltip("×ªÉíÃÅ¼÷")]
+        [Tooltip("è½¬èº«é—¨æ§›")]
         public float TurnThreshold = 70f;
-        [Tooltip("±³ÉíÃÅ¼÷")]
+        [Tooltip("èƒŒèº«é—¨æ§›")]
         public float TurnBackThreshold = 150f;
         float RigWeight = 0f;
 
         // Animator
-        [Tooltip("ÊÇ·ñÃæÏòÍæ¼Ò")]
+        [Tooltip("æ˜¯å¦é¢å‘ç©å®¶")]
         public bool IsFacePlayer;
         public float ViewRadius = 2f;
         [SerializeField] Rig m_Rig;
         [SerializeField] MultiAimConstraint m_MultiAimConstraint;
-        [Tooltip("Èç¹ûÒª×ªÉí£¬ÔòµÈ´ıµÄÊ±¼ä")]
+        [Tooltip("å¦‚æœè¦è½¬èº«ï¼Œåˆ™ç­‰å¾…çš„æ—¶é—´")]
         public float WaitTime;
         Coroutine m_WaitAnimatorCoroutine = null;
 
         // Dialog
-        [Tooltip("ÖĞÎÄ¶Ô»°Êı¾İ")]
+        [Tooltip("ä¸­æ–‡å¯¹è¯æ•°æ®")]
         [SerializeField] DialogueData m_DialogueDataCN;
-        [Tooltip("Ó¢ÎÄ¶Ô»°Êı¾İ")]
+        [Tooltip("è‹±æ–‡å¯¹è¯æ•°æ®")]
         [SerializeField] DialogueData m_DialogueDataEN;
         public DialogueData DialogueData { get; private set; }
         /// <summary>
-        /// µ±Ç°ÊÇ·ñÕıÔÚºÍplayer½»Á÷
+        /// å½“å‰æ˜¯å¦æ­£åœ¨å’Œplayeräº¤æµ
         /// </summary>
-        private readonly NetworkVariable<bool> m_Chatting = new(false);
         /// <summary>
-        /// µ±Ç°½»»¥Íæ¼Ò(Server)
+        /// å½“å‰äº¤äº’ç©å®¶(Server)
         /// </summary>
         private readonly NetworkVariable<int> m_ChattingPlayer = new(-1);
         public int PlayerId => m_ChattingPlayer.Value;
-        public bool Chatting => m_Chatting.Value;
-        [Tooltip("ÊÇ·ñ¿É½»Ì¸")]
+        [Tooltip("æ˜¯å¦å¯äº¤è°ˆ")]
         [SerializeField] bool m_CanChat;
 
         // Interactive
         [SerializeField] float m_InteractRadius = 1f;
         public float InteractRadius => m_InteractRadius;
 
-        // Óëanimator±£³ÖÒ»ÖÂ
+        // ä¸animatorä¿æŒä¸€è‡´
         enum TurnDir : int
         {
             LeftTurn = 1,
@@ -93,7 +92,7 @@ namespace TPSDemo
 
         private void ChangeAudio(Event.LanguageChangedEvent evt)
         {
-            print("Npc¸üĞÂÓïÒô£º" + LocalizationManager.Instance.GetCurrentLanguageString());
+            print("Npcæ›´æ–°è¯­éŸ³ï¼š" + LocalizationManager.Instance.GetCurrentLanguageString());
             LanguageChanged(LocalizationManager.Instance.CurLanguage);
         }
 
@@ -148,11 +147,7 @@ namespace TPSDemo
         public void StopChat() => StopChatServerRpc();
 
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-        private void StopChatServerRpc()
-        {
-            m_Chatting.Value = false;
-            m_ChattingPlayer.Value = -1;
-        }
+        private void StopChatServerRpc() => m_ChattingPlayer.Value = -1;
 
         void SeeTarget()
         {
@@ -170,22 +165,20 @@ namespace TPSDemo
             }
         }
 
-        bool InInteractRange(Vector3 position)
-        {
-            return (position - transform.position).sqrMagnitude <= m_InteractRadius * m_InteractRadius;
-        }
+        bool InInteractRange(Vector3 position) => (position - transform.position).sqrMagnitude <= m_InteractRadius * m_InteractRadius;
 
-        public void Interact(GameObject player)
+        public float HoldDuration => 0f;
+        public void OnInteractPress(GameObject interactor)
         {
-            if (!InInteractRange(player.transform.position)) {
+            if (!m_CanChat) {
                 return;
             }
-            if (Chatting || !m_CanChat) {
+            if (!InInteractRange(interactor.transform.position)) {
                 return;
             }
-            m_Player = player.GetComponent<PlayerController>();
+            m_Player = interactor.GetComponent<PlayerController>();
             print($"player {m_Player.Id} interact npc");
-            bool needWait = FaceTarget(player.transform.position);
+            bool needWait = FaceTarget(interactor.transform.position);
             if (needWait) {
                 if (m_WaitAnimatorCoroutine != null) {
                     StopCoroutine(m_WaitAnimatorCoroutine);
@@ -195,6 +188,10 @@ namespace TPSDemo
                 Dialog();
             }
         }
+        public void OnInteractHold(GameObject interactor)
+        { }
+        public void OnInteractRelease(GameObject interactor, bool completed)
+        { }
 
         float GetAngle(Vector3 position)
         {
@@ -225,13 +222,17 @@ namespace TPSDemo
             return true;
         }
 
+        /// <summary>
+        /// è®¾ç½®å½“å‰å¯¹è¯ç©å®¶ID
+        /// æœ¬æ¥ç›®çš„æ˜¯ä»…æ”¯æŒå•äººå¯¹è¯ï¼Œä½†æ˜¯ä½“éªŒä¸å¥½
+        /// æ‰€ä»¥æ”¯æŒå¤šäººåŒæ—¶å¯¹è¯ï¼Œå¯èƒ½ä¼šæ··ä¹±ï¼Œå¤±å»äº†ä½œç”¨
+        /// </summary>
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-        private void ChatNpcServerRpc(int playerId)
-        {
-            m_Chatting.Value = true;
-            m_ChattingPlayer.Value = playerId;
-        }
+        private void ChatNpcServerRpc(int playerId) => m_ChattingPlayer.Value = playerId;
 
+        /// <summary>
+        /// å¯¹è¯
+        /// </summary>
         void Dialog()
         {
             ChatNpcServerRpc(m_Player.Id);
@@ -241,18 +242,33 @@ namespace TPSDemo
         {
             yield return new WaitForSeconds(WaitTime);
             if (m_Player) {
-                Interact(m_Player.gameObject);
+                OnInteractPress(m_Player.gameObject);
             }
         }
 
         private void OnPlayerChatting(int previousValue, int newValue)
         {
-            if(IsClient && m_Player != null && m_Player.Id == newValue) {
-                DialogueSystem.Instance.Enter(m_Player, this);
+            if(IsClient) {
+                if (m_Player != null && m_Player.Id == newValue) {
+                    DialogueSystem.Instance.Enter(m_Player, this);
+                }
+            }
+            if(IsServer) {
+                var actor = ActorManager.Instance.GetActor(m_ChattingPlayer.Value);
+                if (actor) {
+                    UpdateSeePosClientRpc(actor.AimPoint.position);
+                }
             }
         }
 
-        public void PlayAudio(int dialogId)
+        //[Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+        //private void UpdateSeePosServerRpc() => 
+
+        [ClientRpc]
+        private void UpdateSeePosClientRpc(Vector3 position) => SeePos.position = position;
+
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+        public void PlayAudioServerRpc(int dialogId)
         {
             m_AudioAndEffectPlayGlobal.Play(
                 $"NpcAudio{dialogId}_{LocalizationManager.Instance.GetCurrentLanguageString()}",
@@ -260,7 +276,7 @@ namespace TPSDemo
                 transform.position,
                 Quaternion.identity
             );
-            print("Npc Play Audio " + $"NpcAudio{dialogId}_{LocalizationManager.Instance.GetCurrentLanguageString()}");
+            //print("Npc Play Audio " + $"NpcAudio{dialogId}_{LocalizationManager.Instance.GetCurrentLanguageString()}");
         }
     }
 }

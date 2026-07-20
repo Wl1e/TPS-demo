@@ -14,7 +14,7 @@ namespace TPSDemo
         public Action<int> OnDied;
         public Action<float> OnHealed;
 
-        bool m_IsDied = false;
+        bool IsDied => m_HealthValue.Value.IsLow();
 
         public override void OnNetworkSpawn()
         {
@@ -34,7 +34,7 @@ namespace TPSDemo
 
         public float TakeDamage(DamageInfo info)
         {
-            if (m_IsDied) {
+            if (IsDied) {
                 return 0;
             }
             print($"info damage: {info.Damage}, health: {m_HealthValue.Value.Value}");
@@ -59,13 +59,14 @@ namespace TPSDemo
             }
         }
 
+        public void Revive() => m_HealthValue.Value.FullHealth();
+
         void HandleDeath(GameObject attacker)
         {
-            if (m_IsDied) {
+            if (IsDied) {
                 return;
             }
             if (m_HealthValue.Value.IsLow()) {
-                m_IsDied = true;
                 int actorId = -1;
                 if(attacker && attacker.TryGetComponent<Actor>(out var actor)) {
                     actorId = actor.Id;

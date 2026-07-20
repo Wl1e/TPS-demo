@@ -93,7 +93,7 @@ namespace TPSDemo.UI
                 mgr.Disconnect();
             }
             SceneManager.LoadScene("Boot");
-            UIController.Instance.CloseAllUI();
+            UIController.Instance.CloseCurPanel();
         }
     }
 }

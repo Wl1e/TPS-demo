@@ -1,4 +1,5 @@
-using NUnit.Framework.Interfaces;
+﻿using NUnit.Framework.Interfaces;
+using System.Collections;
 using System.Collections.Generic;
 using TPSDemo.UI;
 using Unity.Netcode;
@@ -56,6 +57,9 @@ namespace TPSDemo
 
         public void TryBuy(Event.TryBuyEvent evt) => TryBuyServerRpc(m_CurrentPlayerId, evt.ShopId, evt.Slot);
 
+        /// <summary>
+        /// 购买时的Server端逻辑
+        /// </summary>
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         public void TryBuyServerRpc(int playerId, int shopId, int slot)
         {
@@ -65,10 +69,14 @@ namespace TPSDemo
             var evt = shop.Buy(player, slot);
             BuyResultClientRpc(playerId, evt);
             if (evt.IsSuccess) {
-                UpdateShopGoodsClientRpc(shopId, shop.GoodArr);
+                // 更新单格数据
+                UpdateShopGoodClientRpc(shopId, slot, shop.GetGood(slot));
             }
         }
 
+        /// <summary>
+        /// 购买成功后，Server将结果发送给Owner
+        /// </summary>
         [ClientRpc]
         private void BuyResultClientRpc(int playerId, Event.ShopBuyEvent evt)
         {
@@ -78,35 +86,48 @@ namespace TPSDemo
 
             EventManager.Broadcast(evt);
 
-            var itemName = m_Shops[evt.ShopId].GetGood(evt.Slot).Value.GoodName;
-            if (evt.IsSuccess) {
-                EventManager.Broadcast(
+            EventManager.Broadcast(
                     new Event.MessageLogEvent {
-                        Message = $"Player{playerId} 购买{itemName}成功"
+                        Message = evt.Info
                     }
                 );
-            } else {
-                EventManager.Broadcast(
-                    new Event.MessageLogEvent {
-                        Message = $"Player{playerId} 购买{itemName}失败，金币不足"
-                    }
-                );
-            }
+            //if (evt.IsSuccess) {
+            //    EventManager.Broadcast(
+            //        new Event.MessageLogEvent {
+            //            Message = $"Player{playerId} 购买{itemName}成功"
+            //        }
+            //    );
+            //} else {
+            //    EventManager.Broadcast(
+            //        new Event.MessageLogEvent {
+            //            Message = $"Player{playerId} 购买{itemName}失败，金币不足"
+            //        }
+            //    );
+            //}
         }
 
         #endregion
 
         #region ShopOpen
 
+        /// <summary>
+        /// 打开商店时
+        /// </summary>
         void OnOpenShop(Event.OpenShopEvent evt)
         {
-            m_CurrentPlayerId = evt.playerId;
+            m_CurrentPlayerId = evt.PlayerId;
             print("Enter Shop, Player " + m_CurrentPlayerId);
             m_CurrentShopId = evt.ShopId;
             OpenShopServerRpc(m_CurrentPlayerId, m_CurrentShopId);
         }
 
-        // 我使用了PlayerId来锁定客户端，强要求：Client中，只有Owner Player才允许打开Shop
+        /// <summary>
+        /// 打开商店的Server验证：
+        /// 是否有商店
+        /// 更新商店数据
+        /// 我使用了PlayerId来锁定客户端
+        /// 强要求：Client中，只有Owner Player才允许打开Shop
+        /// </summary>
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         void OpenShopServerRpc(int playerId, int shopId)
         {
@@ -117,6 +138,9 @@ namespace TPSDemo
             TrueEnterShopClientRpc(playerId);
         }
 
+        /// <summary>
+        /// 经过Server端验证和更新数据后后，进入商店
+        /// </summary>
         [ClientRpc]
         private void TrueEnterShopClientRpc(int playerId)
         {
@@ -129,6 +153,9 @@ namespace TPSDemo
             }
         }
 
+        /// <summary>
+        /// 商店关闭时
+        /// </summary>
         void OnCloseShop(Event.CloseShopEvent evt)
         {
             if (m_Shops.TryGetValue(m_CurrentShopId, out Shop shop)) {
@@ -141,18 +168,33 @@ namespace TPSDemo
 
         #region ShopUpdate
 
-        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-        private void UpdateShopServerRpc(int shopId) => UpdateShopGoodsClientRpc(shopId, m_Shops[shopId].GoodArr);
+        //[Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+        //private void UpdateShopServerRpc(int shopId) => UpdateShopGoodsClientRpc(shopId, m_Shops[shopId].GoodArr);
 
-        // 每次更新都做了List和Array的转换，有性能开销吗
+        /// <summary>
+        /// 将Server端单个槽位数据推送给各个Client
+        /// </summary>
+        [ClientRpc]
+        private void UpdateShopGoodClientRpc(int shopId, int slot, ShopEntry entry)
+        {
+            var shop = m_Shops[shopId];
+            shop.SetGood(slot, entry);
+        }
+
+        /// <summary>
+        /// 将Server端所有数据推送给各个Client
+        /// </summary>
         [ClientRpc]
         private void UpdateShopGoodsClientRpc(int shopId, ShopEntry[] goods)
         {
-            var shop = m_Shops[shopId];
-            shop.SetGoods(goods);
-            EventManager.Broadcast(new Event.ShopUpdateEvent { ShopId = shopId });
+            m_Shops[shopId].SetGoods(goods);
+            //EventManager.Broadcast(new Event.ShopUpdateEvent { ShopId = shopId, Slot = slot });
         }
 
+        /// <summary>
+        /// 获取当前商店
+        /// </summary>
+        /// <returns></returns>
         public Shop GetCurrentShop()
         {
             return m_Shops.GetValueOrDefault(m_CurrentShopId, null);
@@ -162,6 +204,19 @@ namespace TPSDemo
 
         public void Save()
         {
+        }
+
+        /// <summary>
+        /// Shop补货计时（Shop无法使用协程，后续可添加一个全局计时器）
+        /// </summary>
+        public void StartRestockCoroutine(Shop shop, int slot)
+        {
+            StartCoroutine(RestockAfterDelay(shop, slot));
+        }
+        IEnumerator RestockAfterDelay(Shop shop, int slot)
+        {
+            yield return new WaitForSeconds(shop.RestockTime);
+            shop?.RestockGood(slot);
         }
     }
 }

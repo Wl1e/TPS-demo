@@ -6,15 +6,28 @@ namespace TPSDemo
     public class InteractionController : MonoBehaviour
     {
         [Tooltip("交互距离")]
-        [SerializeField] float m_InteractRange = 3f;
+        [SerializeField] private float m_InteractRange = 3f;
         [Tooltip("交互层级")]
-        [SerializeField] LayerMask m_InteractLayerMask;
+        [SerializeField] private LayerMask m_InteractLayerMask;
         [Tooltip("交互输入")]
-        [SerializeField] GameEvent m_OnInteractInput;
+        [SerializeField] private BoolEvent m_OnInteractInput;
 
-        [SerializeField] AudioClip m_PickupAudio;
+        [SerializeField] private AudioClip m_PickupAudio;
 
-        PlayerController m_PlayerController;
+        private PlayerController m_PlayerController;
+
+        /// <summary>
+        /// 当前是否正在交互
+        /// </summary>
+        private bool m_IsInteracting = false;
+        /// <summary>
+        /// 当前正在交互的对象
+        /// </summary>
+        private IInteractive m_InteractingObj = null;
+        /// <summary>
+        /// 交互时间
+        /// </summary>
+        private float m_InteractTime = 0f;
 
         // 当前瞄准的可互动对象
         IInteractive m_CurrentTarget;
@@ -41,7 +54,7 @@ namespace TPSDemo
             m_OnInteractInput.UnregisterListener(OnInteract);
         }
 
-        void Update()
+        private void Update()
         {
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
             // Debug.DrawRay(ray.origin, ray.direction, Color.green, 0.1f, true);
@@ -56,6 +69,15 @@ namespace TPSDemo
                 }
             } else {
                 m_CurrentTarget = null;
+            }
+
+            if(m_IsInteracting) {
+                m_InteractTime += Time.deltaTime;
+                if (m_InteractTime >= m_InteractingObj.HoldDuration) {
+                    FinishInteraction();
+                } else {
+                    m_InteractingObj.OnInteractHold(gameObject);
+                }
             }
         }
 
@@ -74,9 +96,30 @@ namespace TPSDemo
             OnInteraction?.Invoke();
         }
 
-        void OnInteract()
+        private void OnInteract(bool pressed)
         {
-            m_CurrentTarget?.Interact(gameObject);
+            if (pressed && m_CurrentTarget != null) {
+                if (!m_IsInteracting) {
+                    m_InteractTime = 0f;
+                    m_InteractingObj = m_CurrentTarget;
+                    m_InteractingObj.OnInteractPress(gameObject);
+                    m_IsInteracting = true;
+                }
+            }
+            if(!pressed && m_InteractingObj != null) {
+                FinishInteraction();
+            }
+        }
+
+        private void FinishInteraction()
+        {
+            if (!m_IsInteracting) {
+                return;
+            }
+            m_IsInteracting = false;
+            m_InteractingObj?.OnInteractRelease(gameObject, m_InteractTime >= m_InteractingObj.HoldDuration);
+            m_InteractTime = 0f;
+            m_InteractingObj = null;
         }
     }
 }

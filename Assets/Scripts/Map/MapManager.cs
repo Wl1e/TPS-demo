@@ -101,6 +101,12 @@ namespace TPSDemo
                 return;
             }
 
+            if (m_CurrentMap != null && m_CurrentMap.Config.MapId == config.MapId) {
+                TeleportToClientRpc(m_CurrentMap.EntryPoint.position,
+                                    m_CurrentMap.EntryPoint.rotation);
+                return;
+            }
+
             if (string.IsNullOrEmpty(config.SceneName)) {
                 Debug.LogError($"MapManager: Map '{config.MapName}' has no SceneName!");
                 return;
@@ -122,7 +128,7 @@ namespace TPSDemo
                 // 如果m_CurrentMap等于map，代表是client进入触发
                 if (IsServer && m_CurrentMap != map) {
                     InitializeMap();
-                    TeleportToClientRpc(m_CurrentMap.EntryPoint.position, m_CurrentMap.EntryPoint.rotation);
+                    //TeleportToClientRpc(m_CurrentMap.EntryPoint.position, m_CurrentMap.EntryPoint.rotation);
                     //foreach(var actor in ActorManager.Instance.Actors.Values) {
                     //    if(actor.TryGetComponent<PlayerController>(out var player)) {
                             
@@ -140,10 +146,12 @@ namespace TPSDemo
             }
         }
 
+        // 将进加入的Client传送到指定位置
         [ClientRpc]
         private void TeleportToClientRpc(Vector3 position, Quaternion rotation)
         {
             var player = PlayerDataProxy.Instance.GetPlayer();
+
             player.CharacterController.enabled = false;
             player.Movement.Teleport(position, rotation, Vector3.one);
             player.CharacterController.enabled = true;
