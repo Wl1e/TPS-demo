@@ -19,12 +19,12 @@ namespace TPSDemo
 
         public void LoopAudio(string name, AudioClip audioClip) => m_LoopAudio[name] = audioClip;
 
-        public void Play(string name, float duration, Vector3 position, Quaternion rotation, bool bindSelf = false)
+        public void Play(string name, AudioSystem.AudioGroup group, float duration, Vector3 position, Quaternion rotation, bool bindSelf = false)
         {
             if (IsServer) {
-                PlayAudioAndEffectClientRpc(name, duration, position, rotation, bindSelf);
+                PlayAudioAndEffectClientRpc(name, group, duration, position, rotation, bindSelf);
             } else {
-                PlayAudioAndEffectServerRpc(name, duration, position, rotation, bindSelf);
+                PlayAudioAndEffectServerRpc(name, group, duration, position, rotation, bindSelf);
             }
         }
 
@@ -54,14 +54,15 @@ namespace TPSDemo
         }
 
         [ServerRpc]
-        public void PlayAudioAndEffectServerRpc(string name, float duration, Vector3 position, Quaternion rotation, bool bindSelf)
-            => PlayAudioAndEffectClientRpc(name, duration, position, rotation, bindSelf);
+        public void PlayAudioAndEffectServerRpc(string name, AudioSystem.AudioGroup group, float duration, Vector3 position, Quaternion rotation, bool bindSelf)
+            => PlayAudioAndEffectClientRpc(name, group, duration, position, rotation, bindSelf);
 
         [ClientRpc]
-        public void PlayAudioAndEffectClientRpc(string name, float duration, Vector3 position, Quaternion rotation, bool bindSelf)
+        public void PlayAudioAndEffectClientRpc(string name, AudioSystem.AudioGroup group, float duration, Vector3 position, Quaternion rotation, bool bindSelf)
         {
             if (m_Audios.TryGetValue(name, out var audio)) {
                 Director.Instance.RequestAudio(audio)
+                    .WithMixerGroup(group)
                     .WithPosition(position)
                     .WithDuration(duration)
                     .Play();
@@ -86,7 +87,7 @@ namespace TPSDemo
                     player.AudioSource.loop = true;
                     m_LoopPlayer.Add(loopAudio, player);
                     // 绝大部分使用该组件播放的都是音效
-                    player.Play(loopAudio, Director.Instance.GetGroup(2), float.PositiveInfinity);
+                    player.Play(loopAudio, Director.Instance.GetGroup(group), float.PositiveInfinity);
                 }
             }
         }

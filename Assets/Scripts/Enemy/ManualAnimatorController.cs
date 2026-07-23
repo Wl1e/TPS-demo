@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,11 +6,18 @@ using UnityEngine;
 namespace TPSDemo
 {
 
+    [System.Serializable]
+    public struct AnimationEntry
+    {
+        public string Name;
+        public AnimationClip Clip;
+    }
     /// <summary>
     /// 手动控制 Animator 播放动画，支持 CrossFade 过渡。
     /// 挂在带 Animator 的 GameObject 上即可。
     /// 需要在Animator中加上所有你使用的Type类型的空动画片段，方便替换。
     /// </summary>
+    [Obsolete("请使用PlayableController")]
     public class ManualAnimatorController : MonoBehaviour
     {
         #region
@@ -23,18 +31,12 @@ namespace TPSDemo
             Died,
         }
 
-        [System.Serializable]
-        public struct AnimatorEntry
-        {
-            public string Type;
-            public AnimationClip Clip;
-        }
         #endregion
 
         [Header("引用")]
         [SerializeField] private Animator m_Animator = null;
 
-        [SerializeField] private List<AnimatorEntry> m_Clips;
+        [SerializeField] private List<AnimationEntry> m_Clips;
 
         private AnimatorOverrideController m_Override;
 
@@ -57,7 +59,7 @@ namespace TPSDemo
 
         private AnimationClip GetAnimationClip(string name)
         {
-            int idx = m_Clips.FindIndex(entry => entry.Type == name);
+            int idx = m_Clips.FindIndex(entry => entry.Name == name);
             if (idx == -1) {
                 return null;
             }
@@ -184,7 +186,7 @@ namespace TPSDemo
         {
             foreach(var entry in m_Clips) {
                 if (entry.Clip != null) {
-                    RegisterAnimationClip(entry.Type, entry.Clip);
+                    RegisterAnimationClip(entry.Name, entry.Clip);
                 }
             }
         }

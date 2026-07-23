@@ -1,6 +1,5 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
 
 namespace TPSDemo.UI
 {
@@ -13,11 +12,12 @@ namespace TPSDemo.UI
 
         private ObjectiveDatabase m_ObjectiveDB => ResourceManager.Instance.GetResource<ObjectiveDatabase>("Objective");
 
-        void Start()
+        private void Start()
         {
-            Hide();
             EventManager.AddListener<Event.MapStateChangedEvent>(OnMapStateChanged);
+            EventManager.AddListener<Event.MapChangeEvent>(OnEnterNewMap);
             EventManager.AddListener<Event.MapObjectiveUpdateEvent>(OnObjectiveUpdate);
+            Hide();
         }
 
         private void OnDestroy()
@@ -26,6 +26,19 @@ namespace TPSDemo.UI
             EventManager.RemoveListener<Event.MapObjectiveUpdateEvent>(OnObjectiveUpdate);
         }
 
+        /// <summary>
+        /// 进入地图显示Objectives
+        /// </summary>
+        /// <param name="evt"></param>
+        private void OnEnterNewMap(Event.MapChangeEvent evt)
+        {
+            RefreshEntries(PlayerDataProxy.Instance.GetCurMapObjectiveProgress());
+        }
+
+        /// <summary>
+        /// 地图状态切换时刷新Objectives
+        /// </summary>
+        /// <param name="evt"></param>
         void OnMapStateChanged(Event.MapStateChangedEvent evt)
         {
             if (evt.State == MapState.Active) {
@@ -35,21 +48,25 @@ namespace TPSDemo.UI
                 } else {
                     Hide();
                 }
-            }
-            else if (evt.State == MapState.Completed || evt.State == MapState.Idle) {
+            } else if (evt.State == MapState.Completed || evt.State == MapState.Idle) {
                 Hide();
             }
         }
 
+        /// <summary>
+        /// Objectives更新时
+        /// </summary>
+        /// <param name="evt"></param>
         void OnObjectiveUpdate(Event.MapObjectiveUpdateEvent evt)
         {
-            if (evt.Objectives == null || evt.Objectives.Length == 0) {
+            var objectives = PlayerDataProxy.Instance.GetCurMapObjectiveProgress();
+            if (objectives == null || objectives.Count == 0) {
                 Hide();
                 return;
             }
 
             bool allDone = true;
-            foreach (var entry in evt.Objectives) {
+            foreach (var entry in objectives) {
                 if (entry.Cur < entry.Max)
                     allDone = false;
             }
@@ -58,7 +75,7 @@ namespace TPSDemo.UI
                 Show();
             }
 
-            RefreshEntries(evt.Objectives);
+            RefreshEntries(objectives);
 
             if (allDone) {
                 Invoke(nameof(Hide), 1.5f);
@@ -69,18 +86,22 @@ namespace TPSDemo.UI
 
         void Hide() => gameObject.SetActive(false);
 
-        void RefreshEntries(ObjectiveProgress[] objectives)
+        /// <summary>
+        /// 根据ObjectiveProcess更新UI
+        /// </summary>
+        /// <param name="objectives"></param>
+        void RefreshEntries(System.Collections.Generic.List<ObjectiveProgress> objectives)
         {
             if (m_ContentRoot == null || m_EntryPrefab == null) {
                 return;
             }
 
-            while (m_ContentRoot.childCount < objectives.Length) {
+            while (m_ContentRoot.childCount < objectives.Count) {
                 Instantiate(m_EntryPrefab, m_ContentRoot);
             }
 
             for (int i = 0; i < m_ContentRoot.childCount; i++) {
-                bool active = i < objectives.Length;
+                bool active = (i < objectives.Count);
                 m_ContentRoot.GetChild(i).gameObject.SetActive(active);
                 if (!active) {
                     continue;

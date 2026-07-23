@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using TPSDemo.Event;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 using static UnityEngine.Rendering.STP;
 
 namespace TPSDemo
@@ -92,6 +92,18 @@ namespace TPSDemo
             }
         }
 
+        public void TeleportToSpawnPoint()
+        {
+            if (m_CurrentMap == null) {
+                return;
+            }
+            var player = GameNetworkManager.Instance.LocalClient.PlayerObject.GetComponent<PlayerController>();
+
+            player.CharacterController.enabled = false;
+            player.Movement.Teleport(m_CurrentMap.EntryPoint.position, m_CurrentMap.EntryPoint.rotation, Vector3.one);
+            player.CharacterController.enabled = true;
+        }
+
         /// <summary>
         /// 切换到指定地图配置的场景（仅服务器调用
         /// </summary>
@@ -102,8 +114,7 @@ namespace TPSDemo
             }
 
             if (m_CurrentMap != null && m_CurrentMap.Config.MapId == config.MapId) {
-                TeleportToClientRpc(m_CurrentMap.EntryPoint.position,
-                                    m_CurrentMap.EntryPoint.rotation);
+                Debug.Log($"已经在Map{m_CurrentMap.Config.MapId}中了");
                 return;
             }
 
@@ -146,17 +157,6 @@ namespace TPSDemo
             }
         }
 
-        // 将进加入的Client传送到指定位置
-        [ClientRpc]
-        private void TeleportToClientRpc(Vector3 position, Quaternion rotation)
-        {
-            var player = PlayerDataProxy.Instance.GetPlayer();
-
-            player.CharacterController.enabled = false;
-            player.Movement.Teleport(position, rotation, Vector3.one);
-            player.CharacterController.enabled = true;
-        }
-
         /// <summary>完成当前地图</summary>
         public void CompleteCurrentMap()
         {
@@ -194,7 +194,7 @@ namespace TPSDemo
         {
             while (!asyncOperation.isDone) {
                 EventManager.Broadcast(
-                    new MapLoadProgressEvent {
+                    new Event.MapLoadProgressEvent {
                         MapId = 0,
                         Progress = asyncOperation.progress,
                         IsCompleted = asyncOperation.isDone
@@ -202,7 +202,7 @@ namespace TPSDemo
                 yield return null;
             }
             EventManager.Broadcast(
-                    new MapLoadProgressEvent {
+                    new Event.MapLoadProgressEvent {
                         MapId = 0,
                         Progress = asyncOperation.progress,
                         IsCompleted = asyncOperation.isDone

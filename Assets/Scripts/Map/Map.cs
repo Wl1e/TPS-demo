@@ -84,20 +84,38 @@ namespace TPSDemo
                 || (Config.Type == MapType.Combat) && m_State == MapState.Completed;
         }
 
+        public System.Collections.Generic.List<ObjectiveProgress> GetObjectiveProgresses()
+        {
+            System.Collections.Generic.List<ObjectiveProgress> result = new();
+            foreach (var obj in m_Objectives) {
+                obj.GetProcess(out var progress);
+                result.Add(progress);
+            }
+            return result;
+        }
+
         #endregion
 
         #region 私有方法
+        /// <summary>
+        /// 检查当前地图的Objective
+        /// </summary>
         private bool CheckObjective()
         {
             if (m_Objectives == null) {
                 return true;
             }
+
+            bool objCompleted = true;
             foreach (var obj in m_Objectives) {
                 if(!obj.IsCompleted) {
-                    return false;
+                    objCompleted =  false;
                 }
             }
-            return true;
+
+            EventManager.Broadcast(new Event.MapObjectiveUpdateEvent());
+
+            return objCompleted;
         }
         #endregion
 

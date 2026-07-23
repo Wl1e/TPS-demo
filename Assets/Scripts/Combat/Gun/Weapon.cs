@@ -70,7 +70,7 @@ namespace TPSDemo
         /// <summary>
         /// 
         /// </summary>
-        private ManualAnimatorController m_Animator;
+        private PlayableController m_Animator;
         
         // Action
         public event Action OnFire;
@@ -87,7 +87,7 @@ namespace TPSDemo
             m_AttachmentManager = GetComponentInChildren<AttachmentManager>();
             m_Attachable = GetComponent<AttachableBehaviour>();
             m_Behaviour.SetMuzzle(Muzzle);
-            m_Animator = GetComponentInChildren<ManualAnimatorController>();
+            m_Animator = GetComponentInChildren<PlayableController>();
             m_ImpulseSource = GetComponent<Unity.Cinemachine.CinemachineImpulseSource>();
         }
 
@@ -191,7 +191,7 @@ namespace TPSDemo
                 .Create();
 
             Director.Instance.RequestAudio(m_Config.ShootSfx)
-                .WithMixerGroup(Director.Instance.GetGroup(2))
+                .WithMixerGroup(AudioSystem.AudioGroup.SFX)
                 .AttachTo(transform)
                 .Play();
         }

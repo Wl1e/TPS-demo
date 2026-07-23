@@ -94,7 +94,7 @@ namespace TPSDemo
             }
 
             Director.Instance.RequestAudio(ExplosionAudio)
-                .WithMixerGroup(Director.Instance.GetGroup(2))
+                .WithMixerGroup(AudioSystem.AudioGroup.SFX)
                 .WithPosition(transform.position)
                 .Play();
             Director.Instance.RequestEffect(ExplosionEffectPrefab)

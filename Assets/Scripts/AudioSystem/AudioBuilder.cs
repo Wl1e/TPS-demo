@@ -26,9 +26,9 @@ namespace TPSDemo
         }
 
 
-        public AudioBuilder WithMixerGroup(AudioMixerGroup group)
+        public AudioBuilder WithMixerGroup(AudioSystem.AudioGroup group)
         {
-            m_MixerGroup = group;
+            m_MixerGroup = Director.Instance.GetGroup(group);
             return this;
         }
 

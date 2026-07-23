@@ -12,7 +12,7 @@ namespace TPSDemo
         /// <summary>
         /// npcm名字
         /// </summary>
-        string m_NpcName;
+        [SerializeField] private string m_NpcName;
         public string Name => m_NpcName;
         Animator m_Animator;
 
@@ -90,6 +90,33 @@ namespace TPSDemo
             }
         }
 
+        public override void OnNetworkDespawn()
+        {
+            if (IsClient) {
+                m_ChattingPlayer.OnValueChanged -= OnPlayerChatting;
+            }
+            base.OnNetworkDespawn();
+        }
+
+        void Update()
+        {
+            if (m_Player) {
+                var angle = GetAngle(m_Player.Actor.AimPoint.position);
+                if (angle >= -SeeAngleRange && angle <= SeeAngleRange) {
+                    SeePos.position = m_Player.Actor.AimPoint.position;
+                    SeeTarget();
+                } else {
+                    ResetTarget();
+                }
+                if (!InInteractRange(m_Player.transform.position)) {
+                    m_Player = null;
+                    m_Animator.Play("Idle");
+                }
+            } else {
+                ResetTarget();
+            }
+        }
+
         private void ChangeAudio(Event.LanguageChangedEvent evt)
         {
             print("Npc更新语音：" + LocalizationManager.Instance.GetCurrentLanguageString());
@@ -118,36 +145,48 @@ namespace TPSDemo
             ));
         }
 
-        public override void OnNetworkDespawn()
-        {
-            if (IsClient) {
-                m_ChattingPlayer.OnValueChanged -= OnPlayerChatting;
-            }
-            base.OnNetworkDespawn();
-        }
+        bool InInteractRange(Vector3 position) => (position - transform.position).sqrMagnitude <= m_InteractRadius * m_InteractRadius;
 
-        void Update()
-        {
-            if (m_Player) {
-                var angle = GetAngle(m_Player.Actor.AimPoint.position);
-                if (angle >= -SeeAngleRange && angle <= SeeAngleRange) {
-                    SeePos.position = m_Player.Actor.AimPoint.position;
-                    SeeTarget();
-                } else {
-                    ResetTarget();
-                }
-                if (!InInteractRange(m_Player.transform.position)) {
-                    m_Player = null;
-                    m_Animator.Play("Idle");
-                }
-            } else {
-                ResetTarget();
-            }
-        }
+        #region Chat
+
         public void StopChat() => StopChatServerRpc();
 
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         private void StopChatServerRpc() => m_ChattingPlayer.Value = -1;
+
+        /// <summary>
+        /// 设置当前对话玩家ID
+        /// 本来目的是仅支持单人对话，但是体验不好
+        /// 所以支持多人同时对话，可能会混乱，失去了作用
+        /// </summary>
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+        private void ChatNpcServerRpc(int playerId) => m_ChattingPlayer.Value = playerId;
+
+        /// <summary>
+        /// 对话
+        /// </summary>
+        void Dialog()
+        {
+            ChatNpcServerRpc(m_Player.Id);
+        }
+        private void OnPlayerChatting(int previousValue, int newValue)
+        {
+            if(IsClient) {
+                if (m_Player != null && m_Player.Id == newValue) {
+                    DialogueSystem.Instance.Enter(m_Player, this);
+                }
+            }
+            if(IsServer) {
+                var actor = ActorManager.Instance.GetActor(m_ChattingPlayer.Value);
+                if (actor) {
+                    UpdateSeePosClientRpc(actor.AimPoint.position);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Rotate
 
         void SeeTarget()
         {
@@ -164,35 +203,6 @@ namespace TPSDemo
                 m_Rig.weight = RigWeight;
             }
         }
-
-        bool InInteractRange(Vector3 position) => (position - transform.position).sqrMagnitude <= m_InteractRadius * m_InteractRadius;
-
-        public float HoldDuration => 0f;
-        public void OnInteractPress(GameObject interactor)
-        {
-            if (!m_CanChat) {
-                return;
-            }
-            if (!InInteractRange(interactor.transform.position)) {
-                return;
-            }
-            m_Player = interactor.GetComponent<PlayerController>();
-            print($"player {m_Player.Id} interact npc");
-            bool needWait = FaceTarget(interactor.transform.position);
-            if (needWait) {
-                if (m_WaitAnimatorCoroutine != null) {
-                    StopCoroutine(m_WaitAnimatorCoroutine);
-                }
-                m_WaitAnimatorCoroutine = StartCoroutine(Turn());
-            } else {
-                Dialog();
-            }
-        }
-        public void OnInteractHold(GameObject interactor)
-        { }
-        public void OnInteractRelease(GameObject interactor, bool completed)
-        { }
-
         float GetAngle(Vector3 position)
         {
             Vector3 dir = ModelTransform.InverseTransformDirection((position - transform.position).normalized);
@@ -222,22 +232,6 @@ namespace TPSDemo
             return true;
         }
 
-        /// <summary>
-        /// 设置当前对话玩家ID
-        /// 本来目的是仅支持单人对话，但是体验不好
-        /// 所以支持多人同时对话，可能会混乱，失去了作用
-        /// </summary>
-        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-        private void ChatNpcServerRpc(int playerId) => m_ChattingPlayer.Value = playerId;
-
-        /// <summary>
-        /// 对话
-        /// </summary>
-        void Dialog()
-        {
-            ChatNpcServerRpc(m_Player.Id);
-        }
-
         IEnumerator Turn()
         {
             yield return new WaitForSeconds(WaitTime);
@@ -246,20 +240,38 @@ namespace TPSDemo
             }
         }
 
-        private void OnPlayerChatting(int previousValue, int newValue)
+        #endregion
+
+        #region Interaction
+
+        public string Hint => $"与{m_NpcName}交谈";
+        public float HoldDuration => 0f;
+        public void OnInteractPress(GameObject interactor)
         {
-            if(IsClient) {
-                if (m_Player != null && m_Player.Id == newValue) {
-                    DialogueSystem.Instance.Enter(m_Player, this);
-                }
+            if (!m_CanChat) {
+                return;
             }
-            if(IsServer) {
-                var actor = ActorManager.Instance.GetActor(m_ChattingPlayer.Value);
-                if (actor) {
-                    UpdateSeePosClientRpc(actor.AimPoint.position);
+            if (!InInteractRange(interactor.transform.position)) {
+                return;
+            }
+            m_Player = interactor.GetComponent<PlayerController>();
+            print($"player {m_Player.Id} interact npc");
+            bool needWait = FaceTarget(interactor.transform.position);
+            if (needWait) {
+                if (m_WaitAnimatorCoroutine != null) {
+                    StopCoroutine(m_WaitAnimatorCoroutine);
                 }
+                m_WaitAnimatorCoroutine = StartCoroutine(Turn());
+            } else {
+                Dialog();
             }
         }
+        public void OnInteractHold(GameObject interactor)
+        { }
+        public void OnInteractRelease(GameObject interactor, bool completed)
+        { }
+
+        #endregion
 
         //[Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         //private void UpdateSeePosServerRpc() => 
@@ -272,6 +284,7 @@ namespace TPSDemo
         {
             m_AudioAndEffectPlayGlobal.Play(
                 $"NpcAudio{dialogId}_{LocalizationManager.Instance.GetCurrentLanguageString()}",
+                AudioSystem.AudioGroup.Master,
                 float.PositiveInfinity,
                 transform.position,
                 Quaternion.identity

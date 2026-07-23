@@ -22,19 +22,15 @@ public partial class PerformSkillAction : Action
         }
         var enemy = Self.Value.GetComponent<TPSDemo.EnemyController>();
         if (!enemy) {
-            Debug.Log(2);
             return Status.Failure;
         }
         if (!enemy.TryGetComponent(out m_SkillController)) {
-            Debug.Log(3);
             return Status.Failure;
         }
         if (!m_SkillController.IsFinished) {
-            Debug.Log(4);
             return Status.Failure;
         }
         if (!m_SkillController.ValidPerformSkill(Target.Value.transform, SkillIdx.Value)) {
-            Debug.Log(5);
             return Status.Failure;
         }
         m_SkillController.PerformSkill(Target.Value.transform, SkillIdx.Value);

@@ -17,16 +17,25 @@ namespace TPSDemo
         public Vector2 AttackRange;
         [Tooltip("CD")]
         public float Cooldown;
-        [Tooltip("前摇时间")]
-        public float WindupTime;
-        [Tooltip("持续时间")]
-        public float ActiveTime;
-        [Tooltip("后摇时间")]
-        public float RecoveryTime;
         [Tooltip("伤害")]
         public float Damage;
-        [Tooltip("对应动画")]
-        public string AnimationName;
+
+        [Tooltip("前摇时间")]
+        public float WindupTime;
+        [Tooltip("前摇动画")]
+        public string WindupAnimation = "SkillWindup";
+
+        [Tooltip("持续时间")]
+        public float ActiveTime;
+        [Tooltip("施法动画")]
+        public string SkillAnimation = "Skill";
+
+        [Tooltip("后摇时间")]
+        public float RecoveryTime;
+        [Tooltip("后摇动画")]
+        public string RecoveryAnimation = "SkillRecovery";
+
+        
 
         // 目前skill很少，每一个skill一个config感觉没必要
         // 后续可以考虑继承config

@@ -202,7 +202,6 @@ MonoBehaviour:
   m_Time: 0.1
   m_Hitbox: {fileID: 3727475304114750458}
   m_AttackSfx: {fileID: 8300000, guid: 0d44f0cb2e91f5f4ca09aded9a1bd9ab, type: 3}
-  m_AttackAnimation: {fileID: -3510217540682870009, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
 --- !u!1 &2792324663745568812
 GameObject:
   m_ObjectHideFlags: 0
@@ -1027,10 +1026,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70f2772760337c84196dc4a2e4ffb2c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
+  ShowTopMostFoldoutHeaderGroup: 1
   m_HealthValue:
-    value: 100
-    lo: 0
-    hi: 100
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue:
+      value: 100
+      lo: 0
+      hi: 100
 --- !u!114 &8709390099203272961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1102,11 +1106,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
   ShowTopMostFoldoutHeaderGroup: 1
-  DamageAudio: {fileID: 8300000, guid: a7fae22399a6e1d448dc0dd2210f1dac, type: 3}
+  HitAudio: {fileID: 8300000, guid: 25e8bbe95ad4f344abd4dd8d7c8636ab, type: 3}
   DeadAudio: {fileID: 8300000, guid: 65b7d1df144c6944cab9d6686649df0b, type: 3}
   MovementAudio: {fileID: 8300000, guid: 44c5f76f80602024e82d3e5f3af4ee97, type: 3}
   m_SetTargetWhenHit: 1
   m_Channel: {fileID: 11400000, guid: 211e34ae5a2d5bf4bae298ef8d12ad68, type: 2}
+  m_SmoothRotateTime: 1
   DiedTime: 0.3
   EnemyId: 2
   m_Attacker: {fileID: 4019449383691798856}
@@ -1311,13 +1316,13 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8445582706072517725}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 6376796248328854799}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4565514752253212576}
+      addedObject: {fileID: 2304169762881063766}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5143076581689910177}
   m_SourcePrefab: {fileID: 100100000, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
 --- !u!4 &3747629998470133939 stripped
 Transform:
@@ -1329,30 +1334,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
   m_PrefabInstance: {fileID: 3713491524174323544}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8445582706072517725
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4560335578999595529}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Components.NetworkAnimator
-  ShowTopMostFoldoutHeaderGroup: 1
-  NetworkAnimatorExpanded: 0
-  AuthorityMode: 1
-  m_Animator: {fileID: 6376796248328854799}
-  TransitionStateInfoList: []
-  AnimatorParameterEntries:
-    ParameterEntries:
-    - name: SpeedMagnitude
-      NameHash: 673482081
-      Synchronize: 1
-      ParameterType: 1
-  AnimatorParametersExpanded: 0
 --- !u!95 &6376796248328854799
 Animator:
   serializedVersion: 7
@@ -1363,7 +1344,7 @@ Animator:
   m_GameObject: {fileID: 4560335578999595529}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 7c727f103dba79d42ab788c1691e191a, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1375,7 +1356,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4565514752253212576
+--- !u!114 &2304169762881063766
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1384,20 +1365,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 4560335578999595529}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 957a099b82c748c448ef4ada0732b0ad, type: 3}
+  m_Script: {fileID: 11500000, guid: 7d5e8b939dec96d419d23a0ffb97ef3f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ManualAnimatorController
-  m_Animator: {fileID: 6376796248328854799}
-  m_Clips:
-  - Type: Idle
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.PlayableController
+  Clips:
+  - Name: Idle
     Clip: {fileID: -429512112410174799, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
-  - Type: Walk
+  - Name: Walk
     Clip: {fileID: -7264356326966739861, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
-  - Type: Run
+  - Name: Run
     Clip: {fileID: -5181486892397411127, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
-  - Type: Attack
+  - Name: Attack
     Clip: {fileID: -3510217540682870009, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
-  - Type: Hit
+  - Name: Hit
     Clip: {fileID: 3341008991451901215, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
-  m_DefaultBlendDuration: 0.2
+  - Name: Died
+    Clip: {fileID: 3922875575015971284, guid: 7621e5efea2f0de438aaab1315974272, type: 3}
+  m_FadeDuration: 0.2
   m_DefaultAnimationName: Idle
+--- !u!114 &5143076581689910177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4560335578999595529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 249f419600a5ccf42b7cfc8de970d0ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.NetworkPlayable
+  ShowTopMostFoldoutHeaderGroup: 1

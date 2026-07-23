@@ -301,7 +301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3403889932
+  GlobalObjectIdHash: 2093240604
   InScenePlacedSourceGlobalObjectIdHash: 3403889932
   DeferredDespawnTick: 0
   Ownership: 1
@@ -531,7 +531,7 @@ PrefabInstance:
     - target: {fileID: 9500000, guid: bfda376b0f658a748870ea8f7c2c7c03, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 9b87945d769a01f4fb124e9103b42cc5, type: 2}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -547,7 +547,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 100006, guid: bfda376b0f658a748870ea8f7c2c7c03, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4931890760042337368}
+      addedObject: {fileID: 1865995553264896251}
+    - targetCorrespondingSourceObject: {fileID: 100006, guid: bfda376b0f658a748870ea8f7c2c7c03, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5385952265112669665}
   m_SourcePrefab: {fileID: 100100000, guid: bfda376b0f658a748870ea8f7c2c7c03, type: 3}
 --- !u!4 &8396503596780362885 stripped
 Transform:
@@ -589,7 +592,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 100006, guid: bfda376b0f658a748870ea8f7c2c7c03, type: 3}
   m_PrefabInstance: {fileID: 8396503596780488221}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4931890760042337368
+--- !u!114 &1865995553264896251
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -598,19 +601,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 8396503596780585147}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 957a099b82c748c448ef4ada0732b0ad, type: 3}
+  m_Script: {fileID: 11500000, guid: 7d5e8b939dec96d419d23a0ffb97ef3f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ManualAnimatorController
-  m_Animator: {fileID: 8396503596789986173}
-  m_Clips:
-  - Type: Idle
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.PlayableController
+  Clips:
+  - Name: Idle
     Clip: {fileID: 7400000, guid: bfda376b0f658a748870ea8f7c2c7c03, type: 3}
-  - Type: Fire
+  - Name: Fire
     Clip: {fileID: 7400010, guid: bfda376b0f658a748870ea8f7c2c7c03, type: 3}
-  m_DefaultBlendDuration: 0
+  m_FadeDuration: 0.2
   m_DefaultAnimationName: Idle
---- !u!95 &8396503596789986173 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 9500000, guid: bfda376b0f658a748870ea8f7c2c7c03, type: 3}
-  m_PrefabInstance: {fileID: 8396503596780488221}
+--- !u!114 &5385952265112669665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8396503596780585147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 249f419600a5ccf42b7cfc8de970d0ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.NetworkPlayable
+  ShowTopMostFoldoutHeaderGroup: 1

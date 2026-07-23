@@ -73,6 +73,12 @@ namespace TPSDemo.Event
     {
     }
 
+    public class UpdateInteractionHintEvent: InternalEvent
+    {
+        public string Hint;
+        public float Progress = 0f;
+    }
+
     #endregion
 
     #region Loadout
@@ -297,7 +303,6 @@ namespace TPSDemo.Event
 
     public class MapObjectiveUpdateEvent : InternalEvent
     {
-        public ObjectiveProgress[] Objectives;
     }
 
     public class MapLoadProgressEvent: InternalEvent

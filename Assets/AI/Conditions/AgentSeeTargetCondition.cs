@@ -45,9 +45,9 @@ namespace TPSDemo.AI
                     }
                 }
             }
-            foreach (var hit in info) {
-                Debug.Log(hit.collider.gameObject);
-            }
+            //foreach (var hit in info) {
+            //    Debug.Log(hit.collider.gameObject);
+            //}
             return found;
         }
     }

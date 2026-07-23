@@ -16,10 +16,12 @@ namespace TPSDemo
         public float BulletSpeed;
         [Tooltip("子弹碰撞层")]
         public LayerMask HitLayerMask = -1;
-        
+
         //public event Action<GameObject> OnTargetHit;
 
         [Header("资源")]
+        [Tooltip("特效、音效持续时间")]
+        [SerializeField] private float m_Duration = float.PositiveInfinity;
         [Tooltip("攻击音效")]
         [SerializeField] private AudioClip m_ShootSfx;
         [Tooltip("枪口闪光")]
@@ -65,7 +67,7 @@ namespace TPSDemo
 
             foreach (Transform t in Muzzle) {
                 SpawnBulletInMuzzle(t, pos);
-                Owner.AEPlayer.Play(m_SFName, 0.3f, t.position, t.rotation);
+                Owner.AEPlayer.Play(m_SFName, AudioSystem.AudioGroup.SFX, m_Duration, t.position, t.rotation);
             }
 
             WhenAttack();
@@ -93,9 +95,6 @@ namespace TPSDemo
 
         protected void PlayerAE()
         {
-            
-
-            Owner.AnimatorController.RegisterAnimationClip("Attack", m_AttackAnimation);
             Owner.AnimatorController.Play("Attack");
         }
 

@@ -12,15 +12,18 @@ public partial class ValidPerformSkillCondition : Condition
 
     public override bool IsTrue()
     {
-        if (Self == null || Target == null || SkillIdx == null) {
+        if(SkillIdx == null) {
+            return false;
+        }
+        SkillIdx.Value = -1;
+
+        if (Self == null || Target == null) {
             return false;
         }
 
         if(!TPSDemo.AI.AITool.AgentSeeTarget(Self.Value, Target.Value, -1)) {
             return false;
         }
-
-        SkillIdx.Value = -1;
 
         if (Self.Value.TryGetComponent<TPSDemo.SkillController>(out var sc)) {
             if(!sc.IsFinished) {

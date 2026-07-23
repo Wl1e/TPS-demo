@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using static TPSDemo.SkillBase;
+using static UnityEngine.CullingGroup;
 
 namespace TPSDemo
 {
@@ -8,6 +10,7 @@ namespace TPSDemo
     {
         public string Name { get; }
         public bool IsRunning { get; }
+        public SkillConfig Config { get; }
         public void Initialize(EnemyController enemy, SkillConfig config);
         /// <summary>
         /// Update前执行，重置状态，设置释放对象
@@ -16,10 +19,13 @@ namespace TPSDemo
         public void Prepare(Transform target);
         public void Update(float deltaTime);
         public bool ValidPerform(Transform target);
+        public event Action<SkillState> StateChanged;
+        public abstract int Id { get; }
     }
 
     public abstract class SkillBase: ISkill
     {
+        // 技能状态
         public enum SkillState
         {
             None,
@@ -41,20 +47,40 @@ namespace TPSDemo
         protected EnemyController m_EnemyController;
 
         protected SkillState m_State = SkillState.None;
-        protected SkillConfig Config => m_Config;
+        public SkillConfig Config => m_Config;
 
+        /// <summary>
+        /// 技能持续时间
+        /// </summary>
         protected float m_Duration = 0f;
+        /// <summary>
+        /// 技能前摇持续时间
+        /// </summary>
         private float m_WindupDuration = 0f;
+        /// <summary>
+        /// 技能后摇持续时间
+        /// </summary>
         private float m_RecoveryDuration = 0f;
 
+        /// <summary>
+        /// 释放目标
+        /// </summary>
         protected Transform m_Target;
 
+        /// <summary>
+        /// 最后时间（用于计算CD）
+        /// </summary>
         private float m_LastTime = 0f;
+
+        public event Action<SkillState> StateChanged;
+
+        public abstract int Id { get; }
 
         protected bool InCD() => (Time.time - m_LastTime) < Config.Cooldown;
         protected void ChangeState(SkillState state)
         {
             m_State = state;
+            StateChanged?.Invoke(m_State);
             Debug.Log($"技能 {GetType().Name} 进入 {m_State} 状态");
         }
 
@@ -78,6 +104,7 @@ namespace TPSDemo
 
         protected virtual void End()
         {
+            ChangeState(SkillState.Finished);
             m_LastTime = Time.time;
         }
 
@@ -101,7 +128,6 @@ namespace TPSDemo
                     return;
                 } else {
                     End();
-                    ChangeState(SkillState.Finished);
                 }
             }
         }

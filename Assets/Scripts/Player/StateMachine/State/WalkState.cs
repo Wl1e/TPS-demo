@@ -13,7 +13,10 @@ namespace TPSDemo.FSM
         public override void OnEnter()
         {
             m_StateMachine.WantSprint = false;
-            m_StateMachine.Controller.AudioEffectPlayer.Play("Movement", float.PositiveInfinity, Vector3.zero, Quaternion.identity, true);
+            m_StateMachine.Controller.AudioEffectPlayer.Play(
+                "Movement", AudioSystem.AudioGroup.SFX,
+                float.PositiveInfinity, Vector3.zero,
+                Quaternion.identity, true);
         }
 
         public override void OnExit()

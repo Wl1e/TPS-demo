@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Unity.Behavior;
 using Unity.Netcode;
@@ -9,7 +10,7 @@ namespace TPSDemo
     {
         [Header("资源")]
         [Tooltip("受伤音效")]
-        public AudioClip DamageAudio;
+        public AudioClip HitAudio;
         [Tooltip("死亡音效")]
         public AudioClip DeadAudio;
         [Tooltip("移动音效")]
@@ -22,7 +23,7 @@ namespace TPSDemo
 
         [Tooltip("旋转时间")]
         [SerializeField] private float m_SmoothRotateTime = 1f;
-        private float m_SmoothVelocity = 0f;
+        //private float m_SmoothVelocity = 0f;
         private Vector3 m_TargetDir = Vector3.zero;
 
         public float DiedTime = 0.3f;
@@ -36,6 +37,10 @@ namespace TPSDemo
         protected HealthBar m_HealthBar;
         protected AudioAndEffectPlayGlobal m_AudioAndEffectPlayGlobal;
 
+        protected SkillController m_SkillController = null;
+
+        public SkillController SkillController => m_SkillController;
+
         public UnityEngine.AI.NavMeshAgent Agent => m_Agent;
         public AudioAndEffectPlayGlobal AEPlayer => m_AudioAndEffectPlayGlobal;
 
@@ -47,8 +52,8 @@ namespace TPSDemo
 
         public Health Health => m_Health;
 
-        private ManualAnimatorController m_AnimatorController;
-        public ManualAnimatorController AnimatorController => m_AnimatorController;
+        private PlayableController m_AnimatorController;
+        public PlayableController AnimatorController => m_AnimatorController;
         public Hitbox EnemyHitbox;
 
         private void Awake()
@@ -57,8 +62,9 @@ namespace TPSDemo
             m_Health = GetComponent<Health>();
             m_Agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
             m_HealthBar = GetComponentInChildren<HealthBar>();
-            m_AnimatorController = GetComponentInChildren<ManualAnimatorController>();
+            m_AnimatorController = GetComponentInChildren<PlayableController>();
             m_AudioAndEffectPlayGlobal = GetComponent<AudioAndEffectPlayGlobal>();
+            TryGetComponent(out m_SkillController);
             m_TargetDir = transform.forward;
             m_TargetDir.y = 0;
         }
@@ -72,12 +78,17 @@ namespace TPSDemo
             //    var d = Mathf.SmoothDampAngle(curAngle, targetAngle, ref m_SmoothVelocity, m_SmoothRotateTime);
             //    transform.rotation = Quaternion.Euler(0, d, 0);
             //}
+            if(m_AnimatorController.CurrentClipName == "Walk" && m_Agent.velocity == Vector3.zero) {
+                m_AnimatorController.Stop();
+            } else if(m_AnimatorController.CurrentClipName == "Idle" && m_Agent.velocity != Vector3.zero) {
+                m_AnimatorController.Play("Walk");
+            }
         }
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            if (IsServer) {
+            if (IsOwner) {
                 if (m_Attacker != null) {
                     m_Attacker.OnAttack += OnAttack;
                 }
@@ -87,9 +98,11 @@ namespace TPSDemo
                 m_Agent.enabled = false;
                 m_BehaviorTree.enabled = false;
             }
+            m_Health.OnHealthChanged += OnHealthChanged;
             m_HealthBar.Initialize(m_Health.Ratio);
             //NetworkEffectService.Instance.AddAudio(DeadAudio);
-            m_AudioAndEffectPlayGlobal.AddAudio("Dead", DeadAudio);
+            m_AudioAndEffectPlayGlobal.AddAudio("Died", DeadAudio);
+            m_AudioAndEffectPlayGlobal.AddAudio("Hit", HitAudio);
         }
 
         public override void OnNetworkDespawn()
@@ -108,27 +121,27 @@ namespace TPSDemo
         {
         }
 
-        void OnTakeDamage(DamageInfo info)
+        private void OnTakeDamage(DamageInfo info)
         {
-            if (IsServer) {
-                m_HealthBar.UpdateHealthProgress(m_Health.Ratio);
-                if (m_AnimatorController) {
-                    m_AnimatorController.Play(ManualAnimatorController.AnimationType.Hit.ToString());
-                }
-                Director.Instance.RequestAudio(DamageAudio)
-                    .WithMixerGroup(Director.Instance.GetGroup(2))
-                    .WithPosition(transform.position)
-                    .Play();
-
-                if(m_SetTargetWhenHit && m_Channel) {
-                    m_Channel.SendEventMessage(info.Attacker);
-                }
+            if (m_AnimatorController) {
+                m_AnimatorController.Play("Hit");
             }
+            AEPlayer.Play("Hit", AudioSystem.AudioGroup.SFX,
+                float.PositiveInfinity, info.Point, Quaternion.identity);
+
+            if(m_SetTargetWhenHit && m_Channel) {
+                m_Channel.SendEventMessage(info.Attacker);
+            }
+        }
+
+        private void OnHealthChanged(float obj)
+        {
+            m_HealthBar.UpdateHealthProgress(m_Health.Ratio);
         }
 
         void OnDied(int attackerId)
         {
-            if (!IsServer) {
+            if (!IsOwner) {
                 return;
             }
             print($"{gameObject.name} IsDied");
@@ -136,9 +149,9 @@ namespace TPSDemo
             //    DeadAudio.name, float.NegativeInfinity, transform.position, Quaternion.identity
             //);
             m_AudioAndEffectPlayGlobal.Play(
-                "Dead", float.NegativeInfinity, transform.position, Quaternion.identity
+                "Died", AudioSystem.AudioGroup.SFX, float.NegativeInfinity, transform.position, Quaternion.identity
             );
-            m_AnimatorController.Play(ManualAnimatorController.AnimationType.Died.ToString());
+            m_AnimatorController.Play("Died");
             EventManager.Broadcast(
                 new Event.ActorDiedEvent {
                     ActorId = m_Actor.Id,
@@ -148,12 +161,22 @@ namespace TPSDemo
             StartCoroutine(DiedCoroutine());
         }
 
+        /// <summary>
+        /// 死亡协程
+        /// </summary>
+        /// <returns></returns>
         IEnumerator DiedCoroutine()
         {
             yield return new WaitForSeconds(DiedTime);
             NetworkObject.Despawn();
         }
 
+        /// <summary>
+        /// 平滑地看向某个方向（不可用）
+        /// </summary>
+        /// <param name="dir"></param>
         public void LookTo(Vector3 dir) => m_TargetDir = dir;
+
+        public void SetTarget(GameObject player) => m_Channel.SendEventMessage(player);
     }
 }

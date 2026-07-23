@@ -9,25 +9,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 957f6ecb7f823aa4ea808fb404fa6817, type: 3}
+  m_Script: {fileID: 11500000, guid: 18fcac3953c0cf34c84b2657398f7834, type: 3}
   m_Name: SkyDiveSkillConfig
-  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.SkillConfig
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.SkyDiveSkillConfig
   Name: SkyDive
   AttackRange: {x: 5, y: 10}
   Cooldown: 30
-  WindupTime: 1
-  ActiveTime: 5
-  RecoveryTime: 2
   Damage: 70
-  AnimationName: SkyDive
-  Args:
-  - Key: RiseSpeed
-    Value: 1
-  - Key: DiveSpeed
-    Value: 20
-  - Key: AoeRadius
-    Value: 5
-  - Key: RiseTimeRatio
-    Value: 0.6
-  - Key: DiveTimeRatio
-    Value: 0.3
+  WindupTime: 1
+  WindupAnimation: SkillWindup
+  ActiveTime: 5
+  SkillAnimation: Skill
+  RecoveryTime: 2
+  RecoveryAnimation: SkillRecovery
+  Args: []
+  RiseSpeed: 1
+  DiveSpeed: 20
+  AoeRadius: 1

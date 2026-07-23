@@ -7,14 +7,12 @@ namespace TPSDemo
     public class PlayerLifeController : NetworkBehaviour
     {
         [SerializeField] GameObject m_ReviveArea;
-        [SerializeField] float m_ReviveDuration = 3f;
 
-        NetworkVariable<bool> m_IsDead = new(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        private readonly NetworkVariable<bool> m_IsDead = new(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
         PlayerController m_Player;
         PlayerInputHandler m_InputHandler;
         Renderer[] m_Renderers;
-        bool m_IsDeathEntered = false;
 
         public bool IsDead => m_IsDead.Value;
 
@@ -29,9 +27,16 @@ namespace TPSDemo
         {
             base.OnNetworkSpawn();
             m_IsDead.OnValueChanged += OnDeathStateChanged;
+            m_ReviveArea.SetActive(false);
             //if (m_IsDead.Value) {
             //    OnDeathStateChanged(false, true);
             //}
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            base.OnNetworkDespawn();
+            m_IsDead.OnValueChanged -= OnDeathStateChanged;
         }
 
         void OnDeathStateChanged(bool oldValue, bool newValue)
@@ -45,26 +50,26 @@ namespace TPSDemo
 
         private void EnterDeath()
         {
-            if (m_IsDeathEntered) {
-                return;
-            }
-            m_IsDeathEntered = true;
-
             UpdateComponentState(false);
             //HideRenderersForOwner();
-            m_ReviveArea.gameObject.SetActive(true);
+            m_ReviveArea.SetActive(true);
+
+            if(IsOwner) {
+                m_Player.RuntimeData.AniParameter.IsDied = true;
+                m_Player.RuntimeData.AniParameter.Death = true;
+            }
         }
 
         private void EnterRevive()
         {
-            if (!m_IsDeathEntered)
-                return;
-            m_IsDeathEntered = false;
+            m_Player.RuntimeData.AniParameter.IsDied = false;
 
             UpdateComponentState(true);
             //ShowRenderers();
 
-            m_ReviveArea.gameObject.SetActive(false);
+            if (IsOwner) {
+                m_ReviveArea.SetActive(false);
+            }
         }
 
         private void UpdateComponentState(bool enable)
@@ -102,7 +107,6 @@ namespace TPSDemo
             }
         }
 
-
         public void HandleDeathLocally()
         {
             if(!IsOwner) {
@@ -111,6 +115,7 @@ namespace TPSDemo
             if(IsDead) {
                 return;
             }
+
             EnterDeath();
             m_IsDead.Value = true;
         }
@@ -123,25 +128,25 @@ namespace TPSDemo
 
             var netObj = reviver.GetComponent<NetworkObject>();
             if (netObj != null) {
-                StartReviveServerRpc(netObj);
+                ReviveServerRpc(netObj);
             }
         }
 
         [ServerRpc]
-        private void StartReviveServerRpc(NetworkObjectReference reviverRef)
+        private void ReviveServerRpc(NetworkObjectReference reviverRef) => ReviveClientRpc(reviverRef);
+
+        [ClientRpc]
+        private void ReviveClientRpc(NetworkObjectReference reviverRef)
         {
-            if (!m_IsDead.Value) {
+            if(!IsOwner) {
+                return;
+            }
+            if (!IsDead) {
                 return;
             }
 
             m_IsDead.Value = false;
             m_Player.Health.Revive();
-        }
-
-        public override void OnNetworkDespawn()
-        {
-            base.OnNetworkDespawn();
-            m_IsDead.OnValueChanged -= OnDeathStateChanged;
         }
 
         // 显示或隐藏实体

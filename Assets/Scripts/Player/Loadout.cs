@@ -76,8 +76,16 @@ namespace TPSDemo
             return false;
         }
 
-
         #region Client
+
+        
+
+        public void UnequipWeapon(Event.TryUnequipWeaponEvent evt) => UnequipWeaponServerRpc(evt.WeaponIdx);
+
+        #endregion
+
+
+        #region equip(Server)
 
         public IEnumerator EquipWeaponCo(ItemData weaponData)
         {
@@ -87,17 +95,8 @@ namespace TPSDemo
             }
             yield return EquipWeaponCoroutine(weaponData);
         }
-        public void EquipWeapon(ItemData weaponData)
-        {
-            StartCoroutine(EquipWeaponCo(weaponData));
-        }
 
-        public void UnequipWeapon(Event.TryUnequipWeaponEvent evt) => UnequipWeaponServerRpc(evt.WeaponIdx);
-
-        #endregion
-
-
-        #region equip(Server)
+        public void EquipWeapon(ItemData weaponData) => StartCoroutine(EquipWeaponCo(weaponData));
 
         /// <summary>
         /// 将武器放在空槽上
@@ -113,7 +112,7 @@ namespace TPSDemo
                 Debug.LogError("err weapon");
             }
             if (!m_WeaponRef1.Value.TryGet(out var _)) {
-                print($"设置m_WeaponRef1: {m_WeaponRef1.Value.NetworkObjectId} to {weaponNO.NetworkObjectId}");
+                print($"clientId: {m_Player.GetComponent<NetworkObject>().OwnerClientId}, 设置m_WeaponRef1: {m_WeaponRef1.Value.NetworkObjectId} to {weaponNO.NetworkObjectId}");
                 m_WeaponRef1.Value = weaponNO;
                 return 1;
             } else if (!m_WeaponRef2.Value.TryGet(out var _)) {
@@ -178,6 +177,7 @@ namespace TPSDemo
                         Destroy(instance);
                         return;
                     }
+                    print("weapon finish spawn " + obj.IsSpawned);
                     obj.DestroyWithScene = false;
                     EquipWeapon(instance);
                 },
@@ -284,14 +284,6 @@ namespace TPSDemo
 
             // 删除旧武器
             if (weapon != null) {
-                if (IsServer) {
-                    weapon.Detach();
-                    pre.TryGet(out var no);
-                    print("Server销毁武器 " + idx);
-                    if (no != null) {
-                        no.Despawn();
-                    }
-                }
                 if(IsOwner) {
                     print("Client卸下武器 " + idx);
                     weapon.OnAttachmentChanged -= OnWeaponAttachmentChanged;
@@ -302,12 +294,26 @@ namespace TPSDemo
                     //    m_WeaponSlot2 = null;
                     //}
                 }
+                if (IsServer) {
+                    weapon.Detach();
+                    pre.TryGet(out var no);
+                    print("Server销毁武器 " + idx);
+                    if (no != null) {
+                        no.Despawn();
+                    }
+                }
+            }
+
+            if (IsOwner) {
+                pre.TryGet(out var p1);
+                cur.TryGet(out var c1);
+                print($"clientId: {m_Player.GetComponent<NetworkObject>().OwnerClientId} p1: {p1}, c1: {c1}");
             }
 
             weapon = null;
             // 初始化武器
             if (cur.TryGet(out var networkObject)) {
-                    weapon = networkObject.GetComponentInChildren<IWeapon>();
+                weapon = networkObject.GetComponentInChildren<IWeapon>();
                 // Server需要weapon初始化，因为weapon的实际攻击逻辑在Server端
                 if (IsServer || IsOwner) {
                     weapon.Initialize(m_Player.gameObject);

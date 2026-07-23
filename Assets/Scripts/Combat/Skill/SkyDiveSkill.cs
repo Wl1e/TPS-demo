@@ -1,35 +1,26 @@
-﻿using System.Collections;
-using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.UIElements;
+﻿using UnityEngine;
 
 namespace TPSDemo
 {
 	public class SkyDiveSkill: SkillBase
 	{
-        public const int SkillId = 1002;
+        public const int SkillId = (int)SkillName.SkyDiveSkill;
+        public override int Id => SkillId;
 
-        private float m_RiseSpeed = 10f;
-        private float m_DiveSpeed = 20f;
-        private float m_AoeRadius = 5f;
+        private float RiseSpeed => (Config as SkyDiveSkillConfig).RiseSpeed;
+        private float DiveSpeed => (Config as SkyDiveSkillConfig).DiveSpeed;
+        private float AoeRadius => (Config as SkyDiveSkillConfig).AoeRadius;
 
         public LayerMask TargetLayer;
 
         private Vector3 m_RiseStartPos;
-        private bool m_HasLanded = true;
 
         private float m_RiseTime = 0f;
         private float m_WaitTime = 0f;
 
         private Vector3 m_DiveDir = Vector3.negativeInfinity;
 
-        public override void Initialize(EnemyController enemy, SkillConfig config)
-        {
-            base.Initialize(enemy, config);
-            float.TryParse(Config.Args[0].Value, out m_RiseSpeed);
-            float.TryParse(Config.Args[1].Value, out m_DiveSpeed);
-            float.TryParse(Config.Args[2].Value, out m_AoeRadius);
-        }
+        private Vector3 m_EndPosition;
 
         public override bool ValidPerform(Transform target)
         {
@@ -45,9 +36,6 @@ namespace TPSDemo
         {
             base.Prepare(target);
             m_RiseStartPos = m_EnemyController.transform.position;
-            m_HasLanded = false;
-            //m_EnemyController.Agent.isStopped = true;
-            //m_EnemyController.Agent.updatePosition = false;
 
             m_RiseTime = Config.ActiveTime;
             m_WaitTime = Random.Range(1f, 3f);
@@ -68,7 +56,7 @@ namespace TPSDemo
             if (m_Duration < m_RiseTime) {
                 // 阶段1：垂直升空
                 float t = m_Duration / m_RiseTime;
-                float height = Mathf.Lerp(0f, m_RiseTime * m_RiseSpeed, t);
+                float height = Mathf.Lerp(0f, m_RiseTime * RiseSpeed, t);
                 m_EnemyController.transform.position = new Vector3(
                     m_RiseStartPos.x,
                     m_RiseStartPos.y + height,
@@ -84,12 +72,13 @@ namespace TPSDemo
                 }
 
                 // 阶段3：俯冲向目标
-                m_EnemyController.transform.position += m_DiveDir * m_DiveSpeed * Time.deltaTime;
+                m_EnemyController.transform.position += m_DiveDir * DiveSpeed * Time.deltaTime;
                 //Debug.Log("position: " + m_EnemyController.transform.position);
 
                 // 落地判定
-                if (!m_HasLanded && CheckGround()) {
-                    m_HasLanded = true;
+                if (CheckGround()) {
+                    var agent = m_EnemyController.Agent;
+                    agent.Warp(m_EndPosition);
                     ApplyAoeDamage();
                     ChangeState(SkillState.Recovery);
                 }
@@ -100,8 +89,6 @@ namespace TPSDemo
         {
             base.End();
             var agent = m_EnemyController.Agent;
-            agent.Warp(m_EnemyController.transform.position);
-            //agent.transform.rotation = m_EnemyController.transform.rotation;
             agent.isStopped = false;
             agent.updatePosition = true;
             agent.updateRotation = true;
@@ -112,12 +99,14 @@ namespace TPSDemo
         {
             //NavMeshHit hit;
             // 从当前位置往下采样 NavMesh，距离容差内就算"着地"
-            return NavMesh.SamplePosition(
+            var land = UnityEngine.AI.NavMesh.SamplePosition(
                 m_EnemyController.transform.position,
-                out var _,
-                m_DiveSpeed * Time.deltaTime, // 从当前位置向下 1 单位内
+                out var hit,
+                DiveSpeed * Time.deltaTime, // 从当前位置向下 1 单位内
                 m_EnemyController.Agent.areaMask // 用 Agent 自身的可走区域
             );
+            m_EndPosition = hit.position;
+            return land;
         }
 
         private void ApplyAoeDamage()
@@ -125,7 +114,7 @@ namespace TPSDemo
             var hits = Physics.OverlapCapsule(
                 m_EnemyController.transform.position,
                 m_EnemyController.transform.position + Vector3.up * 0.3f,
-                1f,
+                AoeRadius,
                 TargetLayer,
                 QueryTriggerInteraction.Ignore
             );

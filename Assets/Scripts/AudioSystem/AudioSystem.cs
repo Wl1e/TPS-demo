@@ -15,6 +15,13 @@ namespace TPSDemo
             public Vector3 Position;
             public float Duration;
         }
+
+        public enum AudioGroup
+        {
+            Master = 0,
+            BGM = 1,
+            SFX = 2,
+        };
         #endregion
 
         ObjectPool<AudioPlayer> m_AudioPlayerPool;

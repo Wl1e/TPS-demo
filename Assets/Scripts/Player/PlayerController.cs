@@ -221,6 +221,7 @@ namespace TPSDemo
                 RegisterEvents();
                 m_Health.OnTakeDamaged += OnPlayerTakeDamage;
                 m_Health.OnDied += OnDied;
+                MapManager.Instance.TeleportToSpawnPoint();
             } else {
                 DisableClientComponents();
             }
@@ -243,8 +244,12 @@ namespace TPSDemo
         // 初始化需要在Server端运行的东西
         private IEnumerator PlayerInitializeCoroutine()
         {
+            print("In PlayerController player: " + GameNetworkManager.Instance.LocalClient.PlayerObject);
             yield return m_Loadout.EquipWeaponCo(m_Loadout.DefaultWeapon);
-            BootTel.TeleportToHub();
+            if (IsHost) {
+                // host需要主动进入Map1
+                BootTel.TeleportToHub();
+            }
             InitializeFinishClientRpc();
         }
 

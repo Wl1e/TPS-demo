@@ -9,17 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 957f6ecb7f823aa4ea808fb404fa6817, type: 3}
+  m_Script: {fileID: 11500000, guid: b8dc439851fa580489710f615f1026d6, type: 3}
   m_Name: ChargeSkillConfig
-  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.SkillConfig
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ChargeSkillConfig
   Name: Charge
   AttackRange: {x: 3, y: 5}
   Cooldown: 10
-  WindupTime: 0.5
-  ActiveTime: 3
-  RecoveryTime: 1
   Damage: 50
-  AnimationName: Charge
-  Args:
-  - Key: ChargeSpeed
-    Value: 5
+  WindupTime: 0.5
+  WindupAnimation: ChargeWindup
+  ActiveTime: 3
+  SkillAnimation: ChargeActive
+  RecoveryTime: 1
+  RecoveryAnimation: ChargeRecovery
+  Args: []
+  ChargeSpeed: 5
+  Threshold: 0.05

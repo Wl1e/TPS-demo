@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace TPSDemo
 {
@@ -22,11 +21,6 @@ namespace TPSDemo
         {
             base.Awake();
             ItemRoot = new GameObject("ItemRoot").transform;
-        }
-
-        private void CreateNO(GameObject prefab)
-        {
-
         }
 
         public IEnumerator SpawnItem(ItemData data, Vector3 pos, int amount, System.Action<GameObject> cb = null, bool destroyWithScene = true)

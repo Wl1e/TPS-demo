@@ -1,17 +1,20 @@
 ﻿using UnityEngine;
+using static UnityEngine.Rendering.STP;
 
 namespace TPSDemo
 {
     public class ChargeSkill: SkillBase
 	{
-        private const int SkillId = 1001;
+        private const int SkillId = (int)SkillName.ChargeSkill;
+        public override int Id => SkillId;
 
-        public float ChargeSpeed = 1f;
+        public float ChargeSpeed => (Config as ChargeSkillConfig).ChargeSpeed;
         private Vector3 m_TargetPos = Vector3.zero;
         private Vector3 m_LastPos = Vector3.negativeInfinity;
-        private float m_Threshold = 0.1f;
+        private float Threshold => (Config as ChargeSkillConfig).Threshold;
 
-        [SerializeField] Hitbox m_Hitbox;
+        private Hitbox m_Hitbox;
+        private bool m_Collision = false;
 
         [RuntimeInitializeOnLoadMethod]
         private static void RegisterSelf() => SkillFactory.Register<ChargeSkill>(SkillId);
@@ -19,8 +22,11 @@ namespace TPSDemo
         public override void Initialize(EnemyController enemy, SkillConfig config)
         {
             base.Initialize(enemy, config);
-            float.TryParse(Config.Args[0].Value, out ChargeSpeed);
+            m_Hitbox = m_EnemyController.EnemyHitbox;
+            m_Hitbox.OnCollision += OnHitboxCollision;
         }
+
+        private void OnHitboxCollision(Damageable obj) => m_Collision = true;
 
         public override bool ValidPerform(Transform target)
         {
@@ -42,11 +48,18 @@ namespace TPSDemo
 
         protected override void Perform(float deltaTime)
         {
-            if((m_LastPos - m_EnemyController.transform.position).sqrMagnitude < m_Threshold * m_Threshold ||
+            // 撞到Player
+            if(m_Collision) {
+                ChangeState(SkillState.Recovery);
+                return;
+            }
+
+            if((m_LastPos - m_EnemyController.transform.position).sqrMagnitude <= Threshold * Threshold ||
                 m_Duration >= Config.ActiveTime) {
                 ChangeState(SkillState.Recovery);
                 return;
             }
+            m_LastPos = m_EnemyController.transform.position;
 
             Vector3 dir = (m_TargetPos - m_EnemyController.transform.position).normalized;
             m_EnemyController.Agent.isStopped = true;

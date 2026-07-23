@@ -48,13 +48,12 @@ namespace TPSDemo
             return Color.black;
         }
 
+        public abstract string Hint { get; }
         public abstract float HoldDuration { get; }
         public abstract void OnInteractPress(GameObject interactor);
         public abstract void OnInteractHold(GameObject interactor);
         public abstract void OnInteractRelease(GameObject interactor, bool completed);
         public abstract void Drop(GameObject obj);
-        public void WhenSee()
-        { }
     }
 
     public class EvoShield : GearBase
@@ -62,6 +61,7 @@ namespace TPSDemo
         [SerializeField] float m_Shield;
         [SerializeField] float m_EVOPoint = 0f;
 
+        public override string Hint => "EvoShield";
         public override float HoldDuration => 0f;
         public override void OnInteractPress(GameObject interactor)
         {

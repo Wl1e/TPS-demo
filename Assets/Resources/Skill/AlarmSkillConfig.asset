@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2668e5a765935ad48b9915624062be79, type: 3}
+  m_Name: AlarmSkillConfig
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.AlarmSkillConfig
+  Name: Alarm
+  AttackRange: {x: 0, y: 1000}
+  Cooldown: 3
+  Damage: 0
+  WindupTime: 1
+  WindupAnimation: AlarmWindup
+  ActiveTime: 3
+  SkillAnimation: AlarmActive
+  RecoveryTime: 0
+  RecoveryAnimation: AlarmRecovery
+  Args: []
+  AlarmRange: 3
+  AlarmTime: 3
+  AlarmClip: {fileID: 0}

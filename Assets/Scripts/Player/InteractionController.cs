@@ -61,14 +61,12 @@ namespace TPSDemo
 
             if (Physics.Raycast(ray, out RaycastHit hit, m_InteractRange, m_InteractLayerMask)) {
                 if (hit.collider.TryGetComponent<IInteractive>(out var interactive)) {
-                    // 显示交互 UI
-                    //print("interactive: " + interactive);
-                    m_CurrentTarget = interactive;
+                    UpdateCurrentTarget(interactive);
                 } else {
-                    m_CurrentTarget = null;
+                    UpdateCurrentTarget(null);
                 }
             } else {
-                m_CurrentTarget = null;
+                UpdateCurrentTarget(null);
             }
 
             if(m_IsInteracting) {
@@ -77,14 +75,35 @@ namespace TPSDemo
                     FinishInteraction();
                 } else {
                     m_InteractingObj.OnInteractHold(gameObject);
+                    EventManager.Broadcast(
+                        new Event.UpdateInteractionHintEvent {
+                            Hint = m_CurrentTarget.Hint,
+                            Progress = Mathf.Clamp01(m_InteractTime / m_InteractingObj.HoldDuration)
+                        }
+                    );
                 }
+            }
+        }
+
+        private void UpdateCurrentTarget(IInteractive interactive)
+        {
+            if (m_CurrentTarget != interactive) {
+                m_CurrentTarget = interactive;
+                // 显示交互 UI
+                EventManager.Broadcast(
+                    new Event.UpdateInteractionHintEvent {
+                        Hint = m_CurrentTarget?.Hint
+                    }
+                );
             }
         }
 
         public void OnPickupItem(ItemPickup item)
         {
             OnPickup?.Invoke(item.Id, item.Amount);
-            m_PlayerController.AudioEffectPlayer.Play("Interact", float.PositiveInfinity, transform.position, Quaternion.identity);
+            m_PlayerController.AudioEffectPlayer.Play("Interact",
+                AudioSystem.AudioGroup.SFX, float.PositiveInfinity,
+                transform.position, Quaternion.identity);
             EventManager.Broadcast(new Event.PickupItemEvent {
                 ActorId = m_PlayerController.Id,
                 ItemId = item.Id,

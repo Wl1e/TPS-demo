@@ -16,7 +16,6 @@ namespace TPSDemo
         [Header("资源")]
         [Tooltip("攻击音效")]
         [SerializeField] private AudioClip m_AttackSfx;
-        [SerializeField] AnimationClip m_AttackAnimation;
 
         private Coroutine m_Coroutine;
 
@@ -69,8 +68,7 @@ namespace TPSDemo
 
         protected void PlayerAE()
         {
-            Owner.AEPlayer.Play(m_SFName, float.PositiveInfinity, transform.position, transform.rotation);
-            Owner.AnimatorController.RegisterAnimationClip("Attack", m_AttackAnimation);
+            Owner.AEPlayer.Play(m_SFName, AudioSystem.AudioGroup.SFX, float.PositiveInfinity, transform.position, transform.rotation);
             Owner.AnimatorController.Play("Attack");
         }
 

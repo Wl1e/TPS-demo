@@ -67,5 +67,12 @@ namespace TPSDemo
             int moneyId = ResourceManager.Instance.GetResource<ShopList>("Shop").GetConfig(shopId).MoneyId;
             return m_Player.Economy.GetMoney(moneyId);
         }
+
+        // Map
+        public List<ObjectiveProgress> GetCurMapObjectiveProgress()
+        {
+            var map = MapManager.Instance.CurrentMap;
+            return map != null ? map.GetObjectiveProgresses() : new List<ObjectiveProgress>();
+        }
     }
 }

@@ -36,11 +36,11 @@ namespace TPSDemo.Editor
         }
     }
 
-    [CustomPropertyDrawer(typeof(ManualAnimatorController.AnimatorEntry))]
+    [CustomPropertyDrawer(typeof(AnimationEntry))]
     public class ManualAnimationDrawer: TwoPropertyDrawer
     {
         public override float NameWidthRatio { get { return 0.3f; } }
-        public override string Property1Name { get { return "Type"; } }
+        public override string Property1Name { get { return "Name"; } }
         public override string Property2Name { get { return "Clip"; } }
     }
 

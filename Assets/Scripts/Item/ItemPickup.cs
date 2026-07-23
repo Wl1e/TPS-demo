@@ -13,6 +13,7 @@ namespace TPSDemo
             //print("ItemPickup Spawn");
         }
 
+        public string Hint => $"拾取{Name}";
         public float HoldDuration => 0f;
         public void OnInteractPress(GameObject interactor)
         {
@@ -26,13 +27,13 @@ namespace TPSDemo
         { }
         public void OnInteractRelease(GameObject interactor, bool completed)
         {
-            NetworkObject.Despawn();
+            if (completed) {
+                DespawnServerRpc();
+            }
         }
 
-        public void WhenSee()
-        {
-
-        }
+        [ServerRpc]
+        private void DespawnServerRpc() => NetworkObject.Despawn();
 
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         private void InteractServerRpc(int playerId)

@@ -29,9 +29,13 @@ namespace TPSDemo
             if (Health) {
                 showDamage = Health.TakeDamage(info);
             }
+            var dir = Vector3.zero;
+            if(info.Attacker) {
+                dir = (info.Attacker.transform.position - info.Point).normalized;
+            }
             DamageValueDisplayService.Instance.RequestDamageValue(
                 showDamage,
-                info.Point + (info.Attacker.transform.position - info.Point).normalized * DamageValueUI.DamageValueOffset,
+                info.Point + dir * DamageValueUI.DamageValueOffset,
                 false
             );
         }

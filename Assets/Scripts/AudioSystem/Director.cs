@@ -27,10 +27,10 @@ namespace TPSDemo
         /// 2: SFX
         /// </param>
         /// <returns></returns>
-        public AudioMixerGroup GetGroup(int idx) => idx switch {
-            0 => m_MasterGroup,
-            1 => m_BGMGroup,
-            2 => m_SFXGroup,
+        public AudioMixerGroup GetGroup(AudioSystem.AudioGroup idx) => idx switch {
+            AudioSystem.AudioGroup.Master => m_MasterGroup,
+            AudioSystem.AudioGroup.BGM => m_BGMGroup,
+            AudioSystem.AudioGroup.SFX => m_SFXGroup,
             _ => null
         };
 

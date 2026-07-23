@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Xml.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -46,6 +47,8 @@ namespace TPSDemo
         }
 
         // === IInteractive ===
+
+        string IInteractive.Hint => $"打开{m_Config.ChestName}";
 
         float IInteractive.HoldDuration => 1f;
         void IInteractive.OnInteractPress(GameObject interactor)

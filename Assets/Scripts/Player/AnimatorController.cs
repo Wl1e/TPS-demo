@@ -19,6 +19,7 @@ namespace TPSDemo
         public bool Jump;
         public bool Attack;
         public bool IsGrounded;
+        public bool IsDied;
 
         // climb
         public bool IsClimb;
@@ -35,6 +36,7 @@ namespace TPSDemo
         public float UseTime;
 
         public bool TakeDamage;
+        public bool Death;
         public AnimatorParameter(int i = 0)
         {
             Velocity = Vector3.zero;
@@ -57,6 +59,8 @@ namespace TPSDemo
             UseActiveItem = false;
             UseTime = 1f;
             TakeDamage = false;
+            Death = false;
+            IsDied = false;
         }
 
         public void Copy(AnimatorParameter other)
@@ -79,6 +83,8 @@ namespace TPSDemo
             DisableAimLayer = other.DisableAimLayer;
             UseActiveItem = other.UseActiveItem;
             //TakeDamage = other.TakeDamage;
+            IsDied = other.IsDied;
+            //Death = other.Death;
         }
     }
 
@@ -177,6 +183,14 @@ namespace TPSDemo
             SetFloat("VelocityY", curData.Velocity.y);
             if (m_LastParameter.IsGrounded != curData.IsGrounded) {
                 SetBool("Ground", curData.IsGrounded);
+            }
+
+            if (m_LastParameter.IsDied != curData.IsDied) {
+                SetBool("IsDied", curData.Death);
+            }
+            if (m_LastParameter.Death != curData.Death) {
+                UpdateTrigger("Death", curData.Death);
+                curData.Death = false;
             }
 
             // move
@@ -319,7 +333,11 @@ namespace TPSDemo
 
         void SetAimLayerWeight(float layerWeight) => m_Animator.SetLayerWeight(1, layerWeight);
 
-        public void ResetAnimation() => m_PlayerRuntimeData.AniParameter = new AnimatorParameter();
+        public void ResetAnimation()
+        {
+            m_PlayerRuntimeData.AniParameter = new AnimatorParameter();
+            m_LastParameter = new AnimatorParameter();
+        }
 
         private void OnAimConstraintOffsetChanged(Vector3 previousValue, Vector3 newValue)
         {

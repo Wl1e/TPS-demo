@@ -73,10 +73,8 @@ namespace TPSDemo
         /// <param name="hitInfo"> 命中信息 </param>
         protected virtual void OnHit(RaycastHit hitInfo)
         {
-            print("bullet hit " + hitInfo.collider.name);
             Damageable damageable = hitInfo.collider.GetComponentInChildren<Damageable>();
             if (damageable) {
-                print(hitInfo.collider.name + "has damageable");
                 damageable.InflictDamage(new DamageInfo { Attacker = Owner, Damage = Damage, Point = hitInfo.point });
                 OnHitTarget?.Invoke(hitInfo.collider.gameObject);
                 var actor = damageable.GetComponentInParent<Actor>();
@@ -104,7 +102,6 @@ namespace TPSDemo
         private void OnHitClientRpc(Vector3 hitPoint, int victimId)
         {
             if (IsOwner) {
-                print("BulletHitTargetEvent");
                 EventManager.Broadcast(new Event.BulletHitTargetEvent { Attacker = Owner, VictimId = victimId });
             }
         }
@@ -117,6 +114,9 @@ namespace TPSDemo
 
         protected void PlayAE(RaycastHit hitInfo)
         {
+            if(!Owner) {
+                return;
+            }
             string tag = hitInfo.collider.gameObject.tag;
             var effectIdx = m_Config.HitImpactPrefab.FindIndex(e => e.Tag == tag);
             if (effectIdx < 0 && tag != "Enemy" && tag != "Player") {
@@ -127,13 +127,29 @@ namespace TPSDemo
                 up = Vector3.Cross(hitInfo.normal, (hitInfo.point - Owner.transform.position).normalized);
             }
             Quaternion rotation = Quaternion.LookRotation(hitInfo.normal, up);
-            m_AudioAndEffectPlayGlobal.Play(tag, m_Config.HitImpactDuration, hitInfo.point, rotation);
-            m_AudioAndEffectPlayGlobal.Play("SFX", m_Config.HitSfxDuration, hitInfo.point, Quaternion.identity);
+            m_AudioAndEffectPlayGlobal.Play(
+                tag,
+                AudioSystem.AudioGroup.SFX,
+                m_Config.HitImpactDuration,
+                hitInfo.point,
+                rotation
+            );
+            m_AudioAndEffectPlayGlobal.Play(
+                "SFX",
+                AudioSystem.AudioGroup.SFX,
+                m_Config.HitSfxDuration,
+                hitInfo.point,
+                Quaternion.identity
+            );
             // 打怪身上不要弹孔
             // 这样不严谨，或许应该判断可以留单孔的位置，
             // 或许要给物体添加脚本
             if (!hitInfo.collider.gameObject.CompareTag("Enemy") && !hitInfo.collider.gameObject.CompareTag("Player")) {
-                m_AudioAndEffectPlayGlobal.Play("BulletHole", m_Config.BulletHoleDuration, hitInfo.point, rotation);
+                m_AudioAndEffectPlayGlobal.Play(
+                    "BulletHole", AudioSystem.AudioGroup.SFX,
+                    m_Config.BulletHoleDuration, hitInfo.point,
+                    rotation
+                );
             }
         }
     }
