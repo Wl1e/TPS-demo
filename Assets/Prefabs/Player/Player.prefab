@@ -898,7 +898,7 @@ Transform:
   m_GameObject: {fileID: 7231126697609748566}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -937,7 +937,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf2d0fdc7610ebf44a00166d7f170e24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  m_Owner: {fileID: 0}
+  m_Owner: {fileID: 5758035524814191548}
   m_ReviveDuration: 3
 --- !u!1 &7697645733594970520
 GameObject:
@@ -997,6 +997,7 @@ GameObject:
   - component: {fileID: 3466044232605965439}
   - component: {fileID: 122346622546593560}
   - component: {fileID: 8219723764251447864}
+  - component: {fileID: 8743669282676304050}
   m_Layer: 12
   m_Name: Player
   m_TagString: Player
@@ -1049,7 +1050,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 585497169
+  GlobalObjectIdHash: 41440137
   InScenePlacedSourceGlobalObjectIdHash: 585497169
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1136,8 +1137,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   ShowTopMostFoldoutHeaderGroup: 1
   CameraRoot: {fileID: 7819201028269552593}
-  Money:
-  - {x: 1001, y: 30000}
   OnJumpInput: {fileID: 11400000, guid: 49c897c2ed5fefd4bb01a8c68be3942d, type: 2}
   OnSprintInput: {fileID: 11400000, guid: 3a9bc1f19edf2b742bd1be91724ca875, type: 2}
   OnCrouchInput: {fileID: 11400000, guid: ac18f6c36c7033c44b1e0f84ab5a1050, type: 2}
@@ -1399,6 +1398,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.PlayerLifeController
   ShowTopMostFoldoutHeaderGroup: 1
   m_ReviveArea: {fileID: 7231126697609748566}
+--- !u!114 &8743669282676304050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8301697018837147508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd0780f31e0a1ab47ad999298bcb8d22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.PlayerEconomy
+  ShowTopMostFoldoutHeaderGroup: 1
+  DefaultEconomy:
+  - {x: 1001, y: 1000}
 --- !u!1 &8439695403502581523
 GameObject:
   m_ObjectHideFlags: 0

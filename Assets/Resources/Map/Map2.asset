@@ -17,4 +17,5 @@ MonoBehaviour:
   Description: "\u51FB\u8D25\u654C\u4EBA"
   Type: 2
   SceneName: Combat1
-  ObjConfigs: []
+  ObjConfigs:
+  - {fileID: 11400000, guid: 86485709172ecc4459c41292dfd9c845, type: 2}

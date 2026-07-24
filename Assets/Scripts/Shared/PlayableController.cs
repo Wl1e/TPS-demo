@@ -17,9 +17,16 @@ namespace TPSDemo
         [Tooltip("默认动画")]
         [SerializeField] string m_DefaultAnimationName = "Idle";
 
-        private int DefaultAnimationIndex => m_ClipsIndex.GetValueOrDefault(m_DefaultAnimationName, -1);
+        [Header("当前正在播放动画和进度")]
+        #region For debug
+        public string CurAnimation;
+        [Range(0, 1)]
+        public float Progress;
+        #endregion
 
-        private readonly Dictionary<string, int> m_ClipsIndex = new();
+        private int DefaultAnimationIndex => m_ClipsName.FindIndex(name => name == m_DefaultAnimationName);
+
+        private readonly List<string> m_ClipsName = new();
         private readonly List<AnimationClipPlayable> m_ClipPlayables = new();
         private PlayableGraph m_Graph;
         private AnimationMixerPlayable m_Mixer;
@@ -38,17 +45,17 @@ namespace TPSDemo
                 return false;
             }
             var playable = m_ClipPlayables[m_CurrentClipIdx];
-            return (playable.GetAnimationClip().isLooping || playable.GetTime() < playable.GetDuration());
+            return playable.GetTime() < playable.GetDuration();
         }
 
-        public string CurrentClipName => ((AnimationClipPlayable)m_Mixer.GetInput(m_CurrentClipIdx)).GetAnimationClip().name;
+        public string CurrentClipName => m_ClipsName[m_CurrentClipIdx];
         public bool HasClip(string name)
         {
-            if (!m_ClipsIndex.TryGetValue(name, out var idx)) {
-                return false;
-            }
+            var idx = NameToIdx(name);
             return idx >= 0 && idx < m_ClipPlayables.Count;
         }
+
+        private int NameToIdx(string name) => m_ClipsName.FindIndex(nam => name == nam);
 
         void Awake()
         {
@@ -59,19 +66,20 @@ namespace TPSDemo
 
             m_Mixer = AnimationMixerPlayable.Create(m_Graph, Clips.Count);
 
-            for(int  i = 0; i < Clips.Count; i++) {
+            for (int  i = 0; i < Clips.Count; i++) {
                 var name = Clips[i].Name;
                 var clip = Clips[i].Clip;
 
                 var playable = AnimationClipPlayable.Create(m_Graph, clip);
                 playable.SetDuration(clip.length);
 
-                m_ClipsIndex[name] = i;
+                m_ClipsName.Add(name);
                 m_ClipPlayables.Add(playable);
                 playable.SetTime(0);
                 playable.Pause();
                 m_Mixer.ConnectInput(i, m_ClipPlayables[i], 0, 0);
             }
+            m_CurrentClipIdx = NameToIdx(m_DefaultAnimationName);
 
             m_Output = AnimationPlayableOutput.Create(m_Graph, "Output", animator);
             m_Output.SetSourcePlayable(m_Mixer);
@@ -111,18 +119,23 @@ namespace TPSDemo
         private void Update()
         {   
             if(m_CurrentClipIdx != DefaultAnimationIndex && !IsPlaying()) {
-                Stop();
+                if (!LoopAnimation()) {
+                    Stop();
+                }
             }
+            CurAnimation = CurrentClipName;
+            var playable = m_ClipPlayables[m_CurrentClipIdx];
+            Progress = (float)(playable.GetTime() / playable.GetDuration());
         }
 
         [Obsolete("目前只能固定动画数量，如需动态增删，需实现mixer的重构")]
         public void RegisterAnimationClip(string name, AnimationClip clip)
         {
             if (HasClip(name)) {
-                m_ClipPlayables[m_ClipsIndex[name]].Destroy();
+                m_ClipPlayables[NameToIdx(name)].Destroy();
             }
 
-            var idx = m_ClipsIndex[name];
+            var idx = NameToIdx(name);
             var playable = AnimationClipPlayable.Create(m_Graph, clip);
             playable.SetDuration(clip.length);
             m_ClipPlayables[idx] = playable;
@@ -155,13 +168,13 @@ namespace TPSDemo
         // Owner use
         public void Play(string name, float fadeDuration = -1f)
         {
-            print("Play " + name);
+            print($"{gameObject.name} Play {name}");
             if (!HasClip(name)) {
                 Debug.LogWarning($"Animation clip '{name}' not registered.");
                 return;
             }
 
-            PlayAnimation(m_ClipsIndex[name], fadeDuration);
+            PlayAnimation(NameToIdx(name), fadeDuration);
         }
 
         /// <summary>
@@ -253,7 +266,7 @@ namespace TPSDemo
                     m_ClipPlayables[m_PreviousClipIdx].Pause();
                 }
 
-                foreach (var idx in m_ClipsIndex.Values) {
+                for(int idx = 0; idx < m_ClipsName.Count; ++idx) {
                     m_Mixer.SetInputWeight(idx, 0f);
                 }
             } else {
@@ -272,7 +285,7 @@ namespace TPSDemo
         /// <param name="toPort"> 过渡后 </param>
         /// <param name="duration"> 持续时间 </param>
         /// <returns></returns>
-        System.Collections.IEnumerator FadeTransition(int fromPort, int toPort, float duration)
+        private System.Collections.IEnumerator FadeTransition(int fromPort, int toPort, float duration)
         {
             float time = 0f;
 
@@ -309,7 +322,7 @@ namespace TPSDemo
         /// </summary>
         /// <param name="duration"> 持续时间 </param>
         /// <returns></returns>
-        System.Collections.IEnumerator FadeStop(float duration)
+        private System.Collections.IEnumerator FadeStop(float duration)
         {
             // 当前没有播放动画
             if(m_CurrentClipIdx == -1) {
@@ -340,6 +353,21 @@ namespace TPSDemo
             m_ClipPlayables[m_CurrentClipIdx].Pause();
 
             m_TransitionCoroutine = null;
+        }
+
+        /// <summary>
+        /// 若当前动画为Loop，则手动重播
+        /// </summary>
+        private bool LoopAnimation()
+        {
+            if(m_CurrentClipIdx == -1) {
+                return false;
+            }
+            if (!m_ClipPlayables[m_CurrentClipIdx].GetAnimationClip().isLooping) {
+                return false;
+            }
+            PlayAnimation(m_CurrentClipIdx, -1f);
+            return true;
         }
     }
 }

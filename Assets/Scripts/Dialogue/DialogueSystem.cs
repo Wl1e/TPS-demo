@@ -83,7 +83,7 @@ using Event;
         public void ChangeNode(int NodeId)
         {
             m_CurrentNodeId = NodeId;
-            m_Npc.PlayAudioServerRpc(NodeId);
+            m_Npc.PlayAudio(NodeId);
             EventManager.Broadcast(new UpdateDialogEvent { DialogueNode = GetCurrentNode() });
         }
 

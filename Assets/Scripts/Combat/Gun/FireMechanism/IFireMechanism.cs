@@ -13,5 +13,7 @@ namespace TPSDemo
         public void StartFire();
         public void UpdateFire(float deltaTime);
         public void StopFire();
+
+        public void Initialize(IWeapon weapon);
     }
 }

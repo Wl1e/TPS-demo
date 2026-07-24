@@ -20,6 +20,7 @@ namespace TPSDemo
         GameObject m_Owner;
 
         [SerializeField] private WeaponItemData m_Config;
+        public WeaponItemData Config => m_Config;
 
         #region Property
 
@@ -102,6 +103,7 @@ namespace TPSDemo
             if(IsServer || IsOwner) {
                 m_AmmoHandler.Initialize(this);
                 m_Behaviour.Initialize(this);
+                m_FireMechanism.Initialize(this);
             }
             if(IsOwner) {
                 m_FireMechanism.OnShouldFire += TryFire;

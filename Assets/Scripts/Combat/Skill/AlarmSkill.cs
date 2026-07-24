@@ -1,6 +1,4 @@
-﻿using UnityEditor.Experimental.GraphView;
-using UnityEngine;
-using UnityEngine.UIElements;
+﻿using UnityEngine;
 
 namespace TPSDemo
 {
@@ -28,7 +26,7 @@ namespace TPSDemo
         public override void Initialize(EnemyController enemy, SkillConfig config)
         {
             base.Initialize(enemy, config);
-            m_EnemyController.AEPlayer.LoopAudio("Alarm", (Config as AlarmSkillConfig).AlarmClip);
+            m_EnemyController.AEPlayer.AddAudio("Alarm", (Config as AlarmSkillConfig).AlarmClip);
         }
 
         public override bool ValidPerform(Transform target)
@@ -45,11 +43,13 @@ namespace TPSDemo
             if (m_IsAlarm) {
                 if(m_Duration >= AlarmTime) {
                     ChangeState(SkillState.Recovery);
+                    m_IsAlarm = false;
                 }
                 return;
             }
-            m_IsAlarm = true;
 
+            m_IsAlarm = true;
+            m_EnemyController.Agent.isStopped = true;
             Alarm();
         }
 
@@ -65,14 +65,21 @@ namespace TPSDemo
 
             var colliders = Physics.OverlapSphere(
                 alarmPos, AlarmRange,
-                LayerMask.NameToLayer("Enemy"),
+                1 << LayerMask.NameToLayer("Enemy"),
                 QueryTriggerInteraction.Ignore
             );
 
             foreach (var collider in colliders) {
                 var enemy = collider.GetComponentInParent<EnemyController>();
+                Debug.Log("Alarm " + enemy);
                 enemy.SetTarget(m_Target.gameObject);
             }
+        }
+
+        protected override void End()
+        {
+            base.End();
+            m_EnemyController.Agent.isStopped = false;
         }
     }
 }

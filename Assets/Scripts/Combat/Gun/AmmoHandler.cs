@@ -9,12 +9,18 @@ namespace TPSDemo
     [Serializable]
     public class AmmoHandler : NetworkBehaviour
     {
-        [Tooltip("初始弹匣容量")]
-        public int DefaultClipSize;
-        [Tooltip("换弹时间")]
-        [SerializeField] float m_ReloadTime;
-        [Tooltip("使用子弹ID")]
-        [SerializeField] int m_AmmoId;
+        /// <summary>
+        /// 初始弹匣容量
+        /// </summary>
+        private int DefaultClipSize => m_Weapon.Config.DefaultClipSize;
+        /// <summary>
+        /// 换弹时间
+        /// </summary>
+        private float m_ReloadTime => m_Weapon.Config.ReloadTime;
+        /// <summary>
+        /// 使用子弹ID
+        /// </summary>
+        private int m_AmmoId => m_Weapon.Config.AmmoId;
 
         IWeapon m_Weapon;
 
@@ -25,11 +31,6 @@ namespace TPSDemo
         public float ReloadTime => m_ReloadTime;
         public int ClipSize => m_ClipSize;
         public int AmmoId => m_AmmoId;
-
-        private void Awake()
-        {
-            m_ClipSize = DefaultClipSize;
-        }
 
         public override void OnNetworkSpawn()
         {
@@ -46,6 +47,7 @@ namespace TPSDemo
         public void Initialize(IWeapon weapon)
         {
             m_Weapon = weapon;
+            m_ClipSize = DefaultClipSize;
         }
 
         public bool ValidReload()

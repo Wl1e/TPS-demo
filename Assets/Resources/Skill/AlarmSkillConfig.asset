@@ -23,6 +23,6 @@ MonoBehaviour:
   RecoveryTime: 0
   RecoveryAnimation: AlarmRecovery
   Args: []
-  AlarmRange: 3
+  AlarmRange: 100
   AlarmTime: 3
-  AlarmClip: {fileID: 0}
+  AlarmClip: {fileID: 8300000, guid: db68208b906806441a600a933325a57d, type: 3}

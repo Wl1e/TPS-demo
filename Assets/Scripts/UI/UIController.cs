@@ -1,8 +1,6 @@
-using System;
 using TPSDemo.Event;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 namespace TPSDemo.UI
 {

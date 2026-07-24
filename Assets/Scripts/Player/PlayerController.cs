@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Runtime.ConstrainedExecution;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -28,7 +29,6 @@ namespace TPSDemo
         private Health m_Health;
         private WeaponManager m_WeaponManager;
         private Inventory m_Inventory;
-        private readonly PlayerEconomy m_Economy = new();
         private Actor m_Actor;
         private PlayerInputHandler m_InputHandler;
         private Loadout m_Loadout;
@@ -39,6 +39,7 @@ namespace TPSDemo
         private InteractionController m_InteractionController;
         private PlayerLifeController m_LifeController;
         private AudioAndEffectPlayGlobal m_AudioEffectPlayer;
+        private PlayerEconomy m_PlayerEconomy;
 
 
         #endregion component
@@ -83,7 +84,7 @@ namespace TPSDemo
         /// <summary>
         /// 经济系统
         /// </summary>
-        public PlayerEconomy Economy => m_Economy;
+        public PlayerEconomy Economy => m_PlayerEconomy;
 
         /// <summary>
         /// Actor基类
@@ -135,15 +136,13 @@ namespace TPSDemo
 
         #endregion Property
 
-        public System.Collections.Generic.List<Vector2Int> Money;
-
         [SerializeField] private GameEvent OnJumpInput;
         [SerializeField] private GameEvent OnSprintInput;
         [SerializeField] private GameEvent OnCrouchInput;
         [SerializeField] private Vector2Event OnLookInput;
         [SerializeField] private BoolEvent OnActiveCursorInput;
 
-        public AudioClip m_MovementAudio;
+        [SerializeField] private AudioClip m_MovementAudio;
 
         public int Id => m_Actor.Id;
 
@@ -163,6 +162,7 @@ namespace TPSDemo
             m_InteractionController = GetComponent<InteractionController>();
             m_LifeController = GetComponent<PlayerLifeController>();
             m_AudioEffectPlayer = GetComponent<AudioAndEffectPlayGlobal>();
+            m_PlayerEconomy = GetComponent<PlayerEconomy>();
 
             // Combat
             m_AimController = GetComponentInChildren<AimController>();
@@ -175,10 +175,6 @@ namespace TPSDemo
             RuntimeData.IsAiming = m_AimController.IsAiming;
             RuntimeData.CameraRoot = CameraRoot;
             RuntimeData.State = PlayerMovementState.Idle;
-
-            foreach (var e in Money) {
-                m_Economy.AddMoney(e.x, e.y);
-            }
         }
 
         private void DisableClientComponents()
@@ -219,6 +215,7 @@ namespace TPSDemo
                 PlayerDataProxy.Instance.RegisterPlayer(this);
                 m_FSM.InitializeFSM();
                 RegisterEvents();
+                m_Health.OnHealthChanged += OnHealthChanged;
                 m_Health.OnTakeDamaged += OnPlayerTakeDamage;
                 m_Health.OnDied += OnDied;
                 MapManager.Instance.TeleportToSpawnPoint();
@@ -229,6 +226,7 @@ namespace TPSDemo
                 GameModeManager.Instance.RegisterPlayer(this);
                 StartCoroutine(PlayerInitializeCoroutine());
             }
+            AudioEffectPlayer.LoopAudio("Movement", m_MovementAudio);
         }
         public override void OnNetworkDespawn()
         {
@@ -244,7 +242,6 @@ namespace TPSDemo
         // 初始化需要在Server端运行的东西
         private IEnumerator PlayerInitializeCoroutine()
         {
-            print("In PlayerController player: " + GameNetworkManager.Instance.LocalClient.PlayerObject);
             yield return m_Loadout.EquipWeaponCo(m_Loadout.DefaultWeapon);
             if (IsHost) {
                 // host需要主动进入Map1
@@ -285,6 +282,12 @@ namespace TPSDemo
         #endregion Initialize
 
         #region Callback
+
+        private void OnHealthChanged(float value)
+        {
+            print("Player OnHealthChanged");
+            EventManager.Broadcast(new Event.HealthChangedEvent { value = value });
+        }
 
         private void OnPlayerTakeDamage(DamageInfo info)
         {

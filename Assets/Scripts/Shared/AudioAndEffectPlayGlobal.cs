@@ -53,27 +53,26 @@ namespace TPSDemo
             }
         }
 
-        [ServerRpc]
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         public void PlayAudioAndEffectServerRpc(string name, AudioSystem.AudioGroup group, float duration, Vector3 position, Quaternion rotation, bool bindSelf)
             => PlayAudioAndEffectClientRpc(name, group, duration, position, rotation, bindSelf);
 
         [ClientRpc]
         public void PlayAudioAndEffectClientRpc(string name, AudioSystem.AudioGroup group, float duration, Vector3 position, Quaternion rotation, bool bindSelf)
         {
-            if (m_Audios.TryGetValue(name, out var audio)) {
-                Director.Instance.RequestAudio(audio)
-                    .WithMixerGroup(group)
-                    .WithPosition(position)
-                    .WithDuration(duration)
-                    .Play();
-            }
-
             if (m_Effects.TryGetValue(name, out var effect)) {
                 Director.Instance.RequestEffect(effect)
                     .WithPosition(position)
                     .WithRotation(rotation)
                     .WithDuration(duration)
                     .Create();
+            }
+            if (m_Audios.TryGetValue(name, out var audio)) {
+                Director.Instance.RequestAudio(audio)
+                    .WithMixerGroup(group)
+                    .WithPosition(position)
+                    .WithDuration(duration)
+                    .Play();
             }
             if (m_LoopAudio.TryGetValue(name, out var loopAudio)) {
                 if (!m_LoopPlayer.ContainsKey(loopAudio)) {
@@ -86,7 +85,6 @@ namespace TPSDemo
                     }
                     player.AudioSource.loop = true;
                     m_LoopPlayer.Add(loopAudio, player);
-                    // 绝大部分使用该组件播放的都是音效
                     player.Play(loopAudio, Director.Instance.GetGroup(group), float.PositiveInfinity);
                 }
             }

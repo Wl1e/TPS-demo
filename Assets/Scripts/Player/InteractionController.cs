@@ -117,6 +117,7 @@ namespace TPSDemo
 
         private void OnInteract(bool pressed)
         {
+            print("Pressed: " + pressed);
             if (pressed && m_CurrentTarget != null) {
                 if (!m_IsInteracting) {
                     m_InteractTime = 0f;
@@ -139,6 +140,11 @@ namespace TPSDemo
             m_InteractingObj?.OnInteractRelease(gameObject, m_InteractTime >= m_InteractingObj.HoldDuration);
             m_InteractTime = 0f;
             m_InteractingObj = null;
+            EventManager.Broadcast(
+                new Event.UpdateInteractionHintEvent {
+                    Hint = m_CurrentTarget?.Hint
+                }
+            );
         }
     }
 }

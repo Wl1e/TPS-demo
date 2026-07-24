@@ -130,16 +130,13 @@ namespace TPSDemo
                 clipList => {
                     if (language == Language.LanguageEnum.Chinese) {
                         DialogueData = m_DialogueDataCN;
-                        print("load chinese dialog");
                     } else if (language == Language.LanguageEnum.English) {
                         DialogueData = m_DialogueDataEN;
-                        print("load english dialog");
                     }
-                    //print("New Dialog: " + DialogueData);
                     m_AudioAndEffectPlayGlobal.Clear();
                     foreach (AudioClip clip in clipList) {
                         m_AudioAndEffectPlayGlobal.AddAudio(clip.name, clip);
-                        //print("Add Audio " + clip.name);
+                        print("Add Audio " + clip.name);
                     }
                 }
             ));
@@ -279,11 +276,11 @@ namespace TPSDemo
         [ClientRpc]
         private void UpdateSeePosClientRpc(Vector3 position) => SeePos.position = position;
 
-        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-        public void PlayAudioServerRpc(int dialogId)
+        public void PlayAudio(int dialogId)
         {
+            print($"NpcAudio{dialogId}");
             m_AudioAndEffectPlayGlobal.Play(
-                $"NpcAudio{dialogId}_{LocalizationManager.Instance.GetCurrentLanguageString()}",
+                $"NpcAudio{dialogId}",
                 AudioSystem.AudioGroup.Master,
                 float.PositiveInfinity,
                 transform.position,

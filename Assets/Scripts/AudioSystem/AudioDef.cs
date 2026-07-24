@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace TPSDemo
 {
-    // 暂时用不上，后续有更复杂的需求时再考虑扩展
+    [Obsolete("暂时用不上，后续有更复杂的需求时再考虑扩展")]
     [CreateAssetMenu(fileName = "AudioDef", menuName = "Other/Sound/AudioDef")]
 	public class AudioDef: ScriptableObject
     {

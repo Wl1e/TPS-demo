@@ -17,7 +17,7 @@ namespace TPSDemo
         /// <summary>
         /// 本地打开Shop的Player的Id
         /// </summary>
-        private int m_CurrentPlayerId;
+        private int CurrentPlayerId => PlayerDataProxy.Instance.GetPlayer().Id;
 
         public override void OnNetworkSpawn()
         {
@@ -55,7 +55,10 @@ namespace TPSDemo
 
         #region ShopBuy
 
-        public void TryBuy(Event.TryBuyEvent evt) => TryBuyServerRpc(m_CurrentPlayerId, evt.ShopId, evt.Slot);
+        public void TryBuy(Event.TryBuyEvent evt)
+        {
+            TryBuyServerRpc(CurrentPlayerId, evt.ShopId, evt.Slot);
+        }
 
         /// <summary>
         /// 购买时的Server端逻辑
@@ -80,7 +83,7 @@ namespace TPSDemo
         [ClientRpc]
         private void BuyResultClientRpc(int playerId, Event.ShopBuyEvent evt)
         {
-            if(m_CurrentPlayerId != playerId) {
+            if(CurrentPlayerId != playerId) {
                 return;
             }
 
@@ -115,10 +118,8 @@ namespace TPSDemo
         /// </summary>
         void OnOpenShop(Event.OpenShopEvent evt)
         {
-            m_CurrentPlayerId = evt.PlayerId;
-            print("Enter Shop, Player " + m_CurrentPlayerId);
             m_CurrentShopId = evt.ShopId;
-            OpenShopServerRpc(m_CurrentPlayerId, m_CurrentShopId);
+            OpenShopServerRpc(CurrentPlayerId, m_CurrentShopId);
         }
 
         /// <summary>
@@ -144,10 +145,10 @@ namespace TPSDemo
         [ClientRpc]
         private void TrueEnterShopClientRpc(int playerId)
         {
-            if (playerId == m_CurrentPlayerId && m_Shops.TryGetValue(m_CurrentShopId, out Shop shop)) {
-                var player = NetworkManager.LocalClient.PlayerObject.GetComponent<PlayerController>();
+            if (playerId == CurrentPlayerId && m_Shops.TryGetValue(m_CurrentShopId, out Shop shop)) {
+                var player = PlayerDataProxy.Instance.GetPlayer();
                 // 如果后续还有根据PlayerId找Player的需求，可以考虑在本地映射自己的player
-                //var playerActor = ActorManager.Instance.GetActor(m_CurrentPlayerId);
+                //var playerActor = ActorManager.Instance.GetActor(CurrentPlayerId);
                 print($"player: {player}, shop: {shop}");
                 shop.Enter(player);
             }

@@ -62,13 +62,12 @@ namespace TPSDemo
 
         private void EnterRevive()
         {
-            m_Player.RuntimeData.AniParameter.IsDied = false;
-
             UpdateComponentState(true);
             //ShowRenderers();
+            m_ReviveArea.SetActive(false);
 
             if (IsOwner) {
-                m_ReviveArea.SetActive(false);
+                m_Player.RuntimeData.AniParameter.IsDied = false;
             }
         }
 
@@ -98,6 +97,9 @@ namespace TPSDemo
             if (TryGetComponent<AudioListener>(out var listener)) {
                 listener.enabled = enable;
             }
+
+            m_Player.RuntimeData.DisableCombat = !enable;
+            m_Player.RuntimeData.CanUseActiveItem = enable;
         }
 
         private void SetComponentEnabled(Behaviour component, bool enabled)
@@ -132,7 +134,7 @@ namespace TPSDemo
             }
         }
 
-        [ServerRpc]
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         private void ReviveServerRpc(NetworkObjectReference reviverRef) => ReviveClientRpc(reviverRef);
 
         [ClientRpc]

@@ -14,6 +14,7 @@ namespace TPSDemo
             Assert.IsNotNull(config);
             Objective objective = null;
             // 后续拆开
+            // Fixme: 使用FactoryBase实现
             if (config is ObjectiveKillEnemiesConfig) {
                 objective = new ObjectiveKillEnemies();
                 

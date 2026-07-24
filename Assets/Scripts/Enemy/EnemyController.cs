@@ -18,6 +18,7 @@ namespace TPSDemo
 
         [Tooltip("被攻击时设置Target")]
         [SerializeField] private bool m_SetTargetWhenHit = true;
+        // Fixme: 相同enemy共用了管道
         [Tooltip("管道")]
         [SerializeField] protected GameObjectEventChannel m_Channel;
 
@@ -43,6 +44,8 @@ namespace TPSDemo
 
         public UnityEngine.AI.NavMeshAgent Agent => m_Agent;
         public AudioAndEffectPlayGlobal AEPlayer => m_AudioAndEffectPlayGlobal;
+
+        public bool IsDied => m_Health.IsDied;
 
         [Tooltip("攻击者组件")]
         [SerializeField] protected AttackerBase m_Attacker;
@@ -107,7 +110,7 @@ namespace TPSDemo
 
         public override void OnNetworkDespawn()
         {
-            if (IsServer) {
+            if (IsOwner) {
                 if (m_Attacker != null) {
                     m_Attacker.OnAttack -= OnAttack;
                 }
@@ -129,6 +132,7 @@ namespace TPSDemo
             AEPlayer.Play("Hit", AudioSystem.AudioGroup.SFX,
                 float.PositiveInfinity, info.Point, Quaternion.identity);
 
+            print($"{m_SetTargetWhenHit}, {m_Channel}");
             if(m_SetTargetWhenHit && m_Channel) {
                 m_Channel.SendEventMessage(info.Attacker);
             }
@@ -168,7 +172,9 @@ namespace TPSDemo
         IEnumerator DiedCoroutine()
         {
             yield return new WaitForSeconds(DiedTime);
-            NetworkObject.Despawn();
+            if (NetworkObject.IsSpawned) {
+                NetworkObject.Despawn();
+            }
         }
 
         /// <summary>

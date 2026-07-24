@@ -503,7 +503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 411984806
+  GlobalObjectIdHash: 2530470313
   InScenePlacedSourceGlobalObjectIdHash: 411984806
   DeferredDespawnTick: 0
   Ownership: 1
@@ -811,7 +811,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.BulletAttacker
   ShowTopMostFoldoutHeaderGroup: 1
   Owner: {fileID: 2461418467057132247}
-  CD: 1
+  CD: 3
   m_Damage: 10
   m_AttackRange: {x: 2, y: 5}
   Muzzle:
@@ -1480,6 +1480,8 @@ MonoBehaviour:
     Clip: {fileID: 3922875575015971284, guid: 92d1ac957ad9ddf48aa62afae14cb282, type: 3}
   m_FadeDuration: 0.2
   m_DefaultAnimationName: Idle
+  CurAnimation: 
+  Progress: 0
 --- !u!114 &1637257090569946840
 MonoBehaviour:
   m_ObjectHideFlags: 0

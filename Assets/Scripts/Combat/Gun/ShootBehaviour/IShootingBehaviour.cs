@@ -22,19 +22,27 @@ namespace TPSDemo
         /// <summary>
         /// 所属武器
         /// </summary>
-        private IWeapon m_Weapon;
+        protected IWeapon m_Weapon;
         public GameObject Owner => m_Weapon.Owner;
         private Transform Muzzle;
 
-        [Tooltip("子弹预制体")]
-        public BulletController BulletPrefab;
+        /// <summary>
+        /// 子弹预制体
+        /// </summary>
+        public BulletController BulletPrefab => m_Weapon.Config.BulletPrefab;
 
-        [Tooltip("弹速")]
-        public float BulletSpeed;
-        [Tooltip("子弹碰撞层")]
-        public LayerMask HitLayerMask = -1;
-        [Tooltip("伤害")]
-        public float Damage;
+        /// <summary>
+        /// 弹速
+        /// </summary>
+        public float BulletSpeed => m_Weapon.Config.BulletSpeed;
+        /// <summary>
+        /// 子弹碰撞层
+        /// </summary>
+        public LayerMask HitLayerMask => m_Weapon.Config.HitLayerMask;
+        /// <summary>
+        /// 伤害
+        /// </summary>
+        public float Damage => m_Weapon.Config.Damage;
 
         /// <summary>
         /// 子弹碰撞目标时触发

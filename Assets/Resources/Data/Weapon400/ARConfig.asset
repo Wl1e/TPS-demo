@@ -33,7 +33,7 @@ MonoBehaviour:
   BulletSpeed: 10
   HitLayerMask:
     serializedVersion: 2
-    m_Bits: 12594176
+    m_Bits: 12598272
   Damage: 10
   BulletsPerShot: 1
   SpreadScale: 0.1

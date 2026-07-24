@@ -10,7 +10,7 @@ namespace TPSDemo
         public struct AudioInfo
         {
             public AudioClip AudioClip;
-            public AudioMixerGroup MixerGroup;
+            public AudioGroup Group;
             public Transform AttachTransform;
             public Vector3 Position;
             public float Duration;
@@ -74,7 +74,10 @@ namespace TPSDemo
             if (!info.AudioClip) {
                 return;
             }
-            Play(info.AudioClip, info.MixerGroup, info.Position, info.Duration, info.AttachTransform);
+            Play(
+                info.AudioClip, Director.Instance.GetGroup(info.Group),
+                info.Position, info.Duration, info.AttachTransform
+            );
         }
 
         void Play(AudioClip audioClip, AudioMixerGroup group, Vector3 Position, float duration, Transform attach = null)

@@ -1436,7 +1436,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.Director
   m_DVPrefab: {fileID: 7533635671853516047, guid: 3e07b6291d1799c43a267f6318da4f95, type: 3}
   m_Mixer: {fileID: 24100000, guid: c865ba62dbfba36468d20e368d4b92c0, type: 2}
-  m_MasterGroup: {fileID: 0}
+  m_MasterGroup: {fileID: 24300002, guid: c865ba62dbfba36468d20e368d4b92c0, type: 2}
   m_BGMGroup: {fileID: -2764252034590262310, guid: c865ba62dbfba36468d20e368d4b92c0, type: 2}
   m_SFXGroup: {fileID: -5163473417468992872, guid: c865ba62dbfba36468d20e368d4b92c0, type: 2}
 --- !u!114 &103246706
@@ -5241,6 +5241,7 @@ GameObject:
   - component: {fileID: 531320297}
   - component: {fileID: 531320296}
   - component: {fileID: 531320295}
+  - component: {fileID: 531320298}
   m_Layer: 5
   m_Name: MapObjective
   m_TagString: Untagged
@@ -5321,6 +5322,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 531320293}
   m_CullTransparentMesh: 1
+--- !u!114 &531320298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 531320293}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &560374153
 GameObject:
   m_ObjectHideFlags: 0

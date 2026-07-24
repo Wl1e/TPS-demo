@@ -4,11 +4,6 @@ namespace TPSDemo
 {
 	public class ShotgunShooting: ShootBehaviour
     {
-        [Tooltip("每发子弹数")]
-        [SerializeField] private int M_BulletOneShoot = 8;
-        [Tooltip("扩散尺寸，以标准圆为1")]
-        [SerializeField] private float m_SpreadScale = 0.1f;
-
         public override void Shoot(Vector3 dir, ulong clientId)
         {
             CreateSpreadBullet(dir, clientId);
@@ -17,8 +12,8 @@ namespace TPSDemo
         private void CreateSpreadBullet(Vector3 dir, ulong clientId)
         {
             Vector3 right = Vector3.Cross(dir, Vector3.up).normalized;
-            for (int i = 0; i < M_BulletOneShoot; i++) {
-                Vector2 randomCircle = Random.insideUnitCircle * m_SpreadScale;
+            for (int i = 0; i < m_Weapon.Config.BulletsPerShot; i++) {
+                Vector2 randomCircle = Random.insideUnitCircle * m_Weapon.Config.SpreadScale;
                 Vector3 offset = right * randomCircle.x + Vector3.up * randomCircle.y;
                 //var radius = Random.Range(0f, m_SpreadScale);
 

@@ -6,18 +6,28 @@ namespace TPSDemo
 {
     public class Burst : MonoBehaviour, IFireMechanism
     {
+        /// <summary>
+        /// 一次发射多少发
+        /// </summary>
         [SerializeField]
-        int m_ShotPerBurst;
-        [SerializeField]
-        float m_ShotInternal;
-        int m_CurrentShot;
-        float m_LastShotTime = 0f;
+        private int m_ShotPerBurst;
+        /// <summary>
+        /// 射击间隔
+        /// </summary>
+        private float m_ShotInternal;
+        private int m_CurrentShot;
+        private float m_LastShotTime = 0f;
 
-        bool m_IsFiring = false;
+        private bool m_IsFiring = false;
         public float FireInternal { get; }
         public bool IsFiring => m_IsFiring;
 
         public event Action OnShouldFire;
+
+        public void Initialize(IWeapon weapon)
+        {
+            m_ShotInternal = weapon.Config.FireInternal;
+        }
 
         public void StartFire()
         {

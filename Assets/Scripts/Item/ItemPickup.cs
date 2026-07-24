@@ -19,8 +19,8 @@ namespace TPSDemo
         {
             //Debug.Log($"IsSpawned: {NetworkObject.IsSpawned}, IsClient: {IsClient}, IsServer: {IsServer}");
             if (interactor.TryGetComponent<PlayerController>(out var player)) {
-                InteractServerRpc(player.Id);
                 player.InteractionController.OnPickupItem(this);
+                InteractServerRpc(player.Id);
             }
         }
         public void OnInteractHold(GameObject interactor)
@@ -32,7 +32,7 @@ namespace TPSDemo
             }
         }
 
-        [ServerRpc]
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         private void DespawnServerRpc() => NetworkObject.Despawn();
 
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]

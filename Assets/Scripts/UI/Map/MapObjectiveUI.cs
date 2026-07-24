@@ -41,6 +41,7 @@ namespace TPSDemo.UI
         /// <param name="evt"></param>
         void OnMapStateChanged(Event.MapStateChangedEvent evt)
         {
+            print("MapObjectiveUI OnMapStateChanged evt.State: " + evt.State);
             if (evt.State == MapState.Active) {
                 var map = MapManager.Instance?.CurrentMap;
                 if (map != null && map.Config.Type == MapType.Combat && map.Config.ObjConfigs.Length > 0) {
@@ -92,6 +93,8 @@ namespace TPSDemo.UI
         /// <param name="objectives"></param>
         void RefreshEntries(System.Collections.Generic.List<ObjectiveProgress> objectives)
         {
+            print("Map Objectives: " + objectives.Count);
+
             if (m_ContentRoot == null || m_EntryPrefab == null) {
                 return;
             }

@@ -44,7 +44,7 @@ namespace TPSDemo
                 return;
             }
             Debug.Log($"Want kill {enemy.EnemyId} {m_EnemyId} {evt.AttackerId} {m_ActorId}");
-            if (enemy.EnemyId != m_EnemyId || evt.AttackerId != m_ActorId) {
+            if (enemy.EnemyId != m_EnemyId || (m_ActorId != -1 && evt.AttackerId != m_ActorId)) {
                 return;
             }
             Cur++;

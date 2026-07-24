@@ -22,7 +22,7 @@ namespace TPSDemo
 
         public event Action OnAttack;
 
-        public virtual bool CanAttack() => CheckCD();
+        public virtual bool CanAttack() => Owner && !Owner.IsDied && CheckCD();
 
         protected virtual bool CheckCD()
         {

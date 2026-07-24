@@ -18,7 +18,7 @@ namespace TPSDemo
 
         public int FinalPrice
         {
-            get => Mathf.Min(1, Mathf.RoundToInt(Price * Discount / 100f));
+            get => Mathf.Max(1, Mathf.RoundToInt(Price * Discount / 100f));
         }
 
         public ShopEntry() { }

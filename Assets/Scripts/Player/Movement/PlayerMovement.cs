@@ -329,7 +329,7 @@ namespace TPSDemo
 
         // movement需要播放循环音效，和Sfx不一样
         //[ServerRpc]
-        //public void PlayAudioServerRpc(bool play)
+        //public void PlayAudio(bool play)
         //{
         //    PlayAudioClientRpc(play);
         //}

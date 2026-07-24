@@ -108,7 +108,9 @@ namespace TPSDemo
                     } else {
                         no.SpawnWithOwnership(ownerId);
                     }
-                    yield return new WaitUntil(() => no.IsSpawned);
+                    while(!no.IsSpawned) {
+                        yield return null;
+                    }
                 }
                 completed?.Invoke(go);
 

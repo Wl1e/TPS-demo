@@ -26,6 +26,8 @@ namespace TPSDemo
 
         public AttachableNode AttachNode { get; }
 
+        public WeaponItemData Config { get; }
+
         public void Initialize(GameObject holder);
         public void StartFire(Transform target);
         public void EndFire();

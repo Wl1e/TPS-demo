@@ -7,7 +7,6 @@ namespace TPSDemo.FSM
     {
         public WalkState(PlayerStateMachine stateMachine) : base(stateMachine, "Walk")
         {
-            m_StateMachine.Controller.AudioEffectPlayer.LoopAudio("Movement", m_StateMachine.Controller.m_MovementAudio);
         }
 
         public override void OnEnter()
@@ -16,7 +15,8 @@ namespace TPSDemo.FSM
             m_StateMachine.Controller.AudioEffectPlayer.Play(
                 "Movement", AudioSystem.AudioGroup.SFX,
                 float.PositiveInfinity, Vector3.zero,
-                Quaternion.identity, true);
+                Quaternion.identity,
+                true);
         }
 
         public override void OnExit()

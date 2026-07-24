@@ -1407,7 +1407,7 @@ MonoBehaviour:
   - Name: Idle
     Clip: {fileID: -429512112410174799, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
   - Name: Walk
-    Clip: {fileID: -429512112410174799, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
+    Clip: {fileID: 5009624247323112612, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
   - Name: Attack
     Clip: {fileID: -3510217540682870009, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
   - Name: Hit
@@ -1416,6 +1416,8 @@ MonoBehaviour:
     Clip: {fileID: 963360092437884433, guid: 0e0a0951c94875e4595cafe633a16a76, type: 3}
   m_FadeDuration: 0.2
   m_DefaultAnimationName: Idle
+  CurAnimation: 
+  Progress: 0
 --- !u!114 &1425659759441022691
 MonoBehaviour:
   m_ObjectHideFlags: 0

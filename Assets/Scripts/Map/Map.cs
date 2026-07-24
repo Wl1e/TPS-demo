@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace TPSDemo
 {
@@ -18,7 +19,7 @@ namespace TPSDemo
         [SerializeField] Transform m_EntryPoint;
 
         [Tooltip("完成地图的Objectives")]
-        private System.Collections.Generic.List<Objective> m_Objectives;
+        private readonly List<Objective> m_Objectives = new();
 
         public Transform EntryPoint => m_EntryPoint;
         public MapConfig Config => m_Config;
@@ -32,10 +33,10 @@ namespace TPSDemo
 
         private void Awake()
         {
-            if (m_Objectives != null) {
-                foreach (var obj in m_Objectives) {
-                    obj.OnCompleted += _ => CheckObjective();
-                }
+            foreach(var config in Config.ObjConfigs) {
+                var obj = ObjectiveFactory.CreateObjective(config);
+                m_Objectives.Add(obj);
+                obj.OnCompleted += _ => CheckObjective();
             }
         }
 
@@ -46,10 +47,12 @@ namespace TPSDemo
         /// </summary>
         public void OnEnter()
         {
+            var state = m_State;
             m_State = MapState.Active;
             if(CheckObjective()) {
                 m_State = MapState.Completed;
             }
+            print($"Map {Config.MapId} state: {state} => {m_State}");
             OnPlayerEnter?.Invoke();
         }
 
@@ -84,9 +87,9 @@ namespace TPSDemo
                 || (Config.Type == MapType.Combat) && m_State == MapState.Completed;
         }
 
-        public System.Collections.Generic.List<ObjectiveProgress> GetObjectiveProgresses()
+        public List<ObjectiveProgress> GetObjectiveProgresses()
         {
-            System.Collections.Generic.List<ObjectiveProgress> result = new();
+            List<ObjectiveProgress> result = new();
             foreach (var obj in m_Objectives) {
                 obj.GetProcess(out var progress);
                 result.Add(progress);
@@ -103,6 +106,9 @@ namespace TPSDemo
         private bool CheckObjective()
         {
             if (m_Objectives == null) {
+                return true;
+            }
+            if (m_State == MapState.Completed) {
                 return true;
             }
 

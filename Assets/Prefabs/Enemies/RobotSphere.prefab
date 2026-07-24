@@ -104,7 +104,7 @@ Transform:
   m_GameObject: {fileID: 2591157759794334027}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -294,7 +294,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1.22}
+  m_AnchoredPosition: {x: 0, y: 0.97}
   m_SizeDelta: {x: 3, y: 0.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &2364666074595160820
@@ -614,7 +614,7 @@ Transform:
   m_GameObject: {fileID: 8123683460582840458}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -804,7 +804,7 @@ Transform:
   m_GameObject: {fileID: 8571074604486950862}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -827,7 +827,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
   GlobalObjectIdHash: 1987952573
-  InScenePlacedSourceGlobalObjectIdHash: 1011729811
+  InScenePlacedSourceGlobalObjectIdHash: 1987952573
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -909,7 +909,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 1
+  m_Speed: 1.5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -917,8 +917,8 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 1
+  m_Height: 1.25
+  m_BaseOffset: 0.75
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &2514138725444290397
@@ -936,9 +936,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   HitAudio: {fileID: 8300000, guid: 25e8bbe95ad4f344abd4dd8d7c8636ab, type: 3}
   DeadAudio: {fileID: 8300000, guid: 0a338d82d61863d4aa095317ca6ce19e, type: 3}
-  MovementAudio: {fileID: 8300000, guid: 44c5f76f80602024e82d3e5f3af4ee97, type: 3}
+  MovementAudio: {fileID: 0}
   m_SetTargetWhenHit: 1
-  m_Channel: {fileID: 11400000, guid: 0522d476750fe4f49a19ea4322da1f77, type: 2}
+  m_Channel: {fileID: 11400000, guid: fb61d8abb5cfff24783d108e4ac24690, type: 2}
   m_SmoothRotateTime: 1
   DiedTime: 0
   EnemyId: 1
@@ -979,36 +979,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Behavior::Unity.Behavior.BehaviorGraphAgent
   ShowTopMostFoldoutHeaderGroup: 1
-  m_Graph: {fileID: 1871619638529690935, guid: cb8a8738a89f3f549b52135e4b201f6e, type: 2}
+  m_Graph: {fileID: 1871619638529690935, guid: aa227f6009d87fd4a8349356af8e77f4, type: 2}
   m_BlackboardVariableOverridesList:
-  - rid: 3983656116822736963
-  - rid: 3983656116822736964
-  - rid: 2929608191035572735
-  - rid: 2929608213555053415
-  m_OriginalGraph: {fileID: 1871619638529690935, guid: cb8a8738a89f3f549b52135e4b201f6e, type: 2}
+  - rid: 2929608536449352691
+  - rid: 2929608536449352692
+  m_OriginalGraph: {fileID: 1871619638529690935, guid: aa227f6009d87fd4a8349356af8e77f4, type: 2}
   m_IsInitialised: 0
   m_IsStarted: 0
   NetcodeRunOnlyOnOwner: 1
   references:
     version: 2
     RefIds:
-    - rid: 2929608191035572735
-      type: {class: 'BlackboardVariable`1[[TPSDemo.AttackerBase, Assembly-CSharp]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 2885089099157114404
-          m_Value1: 14788750601399238306
-        Name: Attacker
-        m_Value: {fileID: 0}
-    - rid: 2929608213555053415
-      type: {class: 'BlackboardVariable`1[[GameObjectEventChannel, Assembly-CSharp]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 9652131255506372261
-          m_Value1: 18208328266680428228
-        Name: OnHit
-        m_Value: {fileID: 11400000, guid: 0522d476750fe4f49a19ea4322da1f77, type: 2}
-    - rid: 3983656116822736963
+    - rid: 2929608536449352691
       type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
@@ -1016,14 +998,14 @@ MonoBehaviour:
           m_Value1: 0
         Name: Self
         m_Value: {fileID: 8571074604486950862}
-    - rid: 3983656116822736964
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+    - rid: 2929608536449352692
+      type: {class: 'BlackboardVariable`1[[GameObjectEventChannel, Assembly-CSharp]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
-          m_Value0: 5331596818753323169
-          m_Value1: 120181264275773066
-        Name: DetectionRange
-        m_Value: 3
+          m_Value0: 9652131255506372261
+          m_Value1: 18208328266680428228
+        Name: OnHit
+        m_Value: {fileID: 11400000, guid: fb61d8abb5cfff24783d108e4ac24690, type: 2}
 --- !u!114 &4725234822290639380
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1065,6 +1047,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: robotSphere
       objectReference: {fileID: 0}
+    - target: {fileID: 400086, guid: bff429107601444d59c67940e6ad78c4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400110, guid: bff429107601444d59c67940e6ad78c4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1104,6 +1090,10 @@ PrefabInstance:
     - target: {fileID: 400110, guid: bff429107601444d59c67940e6ad78c4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9500000, guid: bff429107601444d59c67940e6ad78c4, type: 3}
+      propertyPath: m_Avatar
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 9500000, guid: bff429107601444d59c67940e6ad78c4, type: 3}
       propertyPath: m_Controller
@@ -1155,6 +1145,8 @@ MonoBehaviour:
     Clip: {fileID: 7400000, guid: ecb6e102166bfcf47b9206c2f8297fc1, type: 3}
   m_FadeDuration: 0.2
   m_DefaultAnimationName: Idle
+  CurAnimation: 
+  Progress: 0
 --- !u!114 &1078943724459584182
 MonoBehaviour:
   m_ObjectHideFlags: 0

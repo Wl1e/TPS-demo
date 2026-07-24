@@ -5,10 +5,12 @@ namespace TPSDemo
 {
     public class SingleMechanism : MonoBehaviour, IFireMechanism
     {
-        [Tooltip("射击间隔")]
-        [SerializeField] float m_FireInternal;
+        /// <summary>
+        /// 射击间隔
+        /// </summary>
+        private float m_FireInternal;
         [Tooltip("是否为释放射击")]
-        [SerializeField] bool m_ReleaseTrigger = false;
+        private bool m_ReleaseTrigger = false;
 
         bool m_Held = false;
 
@@ -18,6 +20,11 @@ namespace TPSDemo
         public bool IsFiring { get; }
 
         public event Action OnShouldFire;
+
+        public void Initialize(IWeapon weapon)
+        {
+            m_FireInternal = weapon.Config.FireInternal;
+        }
 
         public void StartFire()
         {

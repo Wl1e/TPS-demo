@@ -20,7 +20,7 @@ namespace TPSDemo
 
         public void OnInteractRelease(GameObject interactor, bool completed)
         {
-            if(m_Owner.TryGetComponent<PlayerLifeController>(out var playerLifeController)) {
+            if(completed && m_Owner.TryGetComponent<PlayerLifeController>(out var playerLifeController)) {
                 playerLifeController.OnReviveInteract(m_Owner.gameObject);
             }
         }

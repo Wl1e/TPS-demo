@@ -1,8 +1,5 @@
 ﻿
-using System;
-using Unity.Netcode;
 using UnityEngine;
-using static UniHumanoid.MuscleDebug;
 
 namespace TPSDemo
 {

@@ -11,22 +11,17 @@ namespace TPSDemo
         public float Ratio => m_HealthValue.Value.Ratio();
 
         public event Action<DamageInfo> OnTakeDamaged;
-        public Action<int> OnDied;
-        public Action<float> OnHealed;
+        public event Action<int> OnDied;
+        public event Action<float> OnHealed;
 
-        public Action<float> OnHealthChanged;
+        public event Action<float> OnHealthChanged;
 
-        bool IsDied => m_HealthValue.Value.IsLow();
+        public bool IsDied => m_HealthValue.Value.IsLow();
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            m_HealthValue.OnValueChanged += HealthValueChanged;
-        }
-
-        private void HealthValueChanged(RangedFloat previousValue, RangedFloat newValue)
-        {
-            OnHealthChanged?.Invoke(newValue.Value - previousValue.Value);
+            m_HealthValue.OnValueChanged += (pre, cur) => OnHealthChanged?.Invoke(cur.Value - pre.Value);
         }
 
         public float TakeDamage(DamageInfo info)
@@ -35,25 +30,24 @@ namespace TPSDemo
                 return 0;
             }
             float trueDamage = -m_HealthValue.Value.Subtract(info.Damage);
-            if (trueDamage > 0) {
-                OnTakeDamaged?.Invoke(info);
-                if (gameObject.CompareTag("Player")) {
-                    EventManager.Broadcast(new Event.HealthChangedEvent { value = trueDamage });
-                }
+            if (info.Attacker.TryGetComponent<NetworkObject>(out var no)) {
+                TakeDamageRpc(no.NetworkObjectId, trueDamage, info.Point);
             }
             HandleDeath(info.Attacker);
+            OnHealthChanged?.Invoke(trueDamage);
+            m_HealthValue.SetDirty(true);
             return trueDamage;
         }
 
         public void Heal(float value)
         {
             var trueHealValue = m_HealthValue.Value.Add(value);
-            OnHealed?.Invoke(trueHealValue);
-            if (gameObject.CompareTag("Player")) {
-                EventManager.Broadcast(new Event.HealthChangedEvent { value = trueHealValue });
-            }
+            OnHealthChanged?.Invoke(trueHealValue);
+            HealRpc(trueHealValue);
+            m_HealthValue.SetDirty(true);
         }
 
+        
         public void Revive() => m_HealthValue.Value.FullHealth();
 
         void HandleDeath(GameObject attacker)
@@ -63,8 +57,46 @@ namespace TPSDemo
                 if(attacker && attacker.TryGetComponent<Actor>(out var actor)) {
                     actorId = actor.Id;
                 }
-                OnDied?.Invoke(actorId);
+                DeathRpc(actorId);
             }
         }
+
+        #region ToClient
+
+        // 由于ActorId只在Server有效，所以使用NetworkObjectId传递
+        [Rpc(SendTo.Owner)]
+        private void TakeDamageRpc(ulong noId, float value, Vector3 point)
+        {
+            if(!IsOwner) {
+                return;
+            }
+            GameNetworkManager.Instance.SpawnManager.SpawnedObjects.TryGetValue(noId, out var no);
+            if (!no) {
+                return;
+            }
+            OnTakeDamaged?.Invoke(new DamageInfo {
+                Attacker = no.GetComponentInChildren<Actor>().gameObject,
+                Damage = value, Point = point });
+        }
+
+        [Rpc(SendTo.Owner)]
+        private void HealRpc(float value)
+        {
+            if (!IsOwner) {
+                return;
+            }
+            OnHealed?.Invoke(value);
+        }
+
+        [Rpc(SendTo.Owner)]
+        private void DeathRpc(int actorId)
+        {
+            if (!IsOwner) {
+                return;
+            }
+            OnDied?.Invoke(actorId);
+        }
+
+        #endregion
     }
 }

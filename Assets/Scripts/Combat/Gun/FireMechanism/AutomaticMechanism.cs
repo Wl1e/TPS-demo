@@ -6,16 +6,23 @@ namespace TPSDemo
 {
     public class AutomaticMechanism : MonoBehaviour, IFireMechanism
     {
-        [SerializeField]
-        float m_FireInternal;
+        /// <summary>
+        /// 射击间隔
+        /// </summary>
+        private float m_FireInternal;
 
-        float m_LastFiredTime = 0f;
-        bool m_IsFiring = false;
+        private float m_LastFiredTime = 0f;
+        private bool m_IsFiring = false;
 
         public float FireInternal => m_FireInternal;
         public bool IsFiring => m_IsFiring;
 
         public event Action OnShouldFire;
+
+        public void Initialize(IWeapon weapon)
+        {
+            m_FireInternal = weapon.Config.FireInternal;
+        }
 
         public void StartFire()
         {
