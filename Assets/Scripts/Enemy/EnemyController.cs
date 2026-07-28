@@ -18,9 +18,11 @@ namespace TPSDemo
 
         [Tooltip("被攻击时设置Target")]
         [SerializeField] private bool m_SetTargetWhenHit = true;
-        // Fixme: 相同enemy共用了管道
-        [Tooltip("管道")]
-        [SerializeField] protected GameObjectEventChannel m_Channel;
+        [Obsolete("相同enemy共用了管道会导致逻辑问题，暂时直接设置行为树变量")]
+        /// <summary>
+        /// 管道
+        /// </summary>
+        protected GameObjectEventChannel m_Channel;
 
         [Tooltip("旋转时间")]
         [SerializeField] private float m_SmoothRotateTime = 1f;
@@ -34,7 +36,7 @@ namespace TPSDemo
         // 目前BossController继承使用EnemyController逻辑，所以暂时改成Protected
         protected Health m_Health;
         protected Actor m_Actor;
-        protected UnityEngine.AI.NavMeshAgent m_Agent;
+        protected UnityEngine.AI.NavMeshAgent m_Agent = null;
         protected HealthBar m_HealthBar;
         protected AudioAndEffectPlayGlobal m_AudioAndEffectPlayGlobal;
 
@@ -63,7 +65,7 @@ namespace TPSDemo
         {
             m_Actor = GetComponent<Actor>();
             m_Health = GetComponent<Health>();
-            m_Agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+            TryGetComponent(out m_Agent);
             m_HealthBar = GetComponentInChildren<HealthBar>();
             m_AnimatorController = GetComponentInChildren<PlayableController>();
             m_AudioAndEffectPlayGlobal = GetComponent<AudioAndEffectPlayGlobal>();
@@ -81,10 +83,15 @@ namespace TPSDemo
             //    var d = Mathf.SmoothDampAngle(curAngle, targetAngle, ref m_SmoothVelocity, m_SmoothRotateTime);
             //    transform.rotation = Quaternion.Euler(0, d, 0);
             //}
-            if(m_AnimatorController.CurrentClipName == "Walk" && m_Agent.velocity == Vector3.zero) {
-                m_AnimatorController.Stop();
-            } else if(m_AnimatorController.CurrentClipName == "Idle" && m_Agent.velocity != Vector3.zero) {
-                m_AnimatorController.Play("Walk");
+            if(!IsOwner) {
+                return;
+            }
+            if (m_Agent) {
+                if (m_AnimatorController.CurrentClipName == "Walk" && m_Agent.velocity == Vector3.zero) {
+                    m_AnimatorController.Stop();
+                } else if (m_AnimatorController.CurrentClipName == "Idle" && m_Agent.velocity != Vector3.zero) {
+                    m_AnimatorController.Play("Walk");
+                }
             }
         }
 
@@ -98,7 +105,9 @@ namespace TPSDemo
                 m_Health.OnTakeDamaged += OnTakeDamage;
                 m_Health.OnDied += OnDied;
             } else {
-                m_Agent.enabled = false;
+                if (m_Agent) {
+                    m_Agent.enabled = false;
+                }
                 m_BehaviorTree.enabled = false;
             }
             m_Health.OnHealthChanged += OnHealthChanged;
@@ -132,9 +141,11 @@ namespace TPSDemo
             AEPlayer.Play("Hit", AudioSystem.AudioGroup.SFX,
                 float.PositiveInfinity, info.Point, Quaternion.identity);
 
-            print($"{m_SetTargetWhenHit}, {m_Channel}");
-            if(m_SetTargetWhenHit && m_Channel) {
-                m_Channel.SendEventMessage(info.Attacker);
+            //if(m_SetTargetWhenHit && m_Channel) {
+            //    m_Channel.SendEventMessage(info.Attacker);
+            //}
+            if(m_SetTargetWhenHit) {
+                m_BehaviorTree.SetVariableValue("Target", info.Attacker);
             }
         }
 
@@ -148,7 +159,7 @@ namespace TPSDemo
             if (!IsOwner) {
                 return;
             }
-            print($"{gameObject.name} IsDied");
+            Debug.Log($"{gameObject.name} IsDied");
             //NetworkEffectService.Instance.Play(
             //    DeadAudio.name, float.NegativeInfinity, transform.position, Quaternion.identity
             //);
@@ -162,8 +173,23 @@ namespace TPSDemo
                     AttackerId = attackerId
                 }
             );
+            //ActorDiedClientRpc(m_Actor.Id, attackerId);
             StartCoroutine(DiedCoroutine());
         }
+
+        //[ClientRpc]
+        //private void ActorDiedClientRpc(int actorId, int attackerId)
+        //{
+        //    if(IsOwner) {
+        //        return;
+        //    }
+        //    EventManager.Broadcast(
+        //        new Event.ActorDiedEvent {
+        //            ActorId = m_Actor.Id,
+        //            AttackerId = attackerId
+        //        }
+        //    );
+        //}
 
         /// <summary>
         /// 死亡协程
@@ -183,6 +209,7 @@ namespace TPSDemo
         /// <param name="dir"></param>
         public void LookTo(Vector3 dir) => m_TargetDir = dir;
 
-        public void SetTarget(GameObject player) => m_Channel.SendEventMessage(player);
+        //public void SetTarget(GameObject player) => m_Channel.SendEventMessage(player);
+        public void SetTarget(GameObject player) => m_BehaviorTree.SetVariableValue("Target", player);
     }
 }

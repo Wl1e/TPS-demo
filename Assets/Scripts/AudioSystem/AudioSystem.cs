@@ -36,6 +36,7 @@ namespace TPSDemo
             GameObject audioSource = new("AGO", typeof(AudioSource));
             var player = audioSource.AddComponent<AudioPlayer>();
             player.OnRelease += (AudioPlayer player) => m_AudioPlayerPool?.Release(player);
+            player.transform.SetParent(m_AudioHolder.transform);
             return audioSource;
         }
 

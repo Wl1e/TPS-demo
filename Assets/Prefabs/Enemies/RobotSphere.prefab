@@ -938,10 +938,9 @@ MonoBehaviour:
   DeadAudio: {fileID: 8300000, guid: 0a338d82d61863d4aa095317ca6ce19e, type: 3}
   MovementAudio: {fileID: 0}
   m_SetTargetWhenHit: 1
-  m_Channel: {fileID: 11400000, guid: fb61d8abb5cfff24783d108e4ac24690, type: 2}
   m_SmoothRotateTime: 1
   DiedTime: 0
-  EnemyId: 1
+  EnemyId: 3
   m_Attacker: {fileID: 0}
   m_BehaviorTree: {fileID: 8034257646163495838}
   EnemyHitbox: {fileID: 0}

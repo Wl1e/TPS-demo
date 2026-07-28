@@ -15,7 +15,9 @@ namespace TPSDemo.Event
     #region Game
 
     public class GameOverEvent: InternalEvent
-    { }
+    {
+        public bool Success;
+    }
 
     #endregion
 
@@ -28,6 +30,12 @@ namespace TPSDemo.Event
         public int ActorId;
         public int AttackerId;
     }
+
+    public class ActorReviveEvent: InternalEvent
+    {
+        public int ActorId;
+    }
+
     public class HealthChangedEvent : InternalEvent
     {
         public float value;

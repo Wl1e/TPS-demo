@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
 
@@ -174,7 +173,7 @@ namespace TPSDemo
             m_PlayerRuntimeData.AniParameter.Velocity = transform.InverseTransformDirection(m_Velocity);
             m_PlayerRuntimeData.AniParameter.IsGrounded = m_IsGrounded;
 
-            //print($"InputVector: {m_InputGlobal}, Velocity: {m_Velocity}, selfVelocity: {transform.InverseTransformDirection(m_Velocity)}");
+            //Debug.Log($"InputVector: {m_InputGlobal}, Velocity: {m_Velocity}, selfVelocity: {transform.InverseTransformDirection(m_Velocity)}");
         }
         void UpdateMovement()
         {
@@ -201,26 +200,25 @@ namespace TPSDemo
                 return;
             }
 
-
+            if (m_JumpThisFrame) {
+                velocityY += JumpForce;
+                m_JumpThisFrame = false;
+            }
             if (m_IsGrounded) {
                 // 落地清空y轴速度
                 if (velocityY != 0) {
                     velocityY = 0;
                 }
                 // 跳跃
-                if (m_JumpThisFrame) {
-                    velocityY += JumpForce;
-                    m_JumpThisFrame = false;
-                } else {
-                    if (m_Input != Vector3.zero) {
-                        velocityXZ += m_InputGlobal * Acceleration * Time.deltaTime;
-                        if (CurState == PlayerMovementState.Walk) {
-                            velocityXZ = Vector3.ClampMagnitude(velocityXZ, m_WalkSpeed);
-                        }
-                    } else {
-                        velocityXZ = Vector3.MoveTowards(velocityXZ, Vector3.zero, Acceleration * Time.deltaTime);
+                if (m_Input != Vector3.zero) {
+                    velocityXZ += m_InputGlobal * Acceleration * Time.deltaTime;
+                    if (CurState == PlayerMovementState.Walk) {
+                        velocityXZ = Vector3.ClampMagnitude(velocityXZ, m_WalkSpeed);
                     }
+                } else {
+                    velocityXZ = Vector3.MoveTowards(velocityXZ, Vector3.zero, Acceleration * Time.deltaTime);
                 }
+                
             } else {
                 velocityY -= Gravity * Time.deltaTime;
                 if (m_Input != Vector3.zero) {
@@ -234,7 +232,7 @@ namespace TPSDemo
 
             m_Velocity = velocityXZ + Vector3.up * velocityY;
 
-            //print($"InputVector: {m_InputGlobal}, Velocity: {m_Velocity}, TargetData: {m_TargetData.name}");
+            //Debug.Log($"InputVector: {m_InputGlobal}, Velocity: {m_Velocity}, TargetData: {m_TargetData.name}");
         }
 
         MovementModifier GetAbilityModifier()
@@ -266,15 +264,15 @@ namespace TPSDemo
             } else if (state == PlayerMovementState.Sprint) {
             } else if (state == PlayerMovementState.Crouch) {
             }
-            //print($"UpdateData: state{state}, IsAiming: {m_PlayerRuntimeData.IsAiming}, m_TargetData: {m_TargetData}");
+            //Debug.Log($"UpdateData: state{state}, IsAiming: {m_PlayerRuntimeData.IsAiming}, m_TargetData: {m_TargetData}");
         }
 
         void GroundCheck()
         {
+            m_IsGrounded = false;
             if(m_JumpThisFrame) {
                 return;
             }
-            m_IsGrounded = false;
             float checkDistance = m_CharacterController.skinWidth + 0.03f;
             float radius = m_CharacterController.radius;
             Vector3 start = transform.position + m_CharacterController.center - m_CharacterController.height / 2 * Vector3.up + radius * Vector3.up;

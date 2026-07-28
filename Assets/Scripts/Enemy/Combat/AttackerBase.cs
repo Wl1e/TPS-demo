@@ -38,7 +38,7 @@ namespace TPSDemo
         public virtual bool InAttackRange(Transform target)
         {
             float distSqr = (transform.position - target.position).sqrMagnitude;
-            //print("distance: " + Mathf.Sqrt(distSqr));
+            //Debug.Log("distance: " + Mathf.Sqrt(distSqr));
             return distSqr >= m_AttackRange.x * m_AttackRange.x && distSqr <= m_AttackRange.y * m_AttackRange.y;
         }
 

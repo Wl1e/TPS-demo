@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace TPSDemo
@@ -112,7 +111,7 @@ using Event;
             m_Npc = npc;
 
             m_Data = m_Npc.DialogueData;
-            print("DialogueData: " + m_Npc.DialogueData);
+            Debug.Log("DialogueData: " + m_Npc.DialogueData);
 
             ChangeState(DialogState.Active);
             ChangeNode(m_Data.InitializeIdx);

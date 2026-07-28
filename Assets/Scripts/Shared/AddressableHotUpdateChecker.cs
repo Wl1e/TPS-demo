@@ -23,7 +23,7 @@ namespace TPSDemo
         IEnumerator AutoCheckLoop()
         {
             while (CheckInterval != 0f) {
-                //print("检查远程更新");
+                Debug.Log("检查远程更新");
                 yield return new WaitForSeconds(CheckInterval);
                 yield return CheckAsync();
             }
@@ -46,11 +46,16 @@ namespace TPSDemo
                 yield break;
             }
 
-            print($"发现{catalogs.Count}个Catalog需要更新");
+            Debug.Log($"发现{catalogs.Count}个Catalog需要更新");
+
+            AssetCache.ClearCache();
+            var handle = Addressables.ClearDependencyCacheAsync(catalogs, false);
+            yield return handle;
+            handle.Release();
 
             var updateHandle = Addressables.UpdateCatalogs(catalogs, false);
             while(!updateHandle.IsDone) {
-                print($"热更新中：{updateHandle.PercentComplete}");
+                Debug.Log($"热更新中：{updateHandle.PercentComplete}");
                 yield return null;
             }
 
@@ -62,7 +67,7 @@ namespace TPSDemo
             System.Collections.Generic.List<string> keys = new();
             foreach (var catalogLocator in updateHandle.Result) {
                 foreach(var key in catalogLocator.Keys) {
-                    print("热更新 key: " + key.ToString());
+                    Debug.Log("热更新 key: " + key.ToString());
                     keys.Add(key.ToString());
                 }
             }
@@ -70,7 +75,6 @@ namespace TPSDemo
             updateHandle.Release();
             checkHandle.Release();
 
-            AssetCache.RemoveAll(keys);
             EventManager.Broadcast(new Event.AssetUpdateEvent{ Keys = keys });
 
             Debug.Log($"Addressables 热更新完成，已清理 {keys.Count} 个旧缓存");

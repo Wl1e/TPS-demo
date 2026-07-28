@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
-using static UnityEngine.Rendering.STP;
 
 namespace TPSDemo
 {
@@ -21,42 +19,16 @@ namespace TPSDemo
 
         private Map m_CurrentMap;
         public Map CurrentMap => m_CurrentMap;
-        private Scene m_CurrentScene;
-        public MapState State => m_CurrentMap != null ? m_CurrentMap.State : MapState.Idle;
-
-        private bool m_SceneEventSubscribed = false;
-
-        /// <summary>
-        /// 同步给客户端：当前地图状态
-        /// </summary>
-        private readonly NetworkVariable<MapState> m_SyncedState = new(MapState.Idle);
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            if (IsClient) {
-                m_SyncedState.OnValueChanged += OnStateChanged;
-            }
-
-            if (!m_SceneEventSubscribed) {
-                m_SceneEventSubscribed = true;
-                NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
-            }
-
-            if (IsServer) {
-                InitializeMap();
-            }
+            NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
         }
 
         public override void OnNetworkDespawn()
         {
-            if (IsClient) {
-                m_SyncedState.OnValueChanged -= OnStateChanged;
-            }
-            if (m_SceneEventSubscribed) {
-                m_SceneEventSubscribed = false;
-                NetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
-            }
+            NetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
             base.OnNetworkDespawn();
         }
 
@@ -74,16 +46,16 @@ namespace TPSDemo
 
         #region 地图切换（仅服务器）
 
-        public void EnterMap(int mapId)
+        public void EnterMap(int mapId, bool force = false)
         {
             if (!IsServer) {
                 return;
             }
-            if(!CurrentMap.CanExit()) {
+            if(CurrentMap && !CurrentMap.CanExit() && !force) {
                 EventManager.Broadcast(new Event.MessageLogEvent { Message = "无法离开场景，目标尚未完成" });
                 return;
             }
-            print($"Enter Map {mapId}");
+            Debug.Log($"Enter Map {mapId}");
             foreach (var config in m_MapConfigs) {
                 if (config.MapId == mapId) {
                     EnterMap(config);
@@ -99,9 +71,11 @@ namespace TPSDemo
             }
             var player = GameNetworkManager.Instance.LocalClient.PlayerObject.GetComponent<PlayerController>();
 
-            player.CharacterController.enabled = false;
-            player.Movement.Teleport(m_CurrentMap.EntryPoint.position, m_CurrentMap.EntryPoint.rotation, Vector3.one);
-            player.CharacterController.enabled = true;
+            if (m_CurrentMap.EntryPoint != null) {
+                player.CharacterController.enabled = false;
+                player.Movement.Teleport(m_CurrentMap.EntryPoint.position, m_CurrentMap.EntryPoint.rotation, Vector3.one);
+                player.CharacterController.enabled = true;
+            }
         }
 
         /// <summary>
@@ -130,41 +104,29 @@ namespace TPSDemo
 
         private void OnSceneEvent(SceneEvent e)
         {
-            //print($"SceneEventType: {e.SceneEventType} + SceneName: {e.SceneName} + ClientId: {e.ClientId}");
+            //Log.Debug($"SceneEventType: {e.SceneEventType} + SceneName: {e.SceneName} + ClientId: {e.ClientId}");
             if (e.SceneEventType == SceneEventType.UnloadComplete) {
                 //NetworkManager.SceneManager.LoadScene(SceneName, LoadSceneMode.Single);
             } else if (e.SceneEventType == SceneEventType.LoadComplete) {
-                m_CurrentScene = e.Scene;
                 var map = FindAnyObjectByType<Map>();
                 // 如果m_CurrentMap等于map，代表是client进入触发
                 if (IsServer && m_CurrentMap != map) {
+                    m_CurrentMap = map;
                     InitializeMap();
                     //TeleportToClientRpc(m_CurrentMap.EntryPoint.position, m_CurrentMap.EntryPoint.rotation);
-                    //foreach(var actor in ActorManager.Instance.Actors.Values) {
-                    //    if(actor.TryGetComponent<PlayerController>(out var player)) {
-                            
-                            //player.Movement.Teleport(, , Vector3.one);
-                            
-                        //}
-                    //}
-                } else if(IsOwner) {
-                    EventManager.Broadcast(new Event.MessageLogEvent { Message = $"进入场景{map.Config.MapName}" });
+                }
+                if(IsClient) {
+                    m_CurrentMap = map;
+                    var player = PlayerDataProxy.Instance.GetPlayer();
+                    player.Movement.Teleport(m_CurrentMap.EntryPoint.position, m_CurrentMap.EntryPoint.rotation, Vector3.one);
+                    EventManager.Broadcast(new Event.MessageLogEvent { Message = $"进入地图{m_CurrentMap.Config.MapName}" });
+                    EventManager.Broadcast(new Event.MapChangeEvent { NewMapId = m_CurrentMap.Config.MapId });
                 }
             } else if (e.SceneEventType == SceneEventType.Load) {
-                if(IsOwner) {
+                if(IsClient) {
                     StartCoroutine(UpdateProcess(e.AsyncOperation));
                 }
             }
-        }
-
-        /// <summary>完成当前地图</summary>
-        public void CompleteCurrentMap()
-        {
-            if (!IsServer || m_CurrentMap == null)
-                return;
-            m_CurrentMap.OnComplete();
-            m_SyncedState.Value = MapState.Completed;
-            EventManager.Broadcast(new Event.MessageLogEvent { Message = $"完成: {m_CurrentMap.Config.MapName}" });
         }
 
         /// <summary>离开当前地图</summary>
@@ -173,18 +135,20 @@ namespace TPSDemo
             if (!IsServer || m_CurrentMap == null) {
                 return;
             }
+            m_CurrentMap.OnMapComplete -= CurrentMapCompleted;
             m_CurrentMap.OnExit();
-            if (m_SyncedState.Value == MapState.Active) {
-                m_SyncedState.Value = MapState.Idle;
-            }
             m_CurrentMap = null;
         }
 
         private void InitializeMap()
         {
-            m_CurrentMap = FindAnyObjectByType<Map>();
             m_CurrentMap.OnEnter();
-            m_SyncedState.Value = m_CurrentMap.State;
+            m_CurrentMap.OnMapComplete += CurrentMapCompleted;
+        }
+
+        private void CurrentMapCompleted()
+        {
+            EventManager.Broadcast(new Event.MessageLogEvent { Message = $"完成: {m_CurrentMap.Config.MapName}" });
         }
 
         #endregion 地图切换（仅服务器）

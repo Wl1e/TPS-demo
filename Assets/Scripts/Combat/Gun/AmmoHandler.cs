@@ -1,7 +1,6 @@
 
 using System;
 using Unity.Netcode;
-using UnityEngine;
 
 namespace TPSDemo
 {
@@ -9,50 +8,43 @@ namespace TPSDemo
     [Serializable]
     public class AmmoHandler : NetworkBehaviour
     {
+
         /// <summary>
-        /// 初始弹匣容量
+        /// 弹匣容量
         /// </summary>
-        private int DefaultClipSize => m_Weapon.Config.DefaultClipSize;
+        public int ClipSize => m_Weapon.Config.DefaultClipSize;
+
         /// <summary>
         /// 换弹时间
         /// </summary>
-        private float m_ReloadTime => m_Weapon.Config.ReloadTime;
+        public float ReloadTime => m_Weapon.Config.ReloadTime;
+
         /// <summary>
         /// 使用子弹ID
         /// </summary>
-        private int m_AmmoId => m_Weapon.Config.AmmoId;
-
-        IWeapon m_Weapon;
-
-        private int m_ClipSize;
-
-        NetworkVariable<int> m_CurrentAmmo = new NetworkVariable<int>();
+        public int AmmoId => m_Weapon.Config.AmmoId;
+        /// <summary>
+        /// 子弹数量
+        /// </summary>
         public int CurrentAmmo => m_CurrentAmmo.Value;
-        public float ReloadTime => m_ReloadTime;
-        public int ClipSize => m_ClipSize;
-        public int AmmoId => m_AmmoId;
+
+        private IWeapon m_Weapon;
+        private readonly NetworkVariable<int> m_CurrentAmmo = new();
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            // 子弹由Server写入
-            if (IsServer) {
-                m_CurrentAmmo.Value = m_ClipSize;
-            }
+            
             if(IsOwner) {
                 m_CurrentAmmo.OnValueChanged += AmmoChanged;
             }
         }
 
-        public void Initialize(IWeapon weapon)
-        {
-            m_Weapon = weapon;
-            m_ClipSize = DefaultClipSize;
-        }
+        public void Initialize(IWeapon weapon) => m_Weapon = weapon;
 
         public bool ValidReload()
         {
-            return m_CurrentAmmo.Value < m_ClipSize;
+            return m_CurrentAmmo.Value < ClipSize;
         }
 
         public void StartReload()
@@ -65,8 +57,10 @@ namespace TPSDemo
 
         public void EndReload(int ammo)
         {
-            m_CurrentAmmo.Value = ammo;
+            SetAmmo(ammo);
         }
+
+        public void SetAmmo(int ammo) => m_CurrentAmmo.Value = ammo;
 
         public bool ComsumeAmmo(int ammo = 1)
         {

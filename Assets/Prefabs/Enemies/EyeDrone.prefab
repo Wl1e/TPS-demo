@@ -716,7 +716,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1011729811
+  GlobalObjectIdHash: 3647326498
   InScenePlacedSourceGlobalObjectIdHash: 1011729811
   DeferredDespawnTick: 0
   Ownership: 1
@@ -828,7 +828,6 @@ MonoBehaviour:
   DeadAudio: {fileID: 8300000, guid: 0a338d82d61863d4aa095317ca6ce19e, type: 3}
   MovementAudio: {fileID: 8300000, guid: 44c5f76f80602024e82d3e5f3af4ee97, type: 3}
   m_SetTargetWhenHit: 1
-  m_Channel: {fileID: 11400000, guid: 0522d476750fe4f49a19ea4322da1f77, type: 2}
   m_SmoothRotateTime: 1
   DiedTime: 0.3
   EnemyId: 1

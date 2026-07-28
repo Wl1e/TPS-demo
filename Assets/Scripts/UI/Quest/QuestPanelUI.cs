@@ -52,6 +52,7 @@ namespace TPSDemo.UI
                         }
                     );
                     m_QuestList.SelectedIndex = -1;
+                    ClearQuestDetail();
                 }
             );
             m_CancelButton.onClick.AddListener(
@@ -62,7 +63,8 @@ namespace TPSDemo.UI
                           }
                         );
                     m_QuestList.SelectedIndex = -1;
-                    }
+                    ClearQuestDetail();
+                }
             );
             gameObject.SetActive(false);
         }
@@ -81,12 +83,8 @@ namespace TPSDemo.UI
         {
             var list = PlayerDataProxy.Instance.GetQuestProcesses();
             m_QuestList.Refresh(list);
-            if (m_QuestList.SelectedIndex != -1) {
-                UpdateQuestDetail(m_QuestList.SelectedIndex);
-            } else {
-                m_RewardButton.gameObject.SetActive(false);
-                m_CancelButton.gameObject.SetActive(false);
-            }
+            m_RewardButton.gameObject.SetActive(false);
+            m_CancelButton.gameObject.SetActive(false);
         }
 
         private bool HasQuest(NetworkList<QuestProcess> list, int id)
@@ -130,8 +128,7 @@ namespace TPSDemo.UI
 
             var objs = new[] { process.Obj0, process.Obj1, process.Obj2, process.Obj3 };
             int count = 0;
-            for (int i = 0; i < objs.Length; i++)
-            {
+            for (int i = 0; i < objs.Length; i++) {
                 if (objs[i].IsEmpty) {
                     continue;
                 }
@@ -174,6 +171,7 @@ namespace TPSDemo.UI
             m_IsOpened = true;
             gameObject.SetActive(m_IsOpened);
             Refresh();
+            UpdateQuestDetail(m_QuestList.CurrentQuestId);
         }
 
         public void Close()

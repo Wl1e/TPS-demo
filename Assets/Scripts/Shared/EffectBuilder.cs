@@ -118,7 +118,7 @@ namespace TPSDemo
         public GameObject Create()
         {
             if(m_EffectPrefab == null && m_EffectRef == null) {
-                print("effect is null");
+                Debug.Log("effect is null");
                 OnCompleted?.Invoke(this);
                 return null;
             }

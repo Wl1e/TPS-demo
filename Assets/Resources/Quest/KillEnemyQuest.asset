@@ -17,6 +17,7 @@ MonoBehaviour:
   QuestDescription: To kill enemy
   ObjectiveConfigs:
   - {fileID: 11400000, guid: fd3710404840978478d1858cbfdf6051, type: 2}
+  - {fileID: 11400000, guid: 3fa01e265cf26d141b2831c648579f61, type: 2}
   QuestReward:
   - Key: {fileID: 11400000, guid: c39d5ab3fb5697143999f38ccb7f39dd, type: 2}
     Value: 30

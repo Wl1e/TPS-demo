@@ -104,11 +104,12 @@ namespace TPSDemo
             m_PlayerController.AudioEffectPlayer.Play("Interact",
                 AudioSystem.AudioGroup.SFX, float.PositiveInfinity,
                 transform.position, Quaternion.identity);
-            EventManager.Broadcast(new Event.PickupItemEvent {
-                ActorId = m_PlayerController.Id,
-                ItemId = item.Id,
-                Amount = item.Amount,
-            });
+            // 目前client端没有这个事件的需求，还有，记得处理host这个特例，不然host会收两遍
+            //EventManager.Broadcast(new Event.PickupItemEvent {
+            //    ActorId = m_PlayerController.Id,
+            //    ItemId = item.Id,
+            //    Amount = item.Amount,
+            //});
         }
         public void OnInteracted()
         {
@@ -117,7 +118,6 @@ namespace TPSDemo
 
         private void OnInteract(bool pressed)
         {
-            print("Pressed: " + pressed);
             if (pressed && m_CurrentTarget != null) {
                 if (!m_IsInteracting) {
                     m_InteractTime = 0f;

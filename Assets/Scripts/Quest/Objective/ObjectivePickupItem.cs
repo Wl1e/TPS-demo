@@ -57,5 +57,14 @@ namespace TPSDemo
             process.Cur = Cur;
             process.Max = Total;
         }
+
+        public override void UpdateProcess(ref ObjectiveProgress process)
+        {
+            if (process.ObjectiveId != Id) {
+                return;
+            }
+            Cur = process.Cur;
+            Total = process.Max;
+        }
     }
 }

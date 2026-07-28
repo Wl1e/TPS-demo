@@ -7,8 +7,6 @@ using UnityEngine;
 namespace TPSDemo
 {
     using Event;
-    using UniVRM10;
-
     public class CameraController : NetworkBehaviour
     {
         [Tooltip("灵敏度")]
@@ -68,7 +66,8 @@ namespace TPSDemo
                 if (!m_CameraBrain) {
                     Debug.LogError("MainCamera dont have CinemachineBrain component");
                 }
-                
+
+
                 foreach (var mode in m_Modes) {
                     var instance = Instantiate(mode, m_ModeRoot);
                     m_InitializedCameraModes.Add(instance);
@@ -109,7 +108,7 @@ namespace TPSDemo
         {
             var mode = m_InitializedCameraModes.Find(m => m.ModeName == modeName);
             if (mode == null) {
-                print($"{modeName} not found");
+                Debug.Log($"{modeName} not found");
                 return;
             }
             CurrentMode = mode;
@@ -163,16 +162,16 @@ namespace TPSDemo
 
             var cam = GetCamera(modeName);
             if (cam == null) {
-                print($"{modeName} not found");
+                Debug.Log($"{modeName} not found");
                 return;
             }
             m_CameraBrain.DefaultBlend.Time = cam.BlendTime;
             SwitchCameraMode(modeName);
-            if(m_PlayerRuntimeData.ActiveSlot == Combat.Slot.Firearm) {
+            if(m_PlayerRuntimeData.ActiveSlot == Combat.Slot.Firearm && evt.IsAiming && modeName != "FreeLook") {
                 cam.SetFOV(GetAimFOV());
             }
 
-            print("Change Mode: " + modeName);
+            Debug.Log("Change Mode: " + modeName);
         }
 
         public void AddRecoil(Vector2 force)

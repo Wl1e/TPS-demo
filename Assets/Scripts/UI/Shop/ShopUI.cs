@@ -6,37 +6,37 @@ namespace TPSDemo.UI
 {
     using Event;
     using TMPro;
-    using TPSDemo.Combat;
-    using WebSocketSharp;
 
-    public class ShopUI : MonoBehaviour, IPanel
+    public class ShopUI : MonoBehaviour
     {
-        int m_CurrentShopId = -1;
-        [SerializeField] Button m_CloseButton;
+        [SerializeField] private int m_ShopId;
+        [SerializeField] private Button m_CloseButton;
 
-        [SerializeField] ShopSlotUI m_ShopSlotPrefab;
-        [SerializeField] RectTransform m_SlotRoot;
+        [SerializeField] private ShopSlotUI m_ShopSlotPrefab;
+        [SerializeField] private RectTransform m_SlotRoot;
 
-        [SerializeField] TextMeshProUGUI m_Money;
+        [SerializeField] private TextMeshProUGUI m_Money;
 
         private readonly List<ShopSlotUI> m_Slots = new();
+
+        public delegate void CloseSelf();
+
         private void Start()
         {
-            EventManager.AddListener<OpenShopUIEvent>(OnShopOpen);
-            EventManager.AddListener<CloseShopUIEvent>(OnShopClose);
+            //EventManager.AddListener<OpenShopUIEvent>(OnShopOpen);
+            //EventManager.AddListener<CloseShopUIEvent>(OnShopClose);
             EventManager.AddListener<ShopBuyEvent>(OnShopBuy);
             EventManager.AddListener<PlayerEconomyChangedEvent>(OnEconomyChanged);
             EventManager.AddListener<ShopUpdateEvent>(OnShopUpdated);
             if (m_CloseButton) {
                 m_CloseButton.onClick.AddListener(HandleCloseButtonClick);
             }
-            gameObject.SetActive(false);
         }
 
         private void OnDestroy()
         {
-            EventManager.RemoveListener<OpenShopUIEvent>(OnShopOpen);
-            EventManager.RemoveListener<CloseShopUIEvent>(OnShopClose);
+            //EventManager.RemoveListener<OpenShopUIEvent>(OnShopOpen);
+            //EventManager.RemoveListener<CloseShopUIEvent>(OnShopClose);
             EventManager.RemoveListener<ShopBuyEvent>(OnShopBuy);
             EventManager.RemoveListener<PlayerEconomyChangedEvent>(OnEconomyChanged);
             EventManager.RemoveListener<ShopUpdateEvent>(OnShopUpdated);
@@ -45,21 +45,8 @@ namespace TPSDemo.UI
             }
         }
 
-
-        void OnShopOpen(OpenShopUIEvent evt)
-        {
-            m_CurrentShopId = evt.ShopId;
-            m_Money.text = PlayerDataProxy.Instance.GetMoney(m_CurrentShopId).ToString();
-            SetShopGoods(m_CurrentShopId);
-        }
-
-        void SetShopGoods(int shopId)
-        {
-            var goods = PlayerDataProxy.Instance.GetShopGoods(shopId);
-            for(int i = 0; i < goods.Count; i++) {
-                SetSlot(i, goods[i]);
-            }
-        }
+        private void OnShopBuy(ShopBuyEvent evt)
+        { }
 
         private void UpdateGoodState(int shopId, int slot)
         {
@@ -75,7 +62,6 @@ namespace TPSDemo.UI
 
         void SetSlot(int slotIdx, ShopEntry entry)
         {
-            //print($"entry name: {entry.GoodName}, soldout: {entry.Soldout}");
             ShopSlotUI slot = null;
             while (m_Slots.Count <= slotIdx) {
                 slot = Instantiate(m_ShopSlotPrefab, m_SlotRoot);
@@ -85,11 +71,11 @@ namespace TPSDemo.UI
                     //    EventManager.Broadcast(new MessageLogEvent { Message = $"商品{self.Name.text}已售空" });
                     //    return;
                     //}
-                    EventManager.Broadcast(new TryBuyEvent { ShopId = m_CurrentShopId, Slot = m_Slots.IndexOf(self) });
+                    EventManager.Broadcast(new TryBuyEvent { ShopId = m_ShopId, Slot = m_Slots.IndexOf(self) });
                 };
                 var idx = m_Slots.Count - 1;
                 slot.RestockFinished += self => UpdateGoodState(
-                    m_CurrentShopId, idx
+                    m_ShopId, idx
                 );
 
             }
@@ -108,33 +94,19 @@ namespace TPSDemo.UI
             );
         }
 
-        void OnShopClose(CloseShopUIEvent evt)
-        {
-            m_Slots.Clear();
-            for (int idx = m_SlotRoot.childCount - 1; idx >= 0; idx--) {
-                Destroy(m_SlotRoot.GetChild(idx).gameObject);
-            }
-            m_CurrentShopId = -1;
-            gameObject.SetActive(false);
-        }
-
-        void OnShopBuy(ShopBuyEvent evt)
-        {
-        }
-
         private void OnEconomyChanged(PlayerEconomyChangedEvent evt)
         {
-            if(m_CurrentShopId != -1 && evt.MoneyId == ResourceManager.Instance.GetResource<ShopList>("Shop").GetConfig(m_CurrentShopId).MoneyId) {
+            if(m_ShopId != -1 && evt.MoneyId == ResourceManager.Instance.GetResource<ShopList>("Shop").GetConfig(m_ShopId).MoneyId) {
                 m_Money.text = evt.Amount.ToString();
             }
         }
 
         private void OnShopUpdated(ShopUpdateEvent evt)
         {
-            if (evt.ShopId != m_CurrentShopId) {
+            if (evt.ShopId != m_ShopId) {
                 return;
             }
-            UpdateGoodState(m_CurrentShopId, evt.Slot);
+            UpdateGoodState(m_ShopId, evt.Slot);
         }
 
         void HandleCloseButtonClick()
@@ -142,14 +114,13 @@ namespace TPSDemo.UI
             EventManager.Broadcast(new CloseShopEvent());
         }
 
-        void IPanel.Open()
+        public void OnOpen()
         {
-            gameObject.SetActive(true);
-        }
-
-        void IPanel.Close()
-        {
-            gameObject.SetActive(false);
+            m_Money.text = PlayerDataProxy.Instance.GetMoney(m_ShopId).ToString();
+            var goods = PlayerDataProxy.Instance.GetShopGoods(m_ShopId);
+            for (int i = 0; i < goods.Count; i++) {
+                SetSlot(i, goods[i]);
+            }
         }
     }
 }

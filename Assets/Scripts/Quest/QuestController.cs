@@ -165,16 +165,18 @@ namespace TPSDemo
             if(!HasQuest(questId)) {
                 return;
             }
+
             var quest = m_Quests[questId];
             if(quest.IsReward) {
                 return;
             }
+
             quest.FinishReward();
 
             var reward = m_QuestDatabase.GetQuestConfig(questId).QuestReward;
             foreach (var rew in reward) {
                 if(rew.Key) {
-                    m_PlayerController.Inventory.AddItem(rew.Key.Id, rew.Value);
+                    m_PlayerController.Inventory.AddItemClientRpc(rew.Key.Id, rew.Value);
                 }
             }
             RemoveQuestServer(questId);

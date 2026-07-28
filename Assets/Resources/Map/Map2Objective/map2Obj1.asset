@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ObjectiveKillEnemiesConfig
   Id: 1001
   Target: {fileID: 8378100684060686700, guid: abfb88083101f834c888e9c53731de8d, type: 3}
-  Count: 1
+  Count: 2

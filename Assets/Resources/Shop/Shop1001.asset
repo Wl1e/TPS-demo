@@ -15,15 +15,18 @@ MonoBehaviour:
   ShopId: 1001
   ShopName: Shop1001
   MoneyId: 1001
-  Restock: 1
-  RestockTime: 10
   RandomGoods: 0
+  ShopUI: {fileID: 223288233057022919, guid: 10ec0fdf10a8f9e4293cc897c5138c5e, type: 3}
   Goods:
   - Good: {fileID: 11400000, guid: c39d5ab3fb5697143999f38ccb7f39dd, type: 2}
     Amount: 30
     Price: 100
     Discount: 97
+    RestockCnt: 3
+    RestockTime: 10
   - Good: {fileID: 11400000, guid: 05778468d06cb404b8c7e8fb7e9fa0a2, type: 2}
     Amount: 2
     Price: 10000
     Discount: 50
+    RestockCnt: 0
+    RestockTime: 0

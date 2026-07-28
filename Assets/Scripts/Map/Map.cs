@@ -1,6 +1,7 @@
 using System;
-using UnityEngine;
 using System.Collections.Generic;
+using Unity.Netcode;
+using UnityEngine;
 
 namespace TPSDemo
 {
@@ -8,7 +9,7 @@ namespace TPSDemo
     /// 地图实例控制器 — 挂载在场景中的地图 GameObject 上
     /// 持有地图配置、刷怪点/入口点/边界等场景引用，提供进入/退出/完成钩子
     /// </summary>
-    public class Map : MonoBehaviour
+    public class Map : NetworkBehaviour
     {
         [Header("配置")]
         [Tooltip("地图配置")]
@@ -23,20 +24,34 @@ namespace TPSDemo
 
         public Transform EntryPoint => m_EntryPoint;
         public MapConfig Config => m_Config;
-        public MapState State => m_State;
+        public MapState State => m_State.Value;
 
         public event Action OnPlayerEnter;
         public event Action OnPlayerExit;
         public event Action OnMapComplete;
 
-        MapState m_State;
+        private readonly NetworkVariable<MapState> m_State = new();
 
-        private void Awake()
+        public override void OnNetworkSpawn()
         {
-            foreach(var config in Config.ObjConfigs) {
+            base.OnNetworkSpawn();
+
+            foreach (var config in m_Config.ObjConfigs) {
                 var obj = ObjectiveFactory.CreateObjective(config);
                 m_Objectives.Add(obj);
-                obj.OnCompleted += _ => CheckObjective();
+                if (IsServer) {
+                    obj.OnUpdate += UpdateObjective;
+                    obj.OnCompleted += UpdateObjective;
+                    obj.OnCompleted += _ => TryFinishMap();
+                }
+            }
+
+            if(IsClient) {
+                m_State.OnValueChanged += (pre, cur) => EventManager.Broadcast(
+                    new Event.MapStateChangedEvent {
+                        State = cur,
+                    }
+                );
             }
         }
 
@@ -47,12 +62,12 @@ namespace TPSDemo
         /// </summary>
         public void OnEnter()
         {
-            var state = m_State;
-            m_State = MapState.Active;
-            if(CheckObjective()) {
-                m_State = MapState.Completed;
+            var state = State;
+            m_State.Value = MapState.Active;
+            if(CheckAllObjective()) {
+                m_State.Value = MapState.Completed;
             }
-            print($"Map {Config.MapId} state: {state} => {m_State}");
+            Debug.Log($"Map {Config.MapId} state: {state} => {m_State}");
             OnPlayerEnter?.Invoke();
         }
 
@@ -61,19 +76,19 @@ namespace TPSDemo
         /// </summary>
         public void OnExit()
         {
-            m_State = MapState.Idle;
+            m_State.Value = MapState.Idle;
             OnPlayerExit?.Invoke();
         }
 
         /// <summary>
         /// 本地图目标达成
         /// </summary>
-        public void OnComplete()
+        public void Complete()
         {
-            if (m_State == MapState.Completed) {
+            if (State == MapState.Completed) {
                 return;
             }
-            m_State = MapState.Completed;
+            m_State.Value = MapState.Completed;
             OnMapComplete?.Invoke();
         }
 
@@ -84,7 +99,7 @@ namespace TPSDemo
         {
             return (Config.Type == MapType.Boot)
                 || (Config.Type == MapType.Hub)
-                || (Config.Type == MapType.Combat) && m_State == MapState.Completed;
+                || (Config.Type == MapType.Combat) && m_State.Value == MapState.Completed;
         }
 
         public List<ObjectiveProgress> GetObjectiveProgresses()
@@ -103,19 +118,42 @@ namespace TPSDemo
         /// <summary>
         /// 检查当前地图的Objective
         /// </summary>
-        private bool CheckObjective()
+        private void UpdateObjective(Objective obj)
+        {
+            if (State == MapState.Completed) {
+                return;
+            }
+            if (!m_Objectives.Contains(obj)) {
+                return;
+            }
+
+            EventManager.Broadcast(new Event.MapObjectiveUpdateEvent());
+            obj.GetProcess(out var progress);
+            UpdateObjectiveClientRpc(m_Objectives.FindIndex(o => o.Id == obj.Id), progress);
+            return;
+        }
+
+        private void TryFinishMap()
+        {
+            if (CheckAllObjective()) {
+                Complete();
+            }
+        }
+
+        private bool CheckAllObjective()
         {
             if (m_Objectives == null) {
                 return true;
             }
-            if (m_State == MapState.Completed) {
+            if (State == MapState.Completed) {
                 return true;
             }
 
             bool objCompleted = true;
             foreach (var obj in m_Objectives) {
-                if(!obj.IsCompleted) {
-                    objCompleted =  false;
+                if (!obj.IsCompleted) {
+                    objCompleted = false;
+                    break;
                 }
             }
 
@@ -123,6 +161,18 @@ namespace TPSDemo
 
             return objCompleted;
         }
+
+        [ClientRpc]
+        private void UpdateObjectiveClientRpc(int idx, ObjectiveProgress progress)
+        {
+            if (!IsClient) {
+                return;
+            }
+            var obj = m_Objectives[idx];
+            obj.UpdateProcess(ref progress);
+            EventManager.Broadcast(new Event.MapObjectiveUpdateEvent());
+        }
+
         #endregion
 
         #region 编辑器可视化

@@ -45,7 +45,6 @@ namespace TPSDemo
         private void SwitchLanguage(Language.LanguageEnum language)
         {
             if(m_Updating) {
-                print("Updating");
                 return;
             }
             m_Updating = true;

@@ -7,14 +7,15 @@ namespace TPSDemo
     [System.Serializable]
     public class ShopEntry: INetworkSerializable
     {
-        public string GoodName = "";
         public int GoodId = 0;
+        public string GoodName = "";
         public int Amount = 0;
         public int Price = 0;
         public float Discount = 0f;
-        public bool Soldout = true;
+        public int RestockCnt = 0;
         public bool Restocking = false;
         public float RestockTime = 0f;
+        public bool Soldout => RestockCnt < 0;
 
         public int FinalPrice
         {
@@ -23,31 +24,27 @@ namespace TPSDemo
 
         public ShopEntry() { }
 
-        public ShopEntry(
-            ItemData item,
-            int price,
-            int amount = 1,
-            float discount = 100f
-        )
+        public ShopEntry(GoodConfig config)
         {
+            var item = config.Good;
             GoodId = item.Id;
             GoodName = item.Name;
-            Price = price;
-            Amount = amount;
-            Discount = discount;
-            Soldout = false;
+            Price = config.Price;
+            Amount = config.Amount;
+            Discount = config.Discount;
+            RestockCnt = config.RestockCnt;
+            RestockTime = config.RestockTime;
             Restocking = false;
-            RestockTime = 0f;
         }
 
         void INetworkSerializable.NetworkSerialize<T>(BufferSerializer<T> serializer)
         {
-            serializer.SerializeValue(ref GoodName);
             serializer.SerializeValue(ref GoodId);
+            serializer.SerializeValue(ref GoodName);
             serializer.SerializeValue(ref Amount);
             serializer.SerializeValue(ref Price);
             serializer.SerializeValue(ref Discount);
-            serializer.SerializeValue(ref Soldout);
+            serializer.SerializeValue(ref RestockCnt);
             serializer.SerializeValue(ref Restocking);
             serializer.SerializeValue(ref RestockTime);
         }
@@ -57,8 +54,6 @@ namespace TPSDemo
     {
         public int ShopId;
         public string ShopName => GetConfig().ShopName;
-        public bool Restock => GetConfig().Restock;
-        public float RestockTime => GetConfig().RestockTime;
         public bool RandomGoods => GetConfig().RandomGoods;
         public int MoneyId => GetConfig().MoneyId;
 
@@ -75,7 +70,7 @@ namespace TPSDemo
             // 修改会同步到SO，变相的存储?
             // m_Goods = config.Goods?.Count > 0 ? config.Goods : new List<ShopEntry>();
             foreach(var goodConfig in config.Goods) {
-                AddGood(goodConfig.Good, goodConfig.Price, goodConfig.Amount, goodConfig.Discount);
+                AddGood(goodConfig);
             }
         }
 
@@ -101,7 +96,7 @@ namespace TPSDemo
             UpdateGoodState(slot);
         }
 
-        public void AddGood(ItemData item, int price, int amount = 1, float discount = 100f) => m_Goods.Add(new ShopEntry(item, price, amount, discount));
+        public void AddGood(GoodConfig config) => m_Goods.Add(new ShopEntry(config));
 
         public void AddGood(ShopEntry entry) => m_Goods.Add(entry);
 
@@ -133,7 +128,6 @@ namespace TPSDemo
         {
             Debug.Log("slot " + slot + "finish Restock");
             m_Goods[slot].Restocking = false;
-            m_Goods[slot].RestockTime = 0f;
             EventManager.Broadcast(new Event.ShopUpdateEvent {
                 ShopId = ShopId,
                 Slot = slot
@@ -209,12 +203,13 @@ namespace TPSDemo
 
             if (player.Economy.CanAfford(MoneyId, finalPrice)) {
                 player.Economy.SpendMoney(MoneyId, finalPrice);
-                player.Inventory.AddItemClientRpc(player.Id, itemData.Id, good.Amount);
+                player.Inventory.AddItemClientRpc(itemData.Id, good.Amount);
                 evt.IsSuccess = true;
 
-                good.Soldout = !Restock;
-                good.Restocking = Restock;
-                good.RestockTime = RestockTime;
+                good.RestockCnt--;
+                good.Restocking = (good.RestockCnt >= 0);
+                UpdateGoodState(slot);
+
                 evt.Info += $"购买{itemData.Name}成功";
             } else {
                 evt.IsSuccess = false;

@@ -34,6 +34,7 @@ namespace TPSDemo
         public bool ValidReload();
         public void StartReload();
         public void EndReload(int amount);
+        public void SetAmmo(int amount);
         public void ClearAmmo();
         public bool SupportAttachment(IAttachment.AttachmentSlot slot, int attachmentId);
         public void AddAttachment(IAttachment.AttachmentSlot slot, int attachmentId);

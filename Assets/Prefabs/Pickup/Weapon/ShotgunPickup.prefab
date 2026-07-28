@@ -15,10 +15,10 @@ PrefabInstance:
     - target: {fileID: 6251817291085405488, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
       propertyPath: m_Data
       value: 
-      objectReference: {fileID: 11400000, guid: 453fd4cabd6c3b549962d86d544bf86d, type: 2}
+      objectReference: {fileID: 11400000, guid: 0c2d214eb3f6d65429ebcbe87312c67d, type: 2}
     - target: {fileID: 6251817291085405488, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
       propertyPath: m_Amount
-      value: 1
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8237854782321055835, guid: be3dc1c0b98994f4986e35687349459a, type: 3}
       propertyPath: GlobalObjectIdHash

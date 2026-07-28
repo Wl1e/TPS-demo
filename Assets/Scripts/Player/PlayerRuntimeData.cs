@@ -47,5 +47,10 @@ namespace TPSDemo
         /// 能否使用主动道具
         /// </summary>
         public bool CanUseActiveItem = true;
+
+        /// <summary>
+        /// 玩家死亡状态
+        /// </summary>
+        public bool IsDied = false;
     }
 }

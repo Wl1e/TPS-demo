@@ -63,7 +63,9 @@ namespace TPSDemo
             if (m_IsPlaying) {
                 Stop();
             }
-            m_AudioSource.outputAudioMixerGroup = null;
+            if (m_AudioSource) {
+                m_AudioSource.outputAudioMixerGroup = null;
+            }
             OnRelease?.Invoke(this);
         }
 

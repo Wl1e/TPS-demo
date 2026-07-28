@@ -11,6 +11,8 @@ namespace TPSDemo
         public int Amount;
         public int Price;
         public float Discount;
+        public int RestockCnt;
+        public float RestockTime;
     }
 
     [CreateAssetMenu(fileName = "ShopConfig", menuName = "Config/Shop/ShopConfig")]
@@ -19,9 +21,9 @@ namespace TPSDemo
         public int ShopId;
         public string ShopName;
         public int MoneyId;
-        public bool Restock = false;
-        public float RestockTime = 0f;
         public bool RandomGoods = false;
+        public GameObject ShopUI;
+
         public List<GoodConfig> Goods;
     }
 }

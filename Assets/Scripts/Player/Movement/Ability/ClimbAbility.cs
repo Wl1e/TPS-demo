@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace TPSDemo
 {
@@ -23,7 +22,7 @@ namespace TPSDemo
         public MovementModifier Process()
         {
             var normal = ClimbController.ClimbNormal.normalized;
-            print($"ClimbAbility Get normal: {normal}");
+            Debug.Log($"ClimbAbility Get normal: {normal}");
             if(normal == Vector3.zero) {
                 return new MovementModifier();
             }
@@ -31,7 +30,7 @@ namespace TPSDemo
             var rawInput = m_Movement.RawInput;
             var YAxis = Vector3.ProjectOnPlane(Vector3.up, normal).normalized;
             var XAxis = Vector3.Cross(YAxis, normal).normalized;
-            //print($"X: {XAxis}, Y: {YAxis}, n: {normal}");
+            //Debug.Log($"X: {XAxis}, Y: {YAxis}, n: {normal}");
             Vector3 move = (YAxis * rawInput.y + XAxis * -rawInput.x) * ClimbSpeed;
             return new MovementModifier { Velocity = move, OverrideRotation = true, Euler = Quaternion.LookRotation(-normal).eulerAngles };
         }

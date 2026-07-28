@@ -93,6 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ffad4c8713f15c45a8e262ca4ec2b05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopUI
+  m_ShopId: 1001
   m_CloseButton: {fileID: 834527284907451126}
   m_ShopSlotPrefab: {fileID: 3953089236001006501, guid: 9b43fab64ae29514c804eec2e08cc6a9, type: 3}
   m_SlotRoot: {fileID: 4235630174119747287}
@@ -465,7 +466,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5153825152404820213}
   m_HandleRect: {fileID: 7888767121067698916}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -808,7 +809,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.0003724431}
+  m_AnchoredPosition: {x: 0, y: -0.00025167418}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &8993679878290060524

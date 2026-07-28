@@ -23,6 +23,7 @@ namespace TPSDemo.UI
         private void OnDestroy()
         {
             EventManager.RemoveListener<Event.MapStateChangedEvent>(OnMapStateChanged);
+            EventManager.RemoveListener<Event.MapChangeEvent>(OnEnterNewMap);
             EventManager.RemoveListener<Event.MapObjectiveUpdateEvent>(OnObjectiveUpdate);
         }
 
@@ -41,9 +42,8 @@ namespace TPSDemo.UI
         /// <param name="evt"></param>
         void OnMapStateChanged(Event.MapStateChangedEvent evt)
         {
-            print("MapObjectiveUI OnMapStateChanged evt.State: " + evt.State);
             if (evt.State == MapState.Active) {
-                var map = MapManager.Instance?.CurrentMap;
+                var map = MapManager.Instance.CurrentMap;
                 if (map != null && map.Config.Type == MapType.Combat && map.Config.ObjConfigs.Length > 0) {
                     Show();
                 } else {
@@ -61,7 +61,7 @@ namespace TPSDemo.UI
         void OnObjectiveUpdate(Event.MapObjectiveUpdateEvent evt)
         {
             var objectives = PlayerDataProxy.Instance.GetCurMapObjectiveProgress();
-            if (objectives == null || objectives.Count == 0) {
+            if (objectives.Count == 0) {
                 Hide();
                 return;
             }
@@ -72,9 +72,7 @@ namespace TPSDemo.UI
                     allDone = false;
             }
 
-            if (!gameObject.activeSelf) {
-                Show();
-            }
+            Show();
 
             RefreshEntries(objectives);
 
@@ -93,11 +91,10 @@ namespace TPSDemo.UI
         /// <param name="objectives"></param>
         void RefreshEntries(System.Collections.Generic.List<ObjectiveProgress> objectives)
         {
-            print("Map Objectives: " + objectives.Count);
-
             if (m_ContentRoot == null || m_EntryPrefab == null) {
                 return;
             }
+            print(objectives.Count);
 
             while (m_ContentRoot.childCount < objectives.Count) {
                 Instantiate(m_EntryPrefab, m_ContentRoot);
@@ -121,6 +118,10 @@ namespace TPSDemo.UI
                     texts[0].color = completed ? m_CompletedColor : m_ActiveColor;
                     texts[1].color = completed ? m_CompletedColor : m_ActiveColor;
                 }
+            }
+
+            if (objectives.Count > 0) {
+                Show();
             }
         }
     }

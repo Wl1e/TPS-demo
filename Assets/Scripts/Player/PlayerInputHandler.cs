@@ -23,7 +23,7 @@ public class PlayerInputHandler : NetworkBehaviour
     [SerializeField] private GameEvent m_GrenadeInput;
     [SerializeField] private GameEvent m_Weapon1Input;
     [SerializeField] private GameEvent m_Weapon2Input;
-    [SerializeField] private BoolEvent m_ActiveCursorInput;
+    [SerializeField] private GameEvent m_ActiveCursorInput;
     [SerializeField] private GameEvent m_QuestPanelInput;
     [SerializeField] private GameEvent m_SettingInput;
 
@@ -227,7 +227,7 @@ public class PlayerInputHandler : NetworkBehaviour
 
     private void OnActiveCursor(InputAction.CallbackContext ctx)
     {
-        m_ActiveCursorInput.Raise(ctx.ReadValueAsButton());
+        m_ActiveCursorInput.Raise();
     }
 
     private void OnInventory(InputAction.CallbackContext ctx)

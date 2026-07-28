@@ -12,7 +12,9 @@ namespace TPSDemo.UI
         [SerializeField] LoadoutUI m_LoadoutUI;
         [SerializeField] QuestPanelUI m_QuestUI;
         [SerializeField] SettingUI m_SettingUI;
-        [SerializeField] ShopUI m_ShopUI;
+        [SerializeField] ShopUIManager m_ShopUI;
+
+        [SerializeField] GameEvent m_ActiveCursorEvent;
 
         [SerializeField] Image Frame;
 
@@ -35,6 +37,15 @@ namespace TPSDemo.UI
             } else {
                 EventManager.AddListener<PlayerFinishedInitialzeEvent>(OnPlayerFinishedInitialze);
             }
+            m_ActiveCursorEvent.RegisterListener(() => {
+                if (m_CurrentPanel == null) {
+                    if (Cursor.lockState == CursorLockMode.Locked) {
+                        Cursor.lockState = CursorLockMode.None;
+                    } else if (Cursor.lockState == CursorLockMode.None) {
+                        Cursor.lockState = CursorLockMode.Locked;
+                    }
+                }
+            } );
         }
 
         public void OnPlayerFinishedInitialze(PlayerFinishedInitialzeEvent evt)
@@ -98,7 +109,7 @@ namespace TPSDemo.UI
             if (m_CurrentPanel == null) {
                 m_CurrentPanel = panel;
                 m_CurrentPanel.Open();
-                print("Open " + panel);
+                Debug.Log("Open " + panel);
                 if (Cursor.lockState == CursorLockMode.Locked) {
                     Cursor.lockState = CursorLockMode.None;
                 }
@@ -110,7 +121,7 @@ namespace TPSDemo.UI
             if(m_CurrentPanel == panel) {
                 m_CurrentPanel.Close();
                 m_CurrentPanel = null;
-                print("Close " + panel);
+                Debug.Log("Close " + panel);
                 if (Cursor.lockState == CursorLockMode.None) {
                     Cursor.lockState = CursorLockMode.Locked;
                 }
@@ -119,7 +130,9 @@ namespace TPSDemo.UI
 
         public void CloseCurPanel()
         {
-            Close(m_CurrentPanel);
+            if (m_CurrentPanel != null) {
+                Close(m_CurrentPanel);
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using System.Runtime.ConstrainedExecution;
+using TPSDemo.Event;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -15,6 +15,7 @@ namespace TPSDemo
         Crouch,
         Climb,
         Ledge,
+        Died
     }
 
     public class PlayerController : NetworkBehaviour
@@ -129,6 +130,11 @@ namespace TPSDemo
         public InteractionController InteractionController => m_InteractionController;
 
         /// <summary>
+        /// 输入控制
+        /// </summary>
+        public PlayerInputHandler PlayerInputHandler => m_InputHandler;
+
+        /// <summary>
         /// 音效动画播放rpc
         /// </summary>
         public PlayerLifeController LifeController => m_LifeController;
@@ -140,7 +146,6 @@ namespace TPSDemo
         [SerializeField] private GameEvent OnSprintInput;
         [SerializeField] private GameEvent OnCrouchInput;
         [SerializeField] private Vector2Event OnLookInput;
-        [SerializeField] private BoolEvent OnActiveCursorInput;
 
         [SerializeField] private AudioClip m_MovementAudio;
 
@@ -197,9 +202,6 @@ namespace TPSDemo
             if (m_InputHandler) {
                 m_InputHandler.enabled = false;
             }
-            if (m_CharacterController) {
-                m_CharacterController.enabled = false;
-            }
             if(TryGetComponent<AudioListener>(out var listener)) {
                 listener.enabled = false;
             }
@@ -224,6 +226,12 @@ namespace TPSDemo
             }
             if(IsServer) {
                 GameModeManager.Instance.RegisterPlayer(this);
+                // 游戏结束销毁自身，或许可以放在其他地方监听
+                EventManager.AddListener<GameOverEvent>(evt => {
+                    m_FSM.ChangeState("Idle");
+                    GameModeManager.Instance.UnregisterPlayer(this);
+                    NetworkObject.Despawn();
+                });
                 StartCoroutine(PlayerInitializeCoroutine());
             }
             AudioEffectPlayer.LoopAudio("Movement", m_MovementAudio);
@@ -242,7 +250,7 @@ namespace TPSDemo
         // 初始化需要在Server端运行的东西
         private IEnumerator PlayerInitializeCoroutine()
         {
-            yield return m_Loadout.EquipWeaponCo(m_Loadout.DefaultWeapon);
+            yield return m_Loadout.EquipWeaponCo(m_Loadout.DefaultWeapon, m_Loadout.DefaultWeapon.DefaultClipSize);
             if (IsHost) {
                 // host需要主动进入Map1
                 BootTel.TeleportToHub();
@@ -257,7 +265,7 @@ namespace TPSDemo
             if (IsOwner) {
                 m_CharacterController.enabled = true;
                 EventManager.Broadcast(new Event.PlayerFinishedInitialzeEvent());
-                print($"Player {Id} Spawn");
+                Debug.Log($"Player {Id} Spawn");
             }
         }
 
@@ -266,7 +274,6 @@ namespace TPSDemo
             OnJumpInput.RegisterListener(OnJump);
             OnSprintInput.RegisterListener(OnSprint);
             OnCrouchInput.RegisterListener(OnCrouch);
-            OnActiveCursorInput.RegisterListener(OnActiveCursor);
             //OnLookInput.RegisterListener(OnLook);
         }
 
@@ -275,7 +282,6 @@ namespace TPSDemo
             OnJumpInput.UnregisterListener(OnJump);
             OnSprintInput.UnregisterListener(OnSprint);
             OnCrouchInput.UnregisterListener(OnCrouch);
-            OnActiveCursorInput.UnregisterListener(OnActiveCursor);
             //OnLookInput.UnregisterListener(OnLook);
         }
 
@@ -285,7 +291,6 @@ namespace TPSDemo
 
         private void OnHealthChanged(float value)
         {
-            print("Player OnHealthChanged");
             EventManager.Broadcast(new Event.HealthChangedEvent { value = value });
         }
 
@@ -307,11 +312,6 @@ namespace TPSDemo
         private void OnCrouch()
         {
             m_FSM.WantCrouch = !m_FSM.WantCrouch;
-        }
-
-        private void OnActiveCursor(bool active)
-        {
-            Cursor.lockState = CursorLockMode.None;
         }
 
         private void OnDied(int attackerId)

@@ -23,7 +23,8 @@ namespace TPSDemo
 
         Rigidbody m_Rigidbody;
         CapsuleCollider m_CapsuleCollider;
-        AudioSource m_AudioSource;
+
+        private AudioAndEffectPlayGlobal m_AudioAndEffectPlayGlobal;
 
         public Rigidbody Rigidbody => m_Rigidbody;
         public CapsuleCollider CapsuleCollider => m_CapsuleCollider;
@@ -47,6 +48,10 @@ namespace TPSDemo
             m_Rigidbody = GetComponent<Rigidbody>();
             m_CapsuleCollider = GetComponent<CapsuleCollider>();
             m_ImpulseSource = GetComponent<Unity.Cinemachine.CinemachineImpulseSource>();
+            m_AudioAndEffectPlayGlobal = GetComponent<AudioAndEffectPlayGlobal>();
+            m_AudioAndEffectPlayGlobal.AddAudio("Explose", ExplosionAudio);
+            m_AudioAndEffectPlayGlobal.AddEffect("Explose", ExplosionEffectPrefab);
+
             m_Rigidbody.linearDamping = 0.3f;
         }
 
@@ -93,13 +98,8 @@ namespace TPSDemo
                 }
             }
 
-            Director.Instance.RequestAudio(ExplosionAudio)
-                .WithMixerGroup(AudioSystem.AudioGroup.SFX)
-                .WithPosition(transform.position)
-                .Play();
-            Director.Instance.RequestEffect(ExplosionEffectPrefab)
-                .WithPosition(transform.position)
-                .Create();
+            m_AudioAndEffectPlayGlobal.Play("Explose", AudioSystem.AudioGroup.SFX,
+                float.PositiveInfinity, transform.position, Quaternion.identity);
 
             NetworkObject.Despawn();
         }

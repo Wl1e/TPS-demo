@@ -35,7 +35,6 @@ namespace TPSDemo.UI
         [Header("Navigation")]
         public Button backBtn;
 
-        private bool m_IsOpened;
         private Resolution[] m_Resolutions;
 
         private void Awake()
@@ -83,7 +82,7 @@ namespace TPSDemo.UI
             }
             List<TMP_Dropdown.OptionData> options = new();
             foreach (var res in m_Resolutions) {
-                options.Add(new TMP_Dropdown.OptionData($"{res.height}x{res.width}"));
+                options.Add(new TMP_Dropdown.OptionData($"{res.height}x{res.width} FPS: {res.refreshRateRatio:F1}"));
             }
             resolutionDropdown.AddOptions(options);
             resolutionDropdown.value = currentResIndex;
@@ -94,12 +93,8 @@ namespace TPSDemo.UI
                                          mode == FullScreenMode.FullScreenWindow ? 1 : 2;
             displayModeDropdown.onValueChanged.AddListener(OnDisplayModeChanged);
 
-            //if (qualityDropdown != null) {
-            //    qualityDropdown.ClearOptions();
-            //    qualityDropdown.AddOptions(new List<string>(QualitySettings.names));
-            //    qualityDropdown.value = QualitySettings.GetQualityLevel();
-            //    qualityDropdown.onValueChanged.AddListener(OnQualityChanged);
-            //}
+            var cur = m_Resolutions[currentResIndex];
+            Screen.SetResolution(cur.width, cur.height, Screen.fullScreenMode, cur.refreshRateRatio);
         }
 
         private void SetupAudio()
@@ -165,13 +160,11 @@ namespace TPSDemo.UI
 
         public void Open()
         {
-            m_IsOpened = true;
             gameObject.SetActive(true);
         }
 
         public void Close()
         {
-            m_IsOpened = false;
             gameObject.SetActive(false);
         }
     }

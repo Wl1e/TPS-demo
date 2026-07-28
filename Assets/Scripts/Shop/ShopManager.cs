@@ -66,7 +66,6 @@ namespace TPSDemo
         [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
         public void TryBuyServerRpc(int playerId, int shopId, int slot)
         {
-            print($"actorId: {playerId}");
             var player = ActorManager.Instance.GetActor(playerId).GetComponent<PlayerController>();
             var shop = m_Shops[shopId];
             var evt = shop.Buy(player, slot);
@@ -149,7 +148,6 @@ namespace TPSDemo
                 var player = PlayerDataProxy.Instance.GetPlayer();
                 // 如果后续还有根据PlayerId找Player的需求，可以考虑在本地映射自己的player
                 //var playerActor = ActorManager.Instance.GetActor(CurrentPlayerId);
-                print($"player: {player}, shop: {shop}");
                 shop.Enter(player);
             }
         }
@@ -216,7 +214,12 @@ namespace TPSDemo
         }
         IEnumerator RestockAfterDelay(Shop shop, int slot)
         {
-            yield return new WaitForSeconds(shop.RestockTime);
+            var good = shop.GetGood(slot);
+            if(good == null) {
+                Debug.LogError($"Shop{shop.ShopId} 不存在槽位 {slot}");
+                yield break;
+            }
+            yield return new WaitForSeconds(good.RestockTime);
             shop?.RestockGood(slot);
         }
     }

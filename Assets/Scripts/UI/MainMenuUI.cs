@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +18,11 @@ namespace TPSDemo.UI
             SettingsBtn.onClick.AddListener(OnSettingsClicked);
             QuitBtn.onClick.AddListener(OnQuitClicked);
             Cursor.lockState = CursorLockMode.None;
+        }
+
+        private void Start()
+        {
+            UIController.Instance.CloseCurPanel();
         }
 
         private void OnStartGameClicked()

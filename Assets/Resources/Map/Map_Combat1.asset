@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fadcb2c60fd6014b844527bc6a27092, type: 3}
-  m_Name: Map0
+  m_Name: Map_Combat1
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.MapConfig
-  MapId: 0
-  MapName: Boot
-  Description: 
-  Type: 0
-  SceneName: SampleScene
-  Configs: []
+  MapId: 2
+  MapName: "\u6218\u6597\u573A\u666F1"
+  Description: "\u51FB\u8D25\u654C\u4EBA"
+  Type: 2
+  SceneName: Combat1
+  ObjConfigs:
+  - {fileID: 11400000, guid: 86485709172ecc4459c41292dfd9c845, type: 2}

@@ -14,6 +14,7 @@ public partial class ValidAttackCondition : Condition
     {
         var attacker = Attacker.Value;
         var target = Target.Value;
+
         //Debug.Log($"Attacker: {attacker}, Target: {target}");
         // attacker.CanAttack()放到Attack方法中自己判断
         return attacker

@@ -8,13 +8,12 @@ namespace TPSDemo
     {
         static public Dictionary<string, Objective> Objectives =
             new Dictionary<string, Objective> { };
-        // FIXME
+
         static public Objective CreateObjective(ObjectiveConfig config)
         {
             Assert.IsNotNull(config);
             Objective objective = null;
             // 后续拆开
-            // Fixme: 使用FactoryBase实现
             if (config is ObjectiveKillEnemiesConfig) {
                 objective = new ObjectiveKillEnemies();
                 

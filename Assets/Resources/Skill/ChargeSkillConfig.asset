@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ChargeSkillConfig
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ChargeSkillConfig
   Name: Charge
-  AttackRange: {x: 3, y: 5}
+  AttackRange: {x: 2, y: 5}
   Cooldown: 10
   Damage: 50
   WindupTime: 0.5
@@ -24,4 +24,4 @@ MonoBehaviour:
   RecoveryAnimation: ChargeRecovery
   Args: []
   ChargeSpeed: 5
-  Threshold: 0.05
+  Threshold: 0.01

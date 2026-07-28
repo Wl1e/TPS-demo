@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.ConstrainedExecution;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -74,6 +73,10 @@ namespace TPSDemo
             Debug.Log($"Objective: {Id} Completed");
         }
 
+        /// <summary>
+        /// 绑定Objective所有者，如不绑定，则为全局Objective
+        /// </summary>
+        /// <param name="actorId"></param>
         public void SetActor(int actorId)
         {
             m_ActorId = actorId;
@@ -84,5 +87,6 @@ namespace TPSDemo
         }
 
         public abstract void GetProcess(out ObjectiveProgress process);
+        public abstract void UpdateProcess(ref ObjectiveProgress process);
     }
 }

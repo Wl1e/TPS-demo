@@ -7,18 +7,16 @@ namespace TPSDemo
 {
     public struct InventorySlotSync: INetworkSerializeByMemcpy, IEquatable<InventorySlotSync>
     {
-        public int Slot;
         public int ItemId;
         public int Amount;
-        public InventorySlotSync(int slot, int itemId, int amount)
+        public InventorySlotSync(int itemId, int amount)
         {
-            Slot = slot;
             ItemId = itemId;
             Amount = amount;
         }
         bool IEquatable<InventorySlotSync>.Equals(InventorySlotSync other)
         {
-            return Slot == other.Slot && ItemId == other.ItemId && Amount == other.Amount;
+            return ItemId == other.ItemId && Amount == other.Amount;
         }
     }
 
@@ -57,9 +55,6 @@ namespace TPSDemo
             return trueValue;
         }
 
-        public bool IsEmpty()
-        {
-            return Amount == 0;
-        }
+        public bool IsEmpty() => Amount == 0;
     }
 }

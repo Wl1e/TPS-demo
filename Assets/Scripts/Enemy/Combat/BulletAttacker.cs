@@ -32,10 +32,8 @@ namespace TPSDemo
 
         public override void OnNetworkSpawn()
         {
-            if (IsOwner) {
-                Owner.AEPlayer.AddAudio(m_SFName, m_ShootSfx);
-                Owner.AEPlayer.AddEffect(m_SFName, m_MuzzleFlashPrefab);
-            }
+            Owner.AEPlayer.AddAudio(m_SFName, m_ShootSfx);
+            Owner.AEPlayer.AddEffect(m_SFName, m_MuzzleFlashPrefab);
         }
 
         public override void Attack(Transform target)

@@ -45,11 +45,16 @@ MonoBehaviour:
     m_SerializedLabels:
     - en-US
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e823828825d99604c941c4b64fef9e73
+  - m_GUID: b489c6c2e91307740a4842219468f914
     m_Address: zh-CN/NpcAudio0
     m_ReadOnly: 0
     m_SerializedLabels:
     - zh-CN
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e823828825d99604c941c4b64fef9e73
+    m_Address: zh-CN/NpcAudio0
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 894afe9e368169540bd214d4811b6138, type: 2}

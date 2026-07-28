@@ -17,12 +17,14 @@ MonoBehaviour:
   Type: 5
   Description: 
   Icon: {fileID: 21300000, guid: 7d03dd3f645aa6f408a5ede41524af84, type: 3}
-  MaxStack: 2
+  MaxStack: 1
+  IsNetCodePrefab: 0
   Prefab:
     m_AssetGUID: 9224ffc235a4fe44fa5c74971e9c49ba
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
+  NOPrefab: {fileID: 0}
   PickupPrefab: {fileID: 3773495797497117104, guid: 624752c6e887207489ddd227c5842d5d, type: 3}
   DragType: 1

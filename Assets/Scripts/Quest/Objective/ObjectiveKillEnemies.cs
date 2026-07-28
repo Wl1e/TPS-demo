@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 
 namespace TPSDemo
@@ -64,6 +62,15 @@ namespace TPSDemo
             process.ObjectiveId = Id;
             process.Cur = Cur;
             process.Max = Count;
+        }
+
+        public override void UpdateProcess(ref ObjectiveProgress process)
+        {
+            if (process.ObjectiveId != Id) {
+                return;
+            }
+            Cur = process.Cur;
+            Count = process.Max;
         }
     }
 }

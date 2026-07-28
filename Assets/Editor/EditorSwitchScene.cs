@@ -31,4 +31,14 @@ public static class EditorSwitchScene
     {
         OpenScene("Assets/Scenes/Combat1.unity");
     }
+    [MenuItem("切换场景/Win")]
+    public static void SwitchWin()
+    {
+        OpenScene("Assets/Scenes/WinScene.unity");
+    }
+    [MenuItem("切换场景/Lose")]
+    public static void SwitchLose()
+    {
+        OpenScene("Assets/Scenes/LoseScene.unity");
+    }
 }

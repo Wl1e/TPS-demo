@@ -2,8 +2,7 @@ using UnityEngine;
 
 namespace TPSDemo
 {
-
-    public class Poster : MonoBehaviour
+    public class Poster: MonoBehaviour
     {
         [SerializeField] private SpriteRenderer m_Shower;
         private Texture2D m_Texture2D;
@@ -11,11 +10,15 @@ namespace TPSDemo
 
         private void Awake()
         {
-            EventManager.AddListener<Event.AssetUpdateEvent>(OnPostUpdate);
             UpdateImage();
         }
 
-        private void OnDestroy()
+        private void OnEnable()
+        {
+            EventManager.AddListener<Event.AssetUpdateEvent>(OnPostUpdate);
+        }
+
+        private void OnDisable()
         {
             EventManager.RemoveListener<Event.AssetUpdateEvent>(OnPostUpdate);
         }
@@ -27,6 +30,7 @@ namespace TPSDemo
             StartCoroutine(AssetCache.GetOrLoad<Texture2D>(ImageName,
                 texture => {
                     if(!texture) {
+                        Debug.LogError($"不存在{ImageName}图像");
                         return;
                     }
                     m_Texture2D = texture;
@@ -44,7 +48,6 @@ namespace TPSDemo
             if(!evt.Keys.Contains(ImageName)) {
                 return;
             }
-            print("Post update");
             UpdateImage();
         }
     }

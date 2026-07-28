@@ -161,14 +161,13 @@ namespace TPSDemo
         {
             //Pause(0);
             // 或者应该断言这两个变量必须相同，或者没意义
-            m_CurrentClipIdx = pre;
+            //m_CurrentClipIdx = pre;
             PlayAnimation(cur, fadeDuration);
         }
 
         // Owner use
         public void Play(string name, float fadeDuration = -1f)
         {
-            print($"{gameObject.name} Play {name}");
             if (!HasClip(name)) {
                 Debug.LogWarning($"Animation clip '{name}' not registered.");
                 return;
@@ -288,8 +287,6 @@ namespace TPSDemo
         private System.Collections.IEnumerator FadeTransition(int fromPort, int toPort, float duration)
         {
             float time = 0f;
-
-            print($"{fromPort} => {toPort}: {duration}");
 
             m_Mixer.SetInputWeight(toPort, 0f);
             if (fromPort >= 0) {

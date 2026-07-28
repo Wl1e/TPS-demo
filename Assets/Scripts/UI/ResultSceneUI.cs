@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,18 +8,18 @@ namespace TPSDemo.UI
     {
         public Button returnBtn;
 
-        private void Awake()
+        private void Start()
         {
             returnBtn.onClick.AddListener(OnReturnClicked);
+            Cursor.lockState = CursorLockMode.None;
+            if(UIController.Instance) {
+                UIController.Instance.CloseCurPanel();
+            }
         }
 
         private void OnReturnClicked()
         {
-            var mgr = GameNetworkManager.Instance;
-            if (mgr != null && mgr.IsListening) {
-                mgr.Disconnect();
-            }
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Boot");
+            GameModeManager.ExitGame();
         }
     }
 }

@@ -22,12 +22,11 @@ using FSM;
 
         // 暂时给Mantle调试使用
         public Vector3 StartPos = Vector3.zero;
-        public Vector3 MidPos = new Vector3(0, 1.8f, 0);
-        public Vector3 EndPos = new Vector3(0.5f, 1.8f, 0);
+        public Vector3 MidPos = new Vector3(0f, 1.7f, 0f);
+        public Vector3 EndPos = new Vector3(0f, 1.7f, 0.5f);
         public float NowTime = 0f;
         public float MidTime = 0.5f;
         public float EndTime = 0.9f;
-
         void Awake()
         {
             m_Movement = GetComponent<PlayerMovement>();
@@ -50,6 +49,7 @@ using FSM;
             SprintState sprintState = new(this);
             ClimbState climbState = new(this);
             LedgeState ledgeState = new(this);
+            DiedState diedState = new(this);
 
             idleState.OnStateEntered += () => UpdatePlayerState(PlayerMovementState.Idle);
             walkState.OnStateEntered += () => UpdatePlayerState(PlayerMovementState.Walk);
@@ -58,6 +58,7 @@ using FSM;
             sprintState.OnStateEntered += () => UpdatePlayerState(PlayerMovementState.Sprint);
             climbState.OnStateEntered += () => UpdatePlayerState(PlayerMovementState.Climb);
             ledgeState.OnStateEntered += () => UpdatePlayerState(PlayerMovementState.Ledge);
+            diedState.OnStateEntered += () => UpdatePlayerState(PlayerMovementState.Died);
 
             // idle
             idleState.AddTransition(
@@ -75,6 +76,10 @@ using FSM;
             idleState.AddTransition(
                 sprintState,
                 new FuncPredicate(() => WantSprint && m_Movement.IsMoved())
+            );
+            idleState.AddTransition(
+                diedState,
+                new FuncPredicate(() => RuntimeData.IsDied)
             );
 
             // walk
@@ -98,6 +103,10 @@ using FSM;
                 climbState,
                 new FuncPredicate(() => m_PlayerController.ClimbController.CanClimb)
             );
+            walkState.AddTransition(
+                diedState,
+                new FuncPredicate(() => RuntimeData.IsDied)
+            );
 
             // jump
             jumpState.AddTransition(
@@ -120,6 +129,10 @@ using FSM;
                 climbState,
                 new FuncPredicate(() => m_PlayerController.ClimbController.CanClimb)
             );
+            jumpState.AddTransition(
+                diedState,
+                new FuncPredicate(() => RuntimeData.IsDied)
+            );
 
             // crouch
             crouchState.AddTransition(
@@ -129,6 +142,10 @@ using FSM;
             crouchState.AddTransition(
                 sprintState,
                 new FuncPredicate(() => WantSprint && m_Movement.IsMoved())
+            );
+            crouchState.AddTransition(
+                diedState,
+                new FuncPredicate(() => RuntimeData.IsDied)
             );
 
             // sprint
@@ -144,6 +161,10 @@ using FSM;
                 jumpState,
                 new FuncPredicate(() => WantJump && m_Movement.IsGrounded)
             );
+            sprintState.AddTransition(
+                diedState,
+                new FuncPredicate(() => RuntimeData.IsDied)
+            );
 
             // climb
             climbState.AddTransition(
@@ -157,6 +178,10 @@ using FSM;
             climbState.AddTransition(
                 ledgeState,
                 new FuncPredicate(() => m_PlayerController.ClimbController.CanLedge)
+            );
+            climbState.AddTransition(
+                diedState,
+                new FuncPredicate(() => RuntimeData.IsDied)
             );
 
             // Ledge
@@ -173,6 +198,11 @@ using FSM;
             //    new FuncPredicate(() => WantJump)
             //);
 
+            // died
+            diedState.AddTransition(
+                idleState,
+                new FuncPredicate(() => !RuntimeData.IsDied)
+            );
 
             AddState(idleState);
             AddState(walkState);
@@ -181,9 +211,10 @@ using FSM;
             AddState(sprintState);
             AddState(climbState);
             AddState(ledgeState);
+            AddState(diedState);
             ChangeState(idleState);
 
-            //OnStateChanged += (string pre, string cur) => print($"{pre} => {cur}");
+            //OnStateChanged += (string pre, string cur) => Debug.Log($"{pre} => {cur}");
         }
         public void StartFSM()
         {

@@ -30,10 +30,16 @@ MonoBehaviour:
       Sprite: {fileID: 21300000, guid: 405f111e0741d34479323db52502ee80, type: 3}
     - Attachment: {fileID: 11400000, guid: b6081799fccd21041964a6ff39b1aef4, type: 2}
       Sprite: {fileID: 21300000, guid: 92cdb883338b1c24c983e17964d2f5a4, type: 3}
+    - Attachment: {fileID: 11400000, guid: c446f0dd8001a73418ca91dca64db1f1, type: 2}
+      Sprite: {fileID: 21300000, guid: 33fe56516310cdc49977e2b9ff065a3e, type: 3}
   - Weapon: {fileID: 11400000, guid: 453fd4cabd6c3b549962d86d544bf86d, type: 2}
     Sprites:
     - Attachment: {fileID: 11400000, guid: 15f717a4f0aab6646859d5ea1c8e452c, type: 2}
       Sprite: {fileID: 21300000, guid: ebcb5612c77ab6f40b7f817a416b7040, type: 3}
+    - Attachment: {fileID: 11400000, guid: c446f0dd8001a73418ca91dca64db1f1, type: 2}
+      Sprite: {fileID: 21300000, guid: e6734201b7605f749a81172725f6361f, type: 3}
+    - Attachment: {fileID: 11400000, guid: 01a9e061e99d95e41ba5f5976fda888a, type: 2}
+      Sprite: {fileID: 21300000, guid: df5cd344b5c130744ac4929fcd385eae, type: 3}
   - Weapon: {fileID: 11400000, guid: 7c197a89b973b5545b7bccaf908444c9, type: 2}
     Sprites:
     - Attachment: {fileID: 11400000, guid: 15f717a4f0aab6646859d5ea1c8e452c, type: 2}

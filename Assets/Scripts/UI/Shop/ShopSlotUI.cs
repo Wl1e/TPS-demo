@@ -42,7 +42,7 @@ namespace TPSDemo.UI
             Discount = discount;
 
             Name.text = name;
-            PriceText.text = FinalPrice.ToString();
+            PriceText.text = $"<s>{price}</s> {FinalPrice}";
             Icon.sprite = icon;
 
             UpdateState(soldout, restocking, restockTime);
@@ -54,13 +54,13 @@ namespace TPSDemo.UI
 
         public void UpdateState(bool soldout, bool restock, float restockTime)
         {
-            //print($"soldout: {soldout}, restock: {restock}, restockTime: {restockTime}");
             m_SeldOut = soldout;
-            // 卖完了，图标变灰
             if (restock && m_RestockCoroutine == null) {
                 m_RestockCoroutine = StartCoroutine(RestockCoroutine(restockTime));
             } else if(m_SeldOut) {
+                // 卖完了，图标变灰
                 Icon.color = Color.Lerp(Icon.color, Color.black, 0.5f);
+                Icon.color = new(Icon.color.r, Icon.color.g, Icon.color.b, 0.5f);
             }
         }
 
@@ -71,8 +71,7 @@ namespace TPSDemo.UI
             // 所以Shop里对应entry的补货标记晚于这里的更新
             // 所以RestockFinished会再触发一次补货界面
             // 给补货转圈多加0.5s，不是好方法，可能被网络延迟影响
-            //time += 0.5f;
-            print("开始补货转圈");
+            // time += 0.5f;
             m_Restocking = true;
             RestockMask.gameObject.SetActive(m_Restocking);
             RestockMask.fillAmount = 1;
@@ -87,7 +86,6 @@ namespace TPSDemo.UI
             RestockMask.gameObject.SetActive(m_Restocking);
             //RestockFinished?.Invoke(this);
             m_RestockCoroutine = null;
-            print("补货转圈完成");
         }
 
         void IPointerClickHandler.OnPointerClick(PointerEventData eventData)

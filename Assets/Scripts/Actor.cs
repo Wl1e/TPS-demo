@@ -48,7 +48,6 @@ namespace TPSDemo
         {
             ActorManager.Instance.AddActor(this);
         }
-
     }
 
     //public class Actor : MonoBehaviour

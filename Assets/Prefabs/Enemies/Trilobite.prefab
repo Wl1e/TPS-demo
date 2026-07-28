@@ -503,7 +503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2530470313
+  GlobalObjectIdHash: 411984806
   InScenePlacedSourceGlobalObjectIdHash: 411984806
   DeferredDespawnTick: 0
   Ownership: 1
@@ -636,7 +636,6 @@ MonoBehaviour:
   DeadAudio: {fileID: 8300000, guid: 65b7d1df144c6944cab9d6686649df0b, type: 3}
   MovementAudio: {fileID: 8300000, guid: 44c5f76f80602024e82d3e5f3af4ee97, type: 3}
   m_SetTargetWhenHit: 0
-  m_Channel: {fileID: 11400000, guid: 47315a606f2d44a428be53b2775918d1, type: 2}
   m_SmoothRotateTime: 1
   DiedTime: 0.5
   EnemyId: 101
@@ -1478,6 +1477,18 @@ MonoBehaviour:
     Clip: {fileID: 3341008991451901215, guid: 92d1ac957ad9ddf48aa62afae14cb282, type: 3}
   - Name: Died
     Clip: {fileID: 3922875575015971284, guid: 92d1ac957ad9ddf48aa62afae14cb282, type: 3}
+  - Name: ChargeWindup
+    Clip: {fileID: -429512112410174799, guid: 92d1ac957ad9ddf48aa62afae14cb282, type: 3}
+  - Name: ChargeActive
+    Clip: {fileID: -5181486892397411127, guid: 92d1ac957ad9ddf48aa62afae14cb282, type: 3}
+  - Name: ChargeRecovery
+    Clip: {fileID: -429512112410174799, guid: 92d1ac957ad9ddf48aa62afae14cb282, type: 3}
+  - Name: SkyDiveWindup
+    Clip: {fileID: -429512112410174799, guid: 92d1ac957ad9ddf48aa62afae14cb282, type: 3}
+  - Name: SkyDiveActive
+    Clip: {fileID: -9141127649910649806, guid: 92d1ac957ad9ddf48aa62afae14cb282, type: 3}
+  - Name: SkyDiveRecovery
+    Clip: {fileID: -429512112410174799, guid: 92d1ac957ad9ddf48aa62afae14cb282, type: 3}
   m_FadeDuration: 0.2
   m_DefaultAnimationName: Idle
   CurAnimation: 

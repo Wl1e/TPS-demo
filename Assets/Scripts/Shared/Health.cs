@@ -6,6 +6,8 @@ namespace TPSDemo
 {
     public class Health : NetworkBehaviour
     {
+        // 使用SetDirty不是好方法，最好是不使用RangedFloat，而是NetworkVariable同步当前血量(float)
+        // 但是RangedFloat我写都写了，不用不是可惜了
         [SerializeField] private NetworkVariable<RangedFloat> m_HealthValue;
         public float CurrentHealth => m_HealthValue.Value.Value;
         public float Ratio => m_HealthValue.Value.Ratio();
@@ -30,8 +32,10 @@ namespace TPSDemo
                 return 0;
             }
             float trueDamage = -m_HealthValue.Value.Subtract(info.Damage);
-            if (info.Attacker.TryGetComponent<NetworkObject>(out var no)) {
+            if (info.Attacker && info.Attacker.TryGetComponent<NetworkObject>(out var no)) {
                 TakeDamageRpc(no.NetworkObjectId, trueDamage, info.Point);
+            } else {
+                TakeDamageRpc(ulong.MaxValue, trueDamage, info.Point);
             }
             HandleDeath(info.Attacker);
             OnHealthChanged?.Invoke(trueDamage);
@@ -47,8 +51,12 @@ namespace TPSDemo
             m_HealthValue.SetDirty(true);
         }
 
-        
-        public void Revive() => m_HealthValue.Value.FullHealth();
+        [ServerRpc]
+        public void ReviveServerRpc()
+        {
+            m_HealthValue.Value.FullHealth();
+            m_HealthValue.SetDirty(true);
+        }
 
         void HandleDeath(GameObject attacker)
         {
@@ -71,12 +79,15 @@ namespace TPSDemo
                 return;
             }
             GameNetworkManager.Instance.SpawnManager.SpawnedObjects.TryGetValue(noId, out var no);
-            if (!no) {
-                return;
+            GameObject attacker = null;
+            if (no) {
+                attacker = no.GetComponentInChildren<Actor>().gameObject;
             }
             OnTakeDamaged?.Invoke(new DamageInfo {
-                Attacker = no.GetComponentInChildren<Actor>().gameObject,
-                Damage = value, Point = point });
+                Attacker = attacker,
+                Damage = value,
+                Point = point
+            });
         }
 
         [Rpc(SendTo.Owner)]

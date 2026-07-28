@@ -22,10 +22,7 @@ namespace TPSDemo
         public int FrameRate = 60;
         public bool EnableVSync = false;
 
-        private ISession m_CurSession;
         private string m_SessionName;
-        private string m_ProfileName;
-        private Task m_SessionTask;
 
         static public GameNetworkManager Instance { get; private set; }
         public ConnectionState m_ConnectionState { get; private set; }
@@ -45,6 +42,7 @@ namespace TPSDemo
             OnClientConnectedCallback += OnClientConnected;
             OnClientDisconnectCallback += OnClientDisconnect;
             OnConnectionEvent += OnClientConnectionEvent;
+            
 
             //if (UnityServices.Instance != null && UnityServices.Instance.State != ServicesInitializationState.Initialized) {
             //    await UnityServices.InitializeAsync();
@@ -74,8 +72,10 @@ namespace TPSDemo
         {
             OnClientStarted += ClientStarted;
             OnClientStopped += ClientStopped;
+            //OnServerStopped += ServerStopped;
             StartClient();
         }
+
         public void HostStart()
         {
             OnClientStarted += ClientStarted;
@@ -127,7 +127,7 @@ namespace TPSDemo
         {
             OnClientStopped -= ClientStopped;
             m_ConnectionState = ConnectionState.None;
-            m_CurSession = null;
+            GameModeManager.ExitGame();
         }
 
         private void ClientStarted()
@@ -139,6 +139,14 @@ namespace TPSDemo
                 m_ConnectionState = ConnectionState.Connected;
             }
             MessageLog.Log($"Connected to session {m_SessionName}");
+        }
+
+        private void ServerStopped(bool obj)
+        {
+            OnClientStarted += ClientStarted;
+            OnClientStopped += ClientStopped;
+            OnServerStopped -= ServerStopped;
+            m_ConnectionState = ConnectionState.None;
         }
     }
 }

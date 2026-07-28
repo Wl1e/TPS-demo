@@ -96,8 +96,6 @@ namespace TPSDemo
             }
             m_CurrentGrenadeId = grenades[0].itemId;
 
-            print("m_GrenadeRoot: " + m_GrenadeRoot);
-
             StartCoroutine(WorldItemManager.Instance.CreateItemGO(
                 ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(m_CurrentGrenadeId),
                 Vector3.zero,

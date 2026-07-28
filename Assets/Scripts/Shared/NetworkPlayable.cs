@@ -8,7 +8,7 @@ namespace TPSDemo
 	{
         private PlayableController m_PlayableController;
 		// Use this for initialization
-		private void Awake()
+		public override void OnNetworkSpawn()
 		{
             m_PlayableController = GetComponent<PlayableController>();
             if (IsOwner) {
@@ -27,6 +27,7 @@ namespace TPSDemo
 
         private void OnPlayablePlay(int preIdx, int curIdx, float duration)
         {
+            Debug.Log("Play " + curIdx);
             PlayClientRpc(preIdx, curIdx, duration);
         }
     }

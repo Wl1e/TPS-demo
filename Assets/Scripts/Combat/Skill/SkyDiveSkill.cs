@@ -11,7 +11,7 @@ namespace TPSDemo
         private float DiveSpeed => (Config as SkyDiveSkillConfig).DiveSpeed;
         private float AoeRadius => (Config as SkyDiveSkillConfig).AoeRadius;
 
-        public LayerMask TargetLayer;
+        private LayerMask TargetLayer => (Config as SkyDiveSkillConfig).TargetLayer;
 
         private Vector3 m_RiseStartPos;
 
@@ -119,7 +119,10 @@ namespace TPSDemo
                 QueryTriggerInteraction.Ignore
             );
 
+            Debug.Log($"Layer: {TargetLayer}");
+
             foreach (var hit in hits) {
+                Debug.Log($"Hit: {hit}");
                 if (hit.TryGetComponent<Damageable>(out var damageable)) {
                     damageable.InflictDamage(
                         new DamageInfo {

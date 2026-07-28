@@ -17,12 +17,15 @@ MonoBehaviour:
   Cooldown: 30
   Damage: 70
   WindupTime: 1
-  WindupAnimation: SkillWindup
+  WindupAnimation: SkyDiveWindup
   ActiveTime: 5
-  SkillAnimation: Skill
+  SkillAnimation: SkyDiveActive
   RecoveryTime: 2
-  RecoveryAnimation: SkillRecovery
+  RecoveryAnimation: SkyDiveRecovery
   Args: []
   RiseSpeed: 1
   DiveSpeed: 20
   AoeRadius: 1
+  TargetLayer:
+    serializedVersion: 2
+    m_Bits: 4096

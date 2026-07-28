@@ -8,7 +8,6 @@ namespace TPSDemo
     [CreateAssetMenu(menuName = "Config/ObjectiveConfig/ObjectivePickupItemConfig", fileName = "ObjectivePickupItemConfig")]
     public class ObjectivePickupItemConfig : ObjectiveConfig
     {
-        // FIXME: 后续改为ID
         public GameObject Item;
         public int Count;
 

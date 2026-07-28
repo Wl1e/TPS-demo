@@ -5,6 +5,13 @@ namespace TPSDemo.FSM
 {
 	public class LedgeState: StateBase<PlayerStateMachine>
     {
+        public Vector3 StartPos = Vector3.zero;
+        public Vector3 MidPos = new(0f, 1.7f, 0f);
+        public Vector3 EndPos = new(0f, 1.7f, 0.5f);
+        public float NowTime = 0f;
+        public float MidTime = 0.5f;
+        public float EndTime = 0.9f;
+
         public float MantleDuration = 0.5f;
         public bool InMantle { get; private set; }
         public bool FinishMantle { get; private set; }
@@ -49,20 +56,17 @@ namespace TPSDemo.FSM
         IEnumerator MantleCoroutine()
         {
             InMantle = true;
-            m_StateMachine.NowTime = 0f;
+            NowTime = 0f;
             m_StateMachine.RuntimeData.AniParameter.IsMantle = true;
             m_StateMachine.Movement.MovementLock.Increase();
             m_StateMachine.Controller.CharacterController.enabled = false;
-            m_TargetPoint = m_StateMachine.Controller.ClimbController.TopHitInfo.point + Vector3.up * 0.1f;
-            //m_StateMachine.EndPos = m_TargetPoint;
 
             Vector3 origin = m_StateMachine.Movement.transform.position;
-            while (m_StateMachine.NowTime < m_StateMachine.EndTime) {
+            while (NowTime < EndTime) {
                 UpdatePosition(origin);
                 yield return null;
-                m_StateMachine.NowTime += Time.deltaTime;
+                NowTime += Time.deltaTime;
             }
-            //m_StateMachine.Movement.SetPosition(m_StateMachine.EndPos);
 
             m_TargetPoint = Vector3.zero;
 
@@ -75,23 +79,14 @@ namespace TPSDemo.FSM
 
         void UpdatePosition(Vector3 origin)
         {
-            Vector3 StartPos = m_StateMachine.StartPos;
-            Vector3 MidPos = m_StateMachine.MidPos;
-            Vector3 EndPos = m_StateMachine.EndPos;
-            float NowTime = m_StateMachine.NowTime;
-            float MidTime = m_StateMachine.MidTime;
-            float EndTime = m_StateMachine.EndTime;
-
             if (NowTime < MidTime) {
                 Vector3 Pos = origin +
                     m_StateMachine.Movement.transform.rotation * Vector3.Lerp(StartPos, MidPos, NowTime / MidTime);
                 m_StateMachine.Movement.SetPosition(Pos);
-                Debug.Log("Pos: " + Pos);
             } else if(NowTime < EndTime) {
                 Vector3 Pos = origin +
                     m_StateMachine.Movement.transform.rotation * Vector3.Lerp(MidPos, EndPos, (NowTime - MidTime) / (EndTime - MidTime));
                 m_StateMachine.Movement.SetPosition(Pos);
-                Debug.Log("Pos: " + Pos);
             }
             
         }

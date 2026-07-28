@@ -1,7 +1,6 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Net.Mail;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -127,7 +126,6 @@ namespace TPSDemo
         [ServerRpc]
         private void AddAttachmentServerRpc(IAttachment.AttachmentSlot slot, int attachmentId)
         {
-            print($"Slot: {slot}, SkillIdx: {attachmentId}");
             if (slot == IAttachment.AttachmentSlot.Scope) {
                 m_ScopeNV.Value = attachmentId;
             } else if (slot == IAttachment.AttachmentSlot.Magazine) {
@@ -162,7 +160,7 @@ namespace TPSDemo
 
         private void AttachmentChanged(IAttachment.AttachmentSlot slot, int oldId, int newId)
         {
-            bool Unequip = newId == -1;
+            bool unequip = (newId == -1);
 
             if(oldId != -1) {
                 OnRemoveAttachment(slot, oldId, newId == -1);
@@ -176,19 +174,19 @@ namespace TPSDemo
         private void OnAddAttachment(IAttachment.AttachmentSlot slot, int attachmentId)
         {
             var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(attachmentId);
-            StartCoroutine(
-                WorldItemManager.Instance.CreateItemGO<IAttachment>(
-                    itemData,
-                    attachment => {
+            if (!itemData.IsNetCodePrefab) {
+                StartCoroutine(
+                    AssetCache.GetOrLoad(itemData.Prefab, obj => {
+                        Debug.Log($"配件 {obj} 加载完成");
+                         var attachment = obj.GetComponent<IAttachment>();
                         m_Attachments[slot] = attachment;
-                        attachment.SetParent(GetTargetSocket(slot));
-                        // 生成变异步了，所以放在这
+                         attachment.SetParent(GetTargetSocket(slot));
                         if (IsOwner) {
                             OnAttachmentChanged?.Invoke();
                         }
-                    }
-                )
-            );
+                    })
+                );
+            }
         }
 
         private void OnRemoveAttachment(IAttachment.AttachmentSlot slot, int attachmentId, bool enableDefault)
@@ -198,7 +196,6 @@ namespace TPSDemo
             if (attachment != null) {
                 attachment.Destroy();
                 if (IsOwner) {
-                    // FIXME: 不要往地上扔，往背包扔
                     // var itemData = ResourceManager.Instance.GetResource<ItemDataList>("ItemData").GetItemData(attachmentId);
                     // WorldItemManager.Instance.SpawnItem(itemData, transform.position, 1);
                     var player = Weapon.Owner.GetComponent<PlayerController>();
@@ -238,7 +235,7 @@ namespace TPSDemo
                 } else if(defaultAttachment != null) {
                     id = defaultAttachment.Id;
                 }
-                list.Add((IAttachment.AttachmentSlot.Laser, id));
+                list.Add((slot, id));
             }
 
             f(IAttachment.AttachmentSlot.Scope, DefaultScope);

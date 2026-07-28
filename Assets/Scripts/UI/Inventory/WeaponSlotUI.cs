@@ -11,6 +11,7 @@ namespace TPSDemo.UI
         public int SlotIdx;
 
         public DragType Type => DragType.Weapon;
+
         public void OnDrop(IDragable drag)
         {
             var itemType = ItemUIUtils.GetItemType(drag.ItemId);
@@ -24,7 +25,7 @@ namespace TPSDemo.UI
         }
         public void SetWeapon(WeaponUIData data)
         {
-            int weaponId = data.WeaopnId;
+            int weaponId = data.WeaponId;
             if (weaponId == 0) {
                 DestroyItem();
                 return;

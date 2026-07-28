@@ -27,7 +27,7 @@ namespace TPSDemo.UI
             UpdateObjective(1, process.Obj1);
             UpdateObjective(2, process.Obj2);
             UpdateObjective(3, process.Obj3);
-            //print($"UpdateQuest {questId}, Obj0:{JsonUtility.ToJson(process.Obj0)}\n" +
+            //Debug.Log($"UpdateQuest {questId}, Obj0:{JsonUtility.ToJson(process.Obj0)}\n" +
             //    $"Obj1:{JsonUtility.ToJson(process.Obj1)}\n" +
             //    $"Obj2:{JsonUtility.ToJson(process.Obj2)}\n" +
             //    $"Obj3:{JsonUtility.ToJson(process.Obj3)}\n");

@@ -23,9 +23,9 @@ namespace TPSDemo
 
         public override void OnNetworkSpawn()
         {
+            Owner.AEPlayer.AddAudio(m_SFName, m_AttackSfx);
             if (IsOwner) {
                 m_Hitbox.OnCollision += OnCollisionPlayerHurtbox;
-                Owner.AEPlayer.AddAudio(m_SFName, m_AttackSfx);
             }
         }
 
@@ -50,7 +50,6 @@ namespace TPSDemo
             Owner.transform.rotation = Quaternion.LookRotation(dir);
             //Owner.LookTo(dir);
             //if (Owner.transform.forward.y != dir.y) {
-            //    print("Here");
             //    return;
             //}
 

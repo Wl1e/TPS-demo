@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 7aa7ef13d9d69e645b5dbe9c3eefc841
   m_currentHash:
     serializedVersion: 2
-    Hash: 576d423b0e5fc54dc097264265e32220
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_CatalogRequestsTimeout: 0
@@ -52,9 +52,9 @@ MonoBehaviour:
   m_CheckForContentUpdateRestrictionsOption: 0
   m_MonoScriptBundleCustomNaming: 
   m_RemoteCatalogBuildPath:
-    m_Id: 79314920b8e893644939048e6cb42cae
+    m_Id: a482ed8ccbcfa6d4ebce1589df8f87d7
   m_RemoteCatalogLoadPath:
-    m_Id: 242026d573133064a8d66f3a458988de
+    m_Id: 3122a736cb37f844f89d89bc9dc30f6b
   m_ContentStateBuildPathProfileVariableName: <default settings path>
   m_CustomContentStateBuildPath: 
   m_ContentStateBuildPath: 
@@ -62,8 +62,8 @@ MonoBehaviour:
   m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
   - {fileID: 11400000, guid: c8497177607dc164b9aa0bf3aa15937f, type: 2}
-  - {fileID: 11400000, guid: b5b1703fa78793c4198923fdc5b01115, type: 2}
   - {fileID: 11400000, guid: 7958acc4e675fcc4fa92b25c6c58ba92, type: 2}
+  - {fileID: 11400000, guid: e1ecad566d2c7fc428faf82dc5702b5b, type: 2}
   - {fileID: 11400000, guid: 6aaf63f6a55ca2a4b8bcd3ef0f59e50e, type: 2}
   - {fileID: 11400000, guid: 3c9d4ab0909516849beaa85c4ab02921, type: 2}
   m_BuildSettings:
@@ -78,7 +78,21 @@ MonoBehaviour:
       - m_Id: 242026d573133064a8d66f3a458988de
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: 3122a736cb37f844f89d89bc9dc30f6b
+        m_Value: https://wl1e.github.io/test/ABDB
+      - m_Id: 79314920b8e893644939048e6cb42cae
+        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+      - m_Id: 9fa9d334f07a6384abacebd79c375634
+        m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
+      - m_Id: a482ed8ccbcfa6d4ebce1589df8f87d7
         m_Value: D:\code\GithubPage\ABDB
+    - m_InheritedParent: 
+      m_Id: 76daa7d84e505bc47bfa5397740e2ba5
+      m_ProfileName: Remote
+      m_Values:
+      - m_Id: 242026d573133064a8d66f3a458988de
+        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+      - m_Id: 3122a736cb37f844f89d89bc9dc30f6b
+        m_Value: https://wl1e.github.io/test/ABDB
       - m_Id: 79314920b8e893644939048e6cb42cae
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
       - m_Id: 9fa9d334f07a6384abacebd79c375634
@@ -108,6 +122,7 @@ MonoBehaviour:
     - NetCodePrefab
     - zh-CN
     - en-US
+    - BGM
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 951fdbf437c449543907786cdc3055ba, type: 2}

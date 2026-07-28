@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System;
 using Unity.Netcode;
 
 namespace TPSDemo
@@ -7,6 +7,7 @@ namespace TPSDemo
     // enemy的行为树有寻路逻辑，会卡住需要每次都调用的查找逻辑
     // 加上有一个短暂记忆Target的需求
     // 所以将这部分代码拿到逻辑层实现
+    [Obsolete("废弃")]
 	public class FindAndTrackTarget: NetworkBehaviour
 	{
         [SerializeField] GameObjectEventChannel m_Channel;

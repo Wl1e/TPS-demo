@@ -6,6 +6,7 @@ using UnityEngine;
 namespace TPSDemo
 {
     using Event;
+    using Unity.Collections.LowLevel.Unsafe;
 
     public class WeaponManager : FirearmCombatSlot
     {
@@ -23,7 +24,9 @@ namespace TPSDemo
         private PlayerRuntimeData m_RuntimeData;
         private Inventory m_Inventory;
         private Loadout m_Loadout;
-        private NetworkVariable<int> m_CurrentFirearmIndex = new(-1);
+        private NetworkVariable<int> m_CurrentFirearmIndex = new(-1,
+            readPerm: NetworkVariableReadPermission.Everyone,
+            writePerm: NetworkVariableWritePermission.Owner);
         private IWeapon m_CurrentFirearm = null;
         [SerializeField] private float m_ReloadTime = 1f;
 
@@ -109,14 +112,11 @@ namespace TPSDemo
         {
             weapon.OnFire -= OnWeaponFire;
             if(weapon == m_CurrentFirearm) {
-                if (IsServer) {
-                    m_CurrentFirearmIndex.Value = -1;
-                }
+                m_CurrentFirearmIndex.Value = -1;
             }
         }
 
         public override bool ValidActive() {
-            print($"Weapon1 {m_Loadout.HasWeapon(1)}, Weapon2 {m_Loadout.HasWeapon(2)}");
             return m_Loadout != null && (m_Loadout.HasWeapon(1) || m_Loadout.HasWeapon(2));
         }
 
@@ -168,9 +168,17 @@ namespace TPSDemo
 
         #region Equip
 
-        [ServerRpc]
-        private void TrySwitchFirearmServerRpc(int idx)
+        //[ServerRpc]
+        //private void TrySwitchFirearmServerRpc(int idx)
+        //{
+            
+        //}
+
+        public override void TrySwitchFirearm(int idx)
         {
+            if (!m_IsActive) {
+                return;
+            }
             // 按下当前武器对应数字键收回武器
             if (CurrentFirearmIndex == idx) {
                 m_CurrentFirearmIndex.Value = -1;
@@ -184,14 +192,6 @@ namespace TPSDemo
             }
 
             m_CurrentFirearmIndex.Value = idx;
-        }
-
-        public override void TrySwitchFirearm(int idx)
-        {
-            if (!m_IsActive) {
-                return;
-            }
-            TrySwitchFirearmServerRpc(idx);
         }
 
         #endregion Equip
@@ -215,15 +215,15 @@ namespace TPSDemo
         private bool ValidReload()
         {
             if(m_Reloading.Value) {
-                print("正在换弹中");
+                Debug.Log("正在换弹中");
                 return false;
             }
             if (CurrentFirearmIndex == -1) {
-                print("当前未装备武器");
+                Debug.Log("当前未装备武器");
                 return false;
             }
-            if (!m_CurrentFirearm.ValidReload() || m_Inventory.GetAmount(m_CurrentFirearm.AmmoId) <= 0) {
-                print("武器无需换弹或没有对应子弹");
+            if (!m_CurrentFirearm.ValidReload()) {
+                Debug.Log("武器无需换弹");
                 return false;
             }
             return true;
@@ -231,44 +231,58 @@ namespace TPSDemo
 
         public override void TryReload()
         {
-            if(!ValidReload()) {
+            if(m_Inventory.GetAmount(m_CurrentFirearm.AmmoId) <= 0) {
+                Debug.Log("没有对应子弹");
+            }
+            if (!ValidReload()) {
                 return;
             }
             TryReloadServerRpc();
         }
 
         // 当通过在UI中拖动子弹到武器槽时执行
-        private void TryReload2(TryReloadEvent evt)
-        {
-            // FIXME: 界面拖动是有可能让当前未持有的武器换弹的，怎么办，要切枪吗
-            TryReload();
-        }
+        private void TryReload2(TryReloadEvent evt) => TryReload();
 
         private void PutAmmoIntoInventory(int ammoId, int amount)
         {
             if (amount > 0) {
-                m_Inventory.AddItem(ammoId, amount);
+                m_Inventory.AddItemClientRpc(ammoId, amount);
             }
         }
 
-        private int GetLoadAmmo(IWeapon weapon)
-        {
-            int ammoId = weapon.AmmoId;
-            int ammoAmount = m_Inventory.GetAmount(ammoId);
-            ammoAmount = Mathf.Min(ammoAmount, weapon.ClipAmmo);
-            ammoAmount = m_Inventory.ReduceItemAmount(ammoId, ammoAmount);
-            return ammoAmount;
-        }
+        //private void ReduceAmmo(IWeapon weapon)
+        //{
+        //    int ammoId = weapon.AmmoId;
+        //    //int ammoAmount = m_Inventory.GetAmount(ammoId);
+        //    //ammoAmount = Mathf.Min(ammoAmount, weapon.ClipAmmo);
+        //    m_Inventory.ReduceItemAmountRpc(ammoId, weapon.ClipAmmo);
+        //    //return ammoAmount;
+        //}
 
         private IEnumerator ReloadCoroutine(float time)
         {
             m_Reloading.Value = true;
             yield return new WaitForSeconds(time);
-            m_CurrentFirearm.EndReload(GetLoadAmmo(m_CurrentFirearm));
+            EndReloadRpc();
+        }
 
+        [Rpc(SendTo.Owner)]
+        private void EndReloadRpc()
+        {
+            int ammoId = m_CurrentFirearm.AmmoId;
+            int ammoAmount = m_Inventory.GetAmount(ammoId);
+            ammoAmount = Mathf.Min(ammoAmount, m_CurrentFirearm.ClipAmmo);
+            ammoAmount =  m_Inventory.ReduceItemAmount(ammoId, ammoAmount);
+            EndReloadServerRpc(ammoAmount);
+            //return ammoAmount;
+        }
+
+        [ServerRpc]
+        private void EndReloadServerRpc(int ammo)
+        {
+            m_CurrentFirearm.EndReload(ammo);
             m_Reloading.Value = false;
             m_ReloadCoroutine = null;
-            //EndReloadClientRpc();
         }
 
         private void OnReloadStateChanged(bool previousValue, bool newValue)
@@ -296,7 +310,7 @@ namespace TPSDemo
             // m_ReloadCoroutine修改起来太麻烦了，后续通过WeaponStateManager同步
             if (IsServer) {
                 // m_CurrentFirearm当是卸下weapon时，不需要触发，不然将武器背到背上
-                if (m_CurrentFirearm != null) {
+                if (m_CurrentFirearm != null && m_CurrentFirearm.GO != null) {
                     m_CurrentFirearm?.Attach(BackAttach);
                 }
 
@@ -310,8 +324,10 @@ namespace TPSDemo
             if (IsServer || IsOwner) {
                 if (CurrentFirearmIndex == -1) {
                     if (IsOwner) {
-                        m_CurrentFirearm.EndFire();
-                        m_CurrentFirearm.OnUnequip();
+                        if (m_CurrentFirearm.GO != null) {
+                            m_CurrentFirearm.EndFire();
+                            m_CurrentFirearm.OnUnequip();
+                        }
                         Exit();
                     }
                     m_CurrentFirearm = null;
@@ -319,6 +335,7 @@ namespace TPSDemo
                     m_CurrentFirearm = m_Loadout.GetWeapon(cur);
                     if (IsServer) {
                         if (m_CurrentFirearm != null) {
+                            print("Attach");
                             m_CurrentFirearm.Attach(RightHandAttach);
                             m_CurrentFirearm.OnEquip();
                         }
@@ -347,6 +364,7 @@ namespace TPSDemo
             var attachmentData = item.ItemData as AttachmentItemData;
 
             if (!weapon.SupportAttachment(attachmentData.Slot, attachmentData.Id)) {
+                Debug.Log("当前武器不支持配件" + attachmentData.Name);
                 return;
             }
 

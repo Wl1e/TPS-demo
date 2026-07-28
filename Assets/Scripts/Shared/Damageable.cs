@@ -25,11 +25,8 @@ namespace TPSDemo
         }
         public void InflictDamage(DamageInfo info)
         {
-            if(Health.IsDied) {
-                return;
-            }
             float showDamage = info.Damage;
-            if (Health) {
+            if(Health && !Health.IsDied) {
                 showDamage = Health.TakeDamage(info);
             }
             var dir = Vector3.zero;

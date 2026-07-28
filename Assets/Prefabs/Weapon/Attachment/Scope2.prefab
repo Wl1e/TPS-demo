@@ -51,7 +51,7 @@ MonoBehaviour:
   m_ItemData: {fileID: 11400000, guid: 01a9e061e99d95e41ba5f5976fda888a, type: 2}
   Type: 0
   m_Ratio: 1
-  m_TransitionDuration: 0.2
+  m_TransitionDuration: 0.1
   m_CameraSocket: {fileID: 0}
   ScopedCrosshair:
     Sprite: {fileID: 0}

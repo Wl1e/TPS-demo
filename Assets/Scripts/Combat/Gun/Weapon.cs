@@ -24,7 +24,7 @@ namespace TPSDemo
 
         #region Property
 
-        public GameObject GO => gameObject;
+        public GameObject GO => gameObject ?? null;
         public GameObject Owner => m_Owner;
 
         public int WeaponId => m_Config.Id;
@@ -100,11 +100,6 @@ namespace TPSDemo
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            if(IsServer || IsOwner) {
-                m_AmmoHandler.Initialize(this);
-                m_Behaviour.Initialize(this);
-                m_FireMechanism.Initialize(this);
-            }
             if(IsOwner) {
                 m_FireMechanism.OnShouldFire += TryFire;
                 m_AttachmentManager.OnAttachmentChanged += AttachmentChanged;
@@ -112,15 +107,12 @@ namespace TPSDemo
             }
         }
 
-        public override void OnDestroy()
-        {
-            base.OnDestroy();
-            print(name + "is Destroy");
-        }
-
         public void Initialize(GameObject holder)
         {
             m_Owner = holder;
+            m_AmmoHandler.Initialize(this);
+            m_Behaviour.Initialize(this);
+            m_FireMechanism.Initialize(this);
         }
 
         #region Fire
@@ -206,6 +198,8 @@ namespace TPSDemo
         public void StartReload() => m_AmmoHandler.StartReload();
         public void EndReload(int ammo) => m_AmmoHandler.EndReload(ammo);
 
+        // 提前设置好子弹数量
+        public void SetAmmo(int amount) => m_AmmoHandler.SetAmmo(amount);
         public void ClearAmmo() => m_AmmoHandler.ComsumeAmmo(CurrentAmmo);
 
         #endregion
@@ -221,7 +215,7 @@ namespace TPSDemo
         {
             var scope = m_AttachmentManager.GetAttachment(IAttachment.AttachmentSlot.Scope);
             // ��
-            if (scope is ScopeAttachment scope1) {
+            if (scope != null && scope is ScopeAttachment scope1) {
                 return (float)scope1.Ratio;
             }
             return 1f;

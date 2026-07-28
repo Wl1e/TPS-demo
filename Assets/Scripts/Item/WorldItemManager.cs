@@ -97,6 +97,9 @@ namespace TPSDemo
             }
             if (data.IsNetCodePrefab) {
                 var go = Instantiate(data.NOPrefab, position, rotation, parent);
+                if (parent != null) {
+                    go.transform.SetLocalPositionAndRotation(position, rotation);
+                }
                 if (!go.TryGetComponent<NetworkObject>(out var no)) {
                     Debug.LogError($"Item {data.Name} is NetCodeItem, but NOPrefab dont have NetworkObject");
                     yield break;
@@ -122,9 +125,15 @@ namespace TPSDemo
         public IEnumerator CreateItemGO(ItemData data, System.Action<GameObject> completed = null, ulong ownerId = m_InvalidOwnerId)
             => CreateItemGO(data, Vector3.zero, Quaternion.identity, null, completed, ownerId);
 
-
+        [ServerRpc]
+        public IEnumerator CreateItemGOServerRpc(ItemData data, System.Action<GameObject> completed = null, ulong ownerId = m_InvalidOwnerId)
+            => CreateItemGO(data, Vector3.zero, Quaternion.identity, null, completed, ownerId);
 
         public IEnumerator CreateItemGO<T>(ItemData data, System.Action<T> completed = null, ulong ownerId = m_InvalidOwnerId) where T : class
+            => CreateItemGO<T>(data, Vector3.zero, Quaternion.identity, null, completed, ownerId);
+
+        [ServerRpc]
+        public IEnumerator CreateItemGOServerRpc<T>(ItemData data, System.Action<T> completed = null, ulong ownerId = m_InvalidOwnerId) where T : class
             => CreateItemGO<T>(data, Vector3.zero, Quaternion.identity, null, completed, ownerId);
 
         public IEnumerator CreateItemGO<T>(

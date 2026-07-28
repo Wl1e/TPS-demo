@@ -1,21 +1,20 @@
-﻿using System;
-using Unity.Netcode;
+﻿using Unity.Netcode;
 using UnityEngine;
 
 namespace TPSDemo
 {
 
-    public class ItemPickup : ItemBase, IPickupable
+    public class ItemPickup: ItemBase, IPickupable
     {
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            //print("ItemPickup Spawn");
+            //Debug.Log("ItemPickup Spawn");
         }
 
         public string Hint => $"拾取{Name}";
         public float HoldDuration => 0f;
-        public void OnInteractPress(GameObject interactor)
+        public virtual void OnInteractPress(GameObject interactor)
         {
             //Debug.Log($"IsSpawned: {NetworkObject.IsSpawned}, IsClient: {IsClient}, IsServer: {IsServer}");
             if (interactor.TryGetComponent<PlayerController>(out var player)) {
@@ -40,12 +39,19 @@ namespace TPSDemo
         {
             var player = ActorManager.Instance.GetActor(playerId).GetComponent<PlayerController>();
             if (Type == ItemType.Weapon) {
+                print("CanAddWeapon " + player.Loadout.CanAddWeapon());
                 if (!player.Loadout.CanAddWeapon()) {
                     return;
                 }
-                player.Loadout.EquipWeapon(Data);
+                player.Loadout.EquipWeapon(this);
             } else {
-                player.Inventory.AddItemClientRpc(playerId, Id, Amount);
+                player.Inventory.AddItemClientRpc(Id, Amount);
+                // 更新Objective
+                EventManager.Broadcast(new Event.PickupItemEvent {
+                    ActorId = playerId,
+                    ItemId = Id,
+                    Amount = Amount,
+                });
             }
         }
 

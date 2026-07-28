@@ -1,5 +1,4 @@
 ﻿
-using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -8,12 +7,15 @@ using UnityEngine.Assertions;
 
 namespace TPSDemo
 {
-
     public class Inventory : NetworkBehaviour
     {
         private readonly List<InventorySlot> m_Items = new();
         private int m_Size;
         public int DefaultSize = 12;
+        public readonly NetworkVariable<Vector2Int> SyncValue = new(
+            readPerm: NetworkVariableReadPermission.Everyone,
+            writePerm: NetworkVariableWritePermission.Owner
+        );
 
         [SerializeField] private GameEvent m_InventoryEvent;
 
@@ -62,6 +64,7 @@ namespace TPSDemo
             m_Items.ForEach(item => amount += item?.Id == itemId ? item.Amount : 0);
             return amount;
         }
+
         public List<(int itemId, int amount)> GetItems(ItemType type)
         {
             List<(int, int)> result = new List<(int, int)>();
@@ -105,6 +108,7 @@ namespace TPSDemo
 
         public bool AddItem(int itemId, int amount)
         {
+            Debug.Log($"AddItem {itemId} {amount}");
             for (int i = 0; i < m_Size; i++) {
                 if (amount <= 0) {
                     break;
@@ -130,7 +134,7 @@ namespace TPSDemo
         public bool AddItem(IItem item)
         {
             int amount = item is IStackable stackable ? stackable.Amount : 1;
-            print($"Inventory Add Item: {item.Name}, amount: {amount}");
+            Debug.Log($"Inventory Add Item: {item.Name}, amount: {amount}");
             int tmp = amount;
             for (int i = 0; i < m_Size; i++) {
                 if (amount <= 0) {
@@ -193,8 +197,12 @@ namespace TPSDemo
                 }
             }
             UpdateInventory();
+            SyncValue.Value = new(itemId, amount - remainAmount);
             return amount - remainAmount;
         }
+
+        [Rpc(SendTo.Owner)]
+        public void ReduceItemAmountRpc(int itemId, int amount) => ReduceItemAmount(itemId, amount);
 
         private void Resize(int size)
         {
@@ -237,7 +245,7 @@ namespace TPSDemo
         #region Server
 
         [ClientRpc]
-        public void AddItemClientRpc(int playerId, int itemId, int amount)
+        public void AddItemClientRpc(int itemId, int amount)
         {
             if(!IsOwner) {
                 return;

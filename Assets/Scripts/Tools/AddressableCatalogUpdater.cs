@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.InputSystem;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace TPSDemo
@@ -66,7 +65,6 @@ namespace TPSDemo
                 yield break;
             }
 
-            AssetCache.ClearCache();
             m_StatusText = "更新完成";
             m_Progress = 1f;
             m_IsUpdating = false;

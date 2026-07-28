@@ -1,9 +1,11 @@
 ﻿using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using Unity.AppUI.UI;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.InputSystem;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.UIElements;
@@ -87,6 +89,15 @@ namespace TPSDemo
                 onLoaded?.Invoke(tEntry.Asset);
                 yield break;
             }
+
+            var locationHanler = Addressables.LoadResourceLocationsAsync(path);
+            yield return locationHanler;
+            if(locationHanler.Result.Count <= 0) {
+                Debug.LogWarning("不存在资产 " + path);
+                locationHanler.Release();
+                yield break;
+            }
+            locationHanler.Release();
 
             var handler = Addressables.LoadAssetAsync<T>(path);
             yield return handler;
@@ -205,24 +216,29 @@ namespace TPSDemo
             }
         }
 
-        public static int RemoveAll(List<string> keys)
-        {
-            int count = 0;
-            foreach (var key in keys) {
-                if (s_Cache.Remove(key, out var entry)) {
-                    entry.Release();
-                    count++;
-                }
-            }
-            return count;
-        }
-
         public static void ClearCache()
         {
             foreach (var kv in s_Cache) {
                 kv.Value.Release();
             }
             s_Cache.Clear();
+
+            //int count = 0;
+            //foreach (var key in keys) {
+            //    if (s_Cache.Remove(key, out var entry)) {
+            //        entry.Release();
+            //        count++;
+            //    }
+            //}
+            //return count;
         }
-    }
+
+            //public static void ClearCache()
+            //{
+            //    foreach (var kv in s_Cache) {
+            //        kv.Value.Release();
+            //    }
+            //    s_Cache.Clear();
+            //}
+        }
 }

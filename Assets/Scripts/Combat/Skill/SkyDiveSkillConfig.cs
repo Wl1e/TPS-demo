@@ -12,5 +12,7 @@ namespace TPSDemo
         public float DiveSpeed = 20f;
         [Tooltip("伤害半径")]
         public float AoeRadius = 1f;
+        [Tooltip("碰撞层")]
+        public LayerMask TargetLayer;
     }
 }

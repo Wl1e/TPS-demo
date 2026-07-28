@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.ObjectivePickupItemConfig
   Id: 201
   Item: {fileID: 3804280116683418236, guid: dd4b64566d2874240abe1df8c2f35a77, type: 3}
-  Count: 1
+  Count: 29

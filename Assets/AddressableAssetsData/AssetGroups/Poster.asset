@@ -14,7 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: Poster
   m_GUID: 1f85e8b0ec02e434f9423cb1c3d7ba66
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 8c96e6d817b128544a0f6ba630ce558a
+    m_Address: Poster2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8f3d5cd04c92a904599102aa56e89821
+    m_Address: Poster
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 894afe9e368169540bd214d4811b6138, type: 2}
   m_SchemaSet:

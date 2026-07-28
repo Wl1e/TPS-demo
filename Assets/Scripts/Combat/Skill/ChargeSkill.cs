@@ -50,6 +50,7 @@ namespace TPSDemo
         {
             // 撞到Player
             if(m_Collision) {
+                m_Collision = false;
                 ChangeState(SkillState.Recovery);
                 return;
             }
@@ -69,6 +70,8 @@ namespace TPSDemo
         protected override void End()
         {
             base.End();
+            m_Collision = false;
+            m_LastPos = Vector3.negativeInfinity;
             m_EnemyController.EnemyHitbox.SetEnable(false);
         }
 	}

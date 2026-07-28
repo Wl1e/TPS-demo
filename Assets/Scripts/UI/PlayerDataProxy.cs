@@ -64,7 +64,8 @@ namespace TPSDemo
         }
         public int GetMoney(int shopId)
         {
-            int moneyId = ResourceManager.Instance.GetResource<ShopList>("Shop").GetConfig(shopId).MoneyId;
+            var shopConfig = ResourceManager.Instance.GetResource<ShopList>("Shop").GetConfig(shopId);
+            int moneyId = shopConfig != null ? shopConfig.MoneyId : -1;
             return m_Player.Economy.GetMoney(moneyId);
         }
 

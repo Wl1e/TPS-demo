@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 
 namespace TPSDemo
@@ -13,11 +13,11 @@ using Event;
         Camera m_Camera;
 
         // AimPoint
-        [Tooltip("¿´ÏòÄ¿±êµÄTransform")]
+        [Tooltip("çœ‹å‘ç›®æ ‡çš„Transform")]
         public Transform VisualAimPointTransform;
-        [Tooltip("Ä¿±ê¿ÉÒÔÅö×²µÄ²ã¼¶")]
+        [Tooltip("ç›®æ ‡å¯ä»¥ç¢°æ’çš„å±‚çº§")]
         public LayerMask AimRayCastLayerMask = ~0;
-        [Tooltip("Ä¿±ê×îÔ¶¾àÀë")]
+        [Tooltip("ç›®æ ‡æœ€è¿œè·ç¦»")]
         public float AimRayDistance = 200f;
         Vector3 m_VisualAimPosition;
 
@@ -28,11 +28,11 @@ using Event;
         CombatController m_CombatController;
         WeaponManager m_WeaponManager;
         /// <summary>
-        /// ºó×øÁ¦Ç°ÍùËÙ¶È
+        /// åååŠ›å‰å¾€é€Ÿåº¦
         /// </summary>
         public float RecoilKickSpeed = 50f;
         /// <summary>
-        /// ºó×øÁ¦»Ö¸´ËÙ¶È
+        /// åååŠ›æ¢å¤é€Ÿåº¦
         /// </summary>
         public float RecoilReturnSpeed => m_WeaponManager.CurrentFirearm?.RecoilReturnSpeed ?? 0;
         Vector3 m_CurrentRecoilOffset;
@@ -41,7 +41,7 @@ using Event;
         public IWeapon CurrentWeapon = null;
 
         /// <summary>
-        /// Ãé×¼×´Ì¬
+        /// ç„å‡†çŠ¶æ€
         /// </summary>
         public bool IsAiming { get; private set; } = false;
 
@@ -86,7 +86,7 @@ using Event;
         void UpdateAimPositon()
         {
             if (!m_Camera) {
-                // Íæ¼Ò»¹Ã»Éú³É£¨Ïà»úÎ´¾ÍĞ÷£©»òÏà»ú±»Ïú»ÙÊ±£¬È·±£ÍøÂçÍ¬²½ÓĞÖµ¿ÉÓÃ£¬¶ø²»ÊÇÁãÏòÁ¿
+                // ç©å®¶è¿˜æ²¡ç”Ÿæˆï¼ˆç›¸æœºæœªå°±ç»ªï¼‰æˆ–ç›¸æœºè¢«é”€æ¯æ—¶ï¼Œç¡®ä¿ç½‘ç»œåŒæ­¥æœ‰å€¼å¯ç”¨ï¼Œè€Œä¸æ˜¯é›¶å‘é‡
                 return;
             }
 
@@ -100,7 +100,6 @@ using Event;
                 targetPosition = ray.origin + ray.direction * AimRayDistance;
                 distance = AimRayDistance;
             }
-            // TODO Èç¹û¾àÀë¹ı½ü£¬»áÓĞIK¶¯»­ÎÊÌâ£¬ÒıÈëvisualAimBlendDistance
             m_VisualAimPosition = targetPosition;
             VisualAimPointTransform.position = m_VisualAimPosition;
         }
@@ -145,7 +144,6 @@ using Event;
             }
             float Frequency = CurrentWeapon.RecoilFrequency;
             float Force = CurrentWeapon.RecoilForce;
-            // TODO ºóĞø¿ÉÒÔ½«ºó×øÁ¦½»¸øWeapon×Ô¼ºÌá¹©
             Vector2 recoil = new Vector2(
                 Mathf.Sin(Time.time * Frequency) * Force,
                 -(Mathf.Sin(Time.time * Frequency * 2f) * 0.5f + 0.5f) * Force

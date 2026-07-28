@@ -87,6 +87,7 @@ namespace TPSDemo
                 m_ChattingPlayer.OnValueChanged += OnPlayerChatting;
                 LanguageChanged(LocalizationManager.Instance.CurLanguage);
                 EventManager.AddListener<Event.LanguageChangedEvent>(ChangeAudio);
+                EventManager.AddListener<Event.AssetUpdateEvent>(ChangeAudio);
             }
         }
 
@@ -94,6 +95,8 @@ namespace TPSDemo
         {
             if (IsClient) {
                 m_ChattingPlayer.OnValueChanged -= OnPlayerChatting;
+                EventManager.RemoveListener<Event.LanguageChangedEvent>(ChangeAudio);
+                EventManager.RemoveListener<Event.AssetUpdateEvent>(ChangeAudio);
             }
             base.OnNetworkDespawn();
         }
@@ -117,9 +120,19 @@ namespace TPSDemo
             }
         }
 
+        private void ChangeAudio(Event.AssetUpdateEvent evt)
+        {
+            foreach(string key in evt.Keys) {
+                if(key.StartsWith($"{Language.GetLanguageString(LocalizationManager.Instance.CurLanguage)}/NpcAudio")) {
+                    LanguageChanged(LocalizationManager.Instance.CurLanguage);
+                    return;
+                }
+            }
+        }
+
         private void ChangeAudio(Event.LanguageChangedEvent evt)
         {
-            print("Npc更新语音：" + LocalizationManager.Instance.GetCurrentLanguageString());
+            Debug.Log("Npc更新语音：" + LocalizationManager.Instance.GetCurrentLanguageString());
             LanguageChanged(LocalizationManager.Instance.CurLanguage);
         }
 
@@ -136,7 +149,7 @@ namespace TPSDemo
                     m_AudioAndEffectPlayGlobal.Clear();
                     foreach (AudioClip clip in clipList) {
                         m_AudioAndEffectPlayGlobal.AddAudio(clip.name, clip);
-                        print("Add Audio " + clip.name);
+                        Debug.Log("Add Audio " + clip.name);
                     }
                 }
             ));
@@ -252,7 +265,7 @@ namespace TPSDemo
                 return;
             }
             m_Player = interactor.GetComponent<PlayerController>();
-            print($"player {m_Player.Id} interact npc");
+            Debug.Log($"player {m_Player.Id} interact npc");
             bool needWait = FaceTarget(interactor.transform.position);
             if (needWait) {
                 if (m_WaitAnimatorCoroutine != null) {
@@ -278,7 +291,6 @@ namespace TPSDemo
 
         public void PlayAudio(int dialogId)
         {
-            print($"NpcAudio{dialogId}");
             m_AudioAndEffectPlayGlobal.Play(
                 $"NpcAudio{dialogId}",
                 AudioSystem.AudioGroup.Master,
@@ -286,7 +298,7 @@ namespace TPSDemo
                 transform.position,
                 Quaternion.identity
             );
-            //print("Npc Play Audio " + $"NpcAudio{dialogId}_{LocalizationManager.Instance.GetCurrentLanguageString()}");
+            //Debug.Log("Npc Play Audio " + $"NpcAudio{dialogId}_{LocalizationManager.Instance.GetCurrentLanguageString()}");
         }
     }
 }

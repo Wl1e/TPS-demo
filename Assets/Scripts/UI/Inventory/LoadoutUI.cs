@@ -5,7 +5,7 @@ namespace TPSDemo.UI
 {
     public struct WeaponUIData
     {
-        public int WeaopnId;
+        public int WeaponId;
         public int CurAmmo;
         public int MaxAmmo;
         // ItemData上没有存储配件的位置，需要传

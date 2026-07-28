@@ -108,6 +108,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TPSDemo.MapPortal
   Portal: {fileID: 1322660101774297425}
   TargetMapId: 2
+  m_Effect: {fileID: 5150741686014296311}
 --- !u!65 &1322660101774297425
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -233,6 +234,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4f6cd5a26aff8e146be03444adac54d1, type: 3}
+--- !u!1 &5150741686014296311 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 4f6cd5a26aff8e146be03444adac54d1, type: 3}
+  m_PrefabInstance: {fileID: 5456803193816153510}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5490113253677570637 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4f6cd5a26aff8e146be03444adac54d1, type: 3}
