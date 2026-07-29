@@ -136,6 +136,7 @@ namespace TPSDemo
                 case SkillBase.SkillState.Finished:
                     // 很不可靠，要不然就所有skill一直监听
                     m_CurrentSkill.StateChanged -= OnSkillStateChanged;
+                    m_AnimatorController.Stop();
                     m_CurrentSkill = null;
                     break;
             }
